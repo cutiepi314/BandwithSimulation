@@ -1,23 +1,23 @@
 <!doctype html>
-<html lang="en" data-visualize-standalone>
+<html lang="sk" data-visualize-standalone>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Animácia priepustnosti siete</title>
+<title>Sieťové laboratórium</title>
 <style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
 
 </head>
 <body>
-<iframe id="codex-visualization" sandbox="allow-scripts" referrerpolicy="no-referrer" title="Animácia priepustnosti siete" data-srcdoc="&lt;!doctype html&gt;
-&lt;html lang=&quot;en&quot; data-visualize-standalone&gt;
+<iframe id="codex-visualization" sandbox="allow-scripts" referrerpolicy="no-referrer" title="Sieťové laboratórium" data-srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;sk&quot; data-visualize-standalone&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
 &lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
 &lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
-&lt;title&gt;Animácia priepustnosti siete&lt;/title&gt;
+&lt;title&gt;Sieťové laboratórium&lt;/title&gt;
 &lt;style&gt;:root {
   color-scheme: light dark;
   background-color: var(
@@ -1786,6 +1786,26 @@ html&gt;body{padding:0}&lt;/style&gt;
   syncTheme();
 })();
 &lt;/script&gt;
+&lt;style&gt;
+  body { max-width: 1440px; margin-inline: auto; }
+  [role=&quot;tabpanel&quot;][hidden] { display: none !important; }
+  .network-lab-heading { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; margin: 4px 0 20px; }
+  .network-lab-heading strong { font-weight: 500; }
+  .network-lab-heading span { color: var(--muted-foreground); font-size: 13px; }
+  .network-lab-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border); margin-bottom: 28px; padding-bottom: 10px; }
+  .network-lab-tabs button { padding: 10px 16px; border: 0; border-radius: 9px; background: transparent; color: var(--muted-foreground); font: inherit; cursor: pointer; text-align: left; }
+  .network-lab-tabs button[aria-selected=&quot;true&quot;] { background: var(--accent); color: var(--accent-foreground); }
+  .network-lab-tabs button:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+  @media (max-width: 560px) { .network-lab-tabs button { padding: 10px; font-size: 13px; } .network-lab-heading { margin-bottom: 14px; } }
+&lt;/style&gt;
+&lt;header class=&quot;network-lab-heading&quot;&gt;&lt;strong&gt;Sieťové laboratórium&lt;/strong&gt;&lt;span&gt;Dáta, signál a prepínanie rámcov&lt;/span&gt;&lt;/header&gt;
+&lt;nav class=&quot;network-lab-tabs&quot; role=&quot;tablist&quot; aria-label=&quot;Simulácie siete&quot;&gt;
+  &lt;button type=&quot;button&quot; id=&quot;throughput-tab&quot; role=&quot;tab&quot; aria-controls=&quot;throughput-panel&quot; aria-selected=&quot;true&quot; tabindex=&quot;0&quot;&gt;01 · Priepustnosť siete&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;encapsulation-tab&quot; role=&quot;tab&quot; aria-controls=&quot;encapsulation-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;02 · Enkapsulácia a deenkapsulácia&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;switching-tab&quot; role=&quot;tab&quot; aria-controls=&quot;switching-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;03 · Ako switch spracúva rámce&lt;/button&gt;
+&lt;/nav&gt;
+
+&lt;section id=&quot;throughput-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;throughput-tab&quot;&gt;
 &lt;div id=&quot;net-flow-sk&quot;&gt;
   &lt;style&gt;
     #net-flow-sk { color: var(--foreground); }
@@ -1810,6 +1830,32 @@ html&gt;body{padding:0}&lt;/style&gt;
     #net-flow-sk .output { display: flex; flex-direction: column; gap: 4px; min-height: 54px; }
     #net-flow-sk .output-number { font-weight: 500; }
     #net-flow-sk .output-status { color: var(--muted-foreground); }
+    #net-flow-sk .goodput-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--green) 18%, transparent);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    #net-flow-sk .goodput-badge::before {
+      content: &quot;&quot;;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent);
+    }
+    #net-flow-sk .goodput-value {
+      color: var(--green);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
     #net-flow-sk .diagram-key { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin: 7px 0 18px; color: var(--muted-foreground); }
     #net-flow-sk .swatch { display: inline-block; width: 15px; height: 5px; margin-right: 6px; vertical-align: middle; background: var(--viz-series-1); }
     #net-flow-sk .swatch.limit { background: var(--viz-series-2); }
@@ -1880,10 +1926,11 @@ html&gt;body{padding:0}&lt;/style&gt;
 
   &lt;div class=&quot;card&quot;&gt;
     &lt;div class=&quot;result-content&quot;&gt;
-      &lt;div class=&quot;viz-stat&quot;&gt;&lt;span id=&quot;net-rate-label&quot; class=&quot;text-small text-muted&quot;&gt;Kapacita služby&lt;/span&gt;&lt;span class=&quot;viz-stat-value result-value tabular-nums&quot; id=&quot;net-rate&quot;&gt;500 Mb/s&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;viz-stat&quot;&gt;&lt;span id=&quot;net-rate-label&quot; class=&quot;text-small text-muted&quot;&gt;Goodput služby&lt;/span&gt;&lt;span class=&quot;viz-stat-value result-value tabular-nums goodput-value&quot; id=&quot;net-rate&quot;&gt;500 Mb/s&lt;/span&gt;&lt;/div&gt;
       &lt;div class=&quot;viz-stat&quot;&gt;&lt;span class=&quot;text-small text-muted&quot; id=&quot;net-file-label&quot;&gt;Prepočet na bajty&lt;/span&gt;&lt;span class=&quot;viz-stat-value result-value tabular-nums&quot; id=&quot;net-bytes&quot;&gt;62,5 MB/s&lt;/span&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div id=&quot;net-time&quot; class=&quot;time-label text-small text-muted&quot;&gt;Tarif služby · pred obmedzeniami na trase&lt;/div&gt;
+    &lt;div class=&quot;goodput-badge&quot;&gt;goodput&lt;/div&gt;
+    &lt;div id=&quot;net-time&quot; class=&quot;time-label text-small text-muted&quot;&gt;Tarif služby · goodput pred obmedzeniami na trase&lt;/div&gt;
   &lt;/div&gt;
   &lt;script type=&quot;application/json&quot; id=&quot;visualization-share-metadata&quot;&gt;{&quot;version&quot;:1,&quot;sources&quot;:[{&quot;title&quot;:&quot;RFC 5136 — Defining Network Capacity&quot;,&quot;url&quot;:&quot;https://www.rfc-editor.org/rfc/rfc5136.html&quot;},{&quot;title&quot;:&quot;RFC 6349 — Framework for TCP Throughput Testing&quot;,&quot;url&quot;:&quot;https://www.rfc-editor.org/rfc/rfc6349.html&quot;},{&quot;title&quot;:&quot;Cisco — Validate Wi-Fi Throughput Testing&quot;,&quot;url&quot;:&quot;https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/221766-validate-wi-fi-throughput-testing-and.html&quot;}]}&lt;/script&gt;
   &lt;script&gt;
@@ -1896,16 +1943,18 @@ html&gt;body{padding:0}&lt;/style&gt;
     const internet = () =&gt; model(&#x27;internet&#x27;,&#x27;Internet&#x27;,&#x27;cloud&#x27;,&#x27;500 Mb/s&#x27;,&#x27;tarif&#x27;,475,&#x27;500 Mb/s v tarife → 475 Mb/s užitočne pri modelovej účinnosti 95 %.&#x27;);
     const router = () =&gt; model(&#x27;router&#x27;,&#x27;Router&#x27;,&#x27;router&#x27;,&#x27;1 Gb/s&#x27;,&#x27;porty&#x27;,950,&#x27;Router má užitočný strop 950 Mb/s; doterajší tok ďalej neobmedzí.&#x27;);
     const sw = slow =&gt; model(&#x27;switch&#x27;,&#x27;Switch&#x27;,&#x27;network&#x27;,slow ? &#x27;100 Mb/s&#x27; : &#x27;1 Gb/s&#x27;,&#x27;porty&#x27;,slow ? 95 : 950,slow ? &#x27;100 Mb/s port → modelovo 95 Mb/s užitočných dát.&#x27; : &#x27;Gigabitový switch má modelový užitočný strop 950 Mb/s.&#x27;);
-    const wifi = () =&gt; model(&#x27;wifi&#x27;,&#x27;Wi-Fi&#x27;,&#x27;wifi&#x27;,&#x27;150 Mb/s&#x27;,&#x27;PHY&#x27;,60,&#x27;150 Mb/s PHY → modelovo 60 Mb/s užitočne: réžia, rušenie a zdieľaný vysielací čas.&#x27;);
+    const wifi = () =&gt; model(&#x27;wifi&#x27;,&#x27;Wi-Fi&#x27;,&#x27;wifi&#x27;,&#x27;150 Mb/s&#x27;,&#x27;PHY&#x27;,60,&#x27;150 Mb/s PHY → modelovo 60 Mb/s goodput: réžia, rušenie a zdieľaný vysielací čas.&#x27;);
+    const wifiWall = () =&gt; model(&#x27;wifi-wall&#x27;,&#x27;Wi-Fi cez stenu&#x27;,&#x27;wifi&#x27;,&#x27;150 Mb/s&#x27;,&#x27;PHY + stena&#x27;,42,&#x27;Stena, kov a rušenie znižujú Wi-Fi goodput na približne 42 Mb/s. To je výrazný pokles užitočných dát pri rovnakom rádiovom kanáli.&#x27;);
     const cable = () =&gt; model(&#x27;cable&#x27;,&#x27;Kábel&#x27;,&#x27;cable&#x27;,&#x27;1 Gb/s&#x27;,&#x27;Ethernet&#x27;,950,&#x27;Gigabitové káblové spojenie má modelový užitočný strop 950 Mb/s.&#x27;);
+    const cableLoss = () =&gt; model(&#x27;cable-loss&#x27;,&#x27;Kábel s útlmom&#x27;,&#x27;cable&#x27;,&#x27;1 Gb/s&#x27;,&#x27;Ethernet + útlm&#x27;,900,&#x27;Dobrý kábel stráca len pár percent, ale dlhé vedenie a zlé spoje znížia goodput na okolo 900 Mb/s.&#x27;);
     const laptop = () =&gt; model(&#x27;laptop&#x27;,&#x27;Notebook&#x27;,&#x27;laptop&#x27;,&#x27;1 klient&#x27;,&#x27;sťahuje&#x27;,null,&#x27;K notebooku sa dostane najviac toľko užitočných dát, koľko dovolí najužšie miesto.&#x27;);
     const cases = [
-      {id:&#x27;old-wifi&#x27;,stages:[internet(),router(),sw(true),wifi(),laptop()],ending:&#x27;Wi-Fi určí 60 Mb/s; starý switch navyše drží káblovú časť pod 100 Mb/s.&#x27;},
-      {id:&#x27;new-wifi&#x27;,stages:[internet(),router(),sw(false),wifi(),laptop()],ending:&#x27;Aj po výmene switcha zostáva 60 Mb/s: limitom je tá istá Wi-Fi.&#x27;},
-      {id:&#x27;old-cable&#x27;,stages:[internet(),router(),sw(true),cable(),laptop()],ending:&#x27;Kábel odstránil limit Wi-Fi. Starý switch však stále pustí modelovo len 95 Mb/s.&#x27;},
-      {id:&#x27;gigabit&#x27;,stages:[internet(),router(),sw(false),cable(),laptop()],ending:&#x27;Domáca sieť už neobmedzuje službu: modelový výsledok je 475 Mb/s.&#x27;},
-      {id:&#x27;sharing&#x27;,stages:[internet(),router(),sw(false),model(&#x27;wifi&#x27;,&#x27;Wi-Fi&#x27;,&#x27;wifi&#x27;,&#x27;1 200 Mb/s&#x27;,&#x27;PHY&#x27;,480,&#x27;Táto Wi-Fi má modelový užitočný strop 480 Mb/s pre všetkých klientov spolu.&#x27;),model(&#x27;sharing&#x27;,&#x27;Notebook&#x27;,&#x27;laptop&#x27;,&#x27;1 zo 4&#x27;,&#x27;klientov&#x27;,null,&#x27;475 Mb/s sa v tomto modeli rozdelí rovnomerne medzi štyroch sťahujúcich klientov.&#x27;)],divide:4,ending:&#x27;Pri rovnomernom delení dostane každý zo štyroch klientov približne 119 Mb/s.&#x27;},
-      {id:&#x27;server&#x27;,stages:[model(&#x27;server&#x27;,&#x27;Server&#x27;,&#x27;server&#x27;,&#x27;40 Mb/s&#x27;,&#x27;užitočne&#x27;,40,&#x27;Server poskytuje užitočné dáta najviac 40 Mb/s.&#x27;),model(&#x27;internet&#x27;,&#x27;Internet&#x27;,&#x27;cloud&#x27;,&#x27;500 Mb/s&#x27;,&#x27;tarif&#x27;,475,&#x27;Internetová služba má modelový užitočný strop 475 Mb/s; tok 40 Mb/s zo servera ďalej neobmedzí.&#x27;),model(&#x27;lan&#x27;,&#x27;Router + switch&#x27;,&#x27;network&#x27;,&#x27;1 Gb/s&#x27;,&#x27;porty&#x27;,950,&#x27;Gigabitový router aj switch majú dostatočnú kapacitu pre tok zo servera.&#x27;),cable(),laptop()],ending:&#x27;Sťahovanie určuje server: aj rýchla domáca sieť dostane len 40 Mb/s.&#x27;}
+      {id:&#x27;old-wifi&#x27;,stages:[internet(),router(),sw(true),wifiWall(),laptop()],ending:&#x27;Stena a rušenie znížia Wi‑Fi goodput na približne 42 Mb/s; starý switch navyše drží káblovú časť pod 100 Mb/s.&#x27;},
+      {id:&#x27;new-wifi&#x27;,stages:[internet(),router(),sw(false),wifiWall(),laptop()],ending:&#x27;Po výmene switcha zostáva limit rovnaký: stena a Wi‑Fi stále určujú len ~42 Mb/s goodput.&#x27;},
+      {id:&#x27;old-cable&#x27;,stages:[internet(),router(),sw(true),cableLoss(),laptop()],ending:&#x27;Kábel znižuje účinok Wi‑Fi, ale starý switch stále drží tok na okolo 95 Mb/s.&#x27;},
+      {id:&#x27;gigabit&#x27;,stages:[internet(),router(),sw(false),cableLoss(),laptop()],ending:&#x27;Domáca sieť už neobmedzuje službu: modelový goodput ostáva okolo 475 Mb/s.&#x27;},
+      {id:&#x27;sharing&#x27;,stages:[internet(),router(),sw(false),model(&#x27;wifi&#x27;,&#x27;Wi‑Fi + prekážky&#x27;,&#x27;wifi&#x27;,&#x27;1 200 Mb/s&#x27;,&#x27;PHY + stena&#x27;,420,&#x27;Steny a zdieľanie rádiového kanála znižujú súhrnný goodput na približne 420 Mb/s pre všetkých klientov naraz.&#x27;),model(&#x27;sharing&#x27;,&#x27;Notebook&#x27;,&#x27;laptop&#x27;,&#x27;1 zo 4&#x27;,&#x27;klientov&#x27;,null,&#x27;475 Mb/s sa v tomto modeli rozdelí rovnomerne medzi štyroch sťahujúcich klientov.&#x27;)],divide:4,ending:&#x27;Pri rovnomernom delení dostane každý zo štyroch klientov približne 105 Mb/s goodput.&#x27;},
+      {id:&#x27;server&#x27;,stages:[model(&#x27;server&#x27;,&#x27;Server&#x27;,&#x27;server&#x27;,&#x27;40 Mb/s&#x27;,&#x27;užitočne&#x27;,40,&#x27;Server poskytuje užitočné dáta najviac 40 Mb/s.&#x27;),model(&#x27;internet&#x27;,&#x27;Internet&#x27;,&#x27;cloud&#x27;,&#x27;500 Mb/s&#x27;,&#x27;tarif&#x27;,475,&#x27;Internetová služba má modelový užitočný strop 475 Mb/s; tok 40 Mb/s zo servera ďalej neobmedzí.&#x27;),model(&#x27;lan&#x27;,&#x27;Router + switch&#x27;,&#x27;network&#x27;,&#x27;1 Gb/s&#x27;,&#x27;porty&#x27;,950,&#x27;Gigabitový router aj switch majú dostatočnú kapacitu pre tok zo servera.&#x27;),cableLoss(),laptop()],ending:&#x27;Sťahovanie určuje server: aj rýchla domáca sieť dostane len 40 Mb/s goodput.&#x27;}
     ];
     let scenario = 0, step = -1, playing = false, all = false;
     let displayed = Array(5).fill(500), from = displayed.slice(), target = displayed.slice();
@@ -2022,10 +2071,11 @@ html&gt;body{padding:0}&lt;/style&gt;
       el(&#x27;progress&#x27;).setAttribute(&#x27;aria-valuenow&#x27;,String(step+1)); el(&#x27;progress-bar&#x27;).style.width = ((step+1)*20) + &#x27;%&#x27;;
       el(&#x27;detail&#x27;).textContent = step &lt; 0 ? &#x27;Tarif 500 Mb/s. Postupne sa pridajú obmedzenia na trase.&#x27; : step === 4 ? data.ending : data.stages[step].detail;
       const rate = step &lt; 0 ? 500 : rates[step];
-      el(&#x27;rate-label&#x27;).textContent = step &lt; 0 ? &#x27;Kapacita služby&#x27; : step === 4 ? (data.divide ? &#x27;Priepustnosť pre 1 klienta&#x27; : &#x27;Skutočná priepustnosť&#x27;) : &#x27;Strop po tomto kroku&#x27;;
+      el(&#x27;rate-label&#x27;).textContent = step &lt; 0 ? &#x27;Goodput služby&#x27; : step === 4 ? (data.divide ? &#x27;Goodput pre 1 klienta&#x27; : &#x27;Výsledný goodput&#x27;) : &#x27;Goodput po tomto kroku&#x27;;
       el(&#x27;file-label&#x27;).textContent = step === 4 ? &#x27;Sťahovanie súboru&#x27; : &#x27;Prepočet na bajty&#x27;;
+      el(&#x27;rate&#x27;).classList.toggle(&#x27;goodput-value&#x27;,true);
       el(&#x27;rate&#x27;).textContent = fmt(rate) + &#x27; Mb/s&#x27;; el(&#x27;bytes&#x27;).textContent = fmt(rate/8) + &#x27; MB/s&#x27;;
-      el(&#x27;time&#x27;).textContent = step &lt; 0 ? &#x27;Tarif služby · pred obmedzeniami na trase&#x27; : step === 4 ? &#x27;1 GB súbor ≈ &#x27; + timeFor(rate) + &#x27; · model bez rozbehu prenosu&#x27; : &#x27;Zostávajúce úseky môžu tento strop ešte znížiť&#x27;;
+      el(&#x27;time&#x27;).textContent = step &lt; 0 ? &#x27;Tarif služby · goodput pred obmedzeniami na trase&#x27; : step === 4 ? &#x27;1 GB súbor ≈ &#x27; + timeFor(rate) + &#x27; · model bez rozbehu prenosu, len užitočné dáta&#x27; : &#x27;Zostávajúce úseky môžu tento goodput ešte znížiť&#x27;;
       el(&#x27;play&#x27;).textContent = playing ? &#x27;Pozastaviť&#x27; : step === 4 ? &#x27;Prehrať znova&#x27; : &#x27;Prehrať&#x27;;
       el(&#x27;play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,String(playing));
       el(&#x27;step&#x27;).disabled = step === 4;
@@ -2100,11 +2150,1003 @@ html&gt;body{padding:0}&lt;/style&gt;
         if (!state.privateContent || state.privateContent.origin !== sessionToken) restore(state);
       }
     });
+    window.NetworkFlow = { pause() { playing = false; updateLabels(); }, redraw() { draw(performance.now()); } };
     const observer = new ResizeObserver(() =&gt; { draw(performance.now()); }); observer.observe(el(&#x27;flow-area&#x27;));
   })();
   &lt;/script&gt;
 &lt;/div&gt;
 
+&lt;/section&gt;
+&lt;section id=&quot;encapsulation-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;encapsulation-tab&quot; hidden&gt;
+&lt;script&gt;
+/* Educational, deterministic packet builder. No network traffic is generated.
+ * References: RFC 791 (IPv4), RFC 8200 (IPv6), RFC 9293 (TCP), RFC 768 (UDP),
+ * RFC 1071 (Internet checksum), RFC 1042 (LLC/SNAP).
+ * Frame lengths exclude PHY preambles, interframe gaps, ACKs and retransmission.
+ */
+(function (root) {
+  &#x27;use strict&#x27;;
+
+  var defaultConfig = Object.freeze({
+    message: &#x27;Ahoj, sieť!&#x27;, textEncoding: &#x27;utf8&#x27;, link: &#x27;ethernet&#x27;,
+    transport: &#x27;tcp&#x27;, ipVersion: &#x27;ipv4&#x27;, sourcePort: 51514, destPort: 443,
+    sourceIp: &#x27;192.0.2.10&#x27;, destIp: &#x27;198.51.100.20&#x27;,
+    sourceMac: &#x27;02:00:00:00:00:0a&#x27;, destMac: &#x27;02:00:00:00:00:14&#x27;, ttl: 64
+  });
+  var encodingLabels = { utf8: &#x27;UTF-8&#x27;, utf16le: &#x27;UTF-16LE bez BOM&#x27;, ascii: &#x27;ASCII&#x27; };
+  var AP_MAC = &#x27;02:00:00:00:aa:01&#x27;;
+
+  function choose(value, fallback, choices, label) {
+    var result = value == null ? fallback : value;
+    if (choices.indexOf(result) === -1) throw new Error(&#x27;Neplatná voľba: &#x27; + label + &#x27;.&#x27;);
+    return result;
+  }
+  function integer(value, fallback, min, max, label) {
+    var result = value == null ? fallback : Number(value);
+    if (value === &#x27;&#x27; || !Number.isInteger(result) || result &lt; min || result &gt; max) {
+      throw new Error(label + &#x27; musí byť celé číslo od &#x27; + min + &#x27; do &#x27; + max + &#x27;.&#x27;);
+    }
+    return result;
+  }
+  function hex(value, width) { return &#x27;0x&#x27; + value.toString(16).toUpperCase().padStart(width || 4, &#x27;0&#x27;); }
+  function u16(value) { return [(value &gt;&gt;&gt; 8) &amp; 255, value &amp; 255]; }
+  function u32(value) { return [(value &gt;&gt;&gt; 24) &amp; 255, (value &gt;&gt;&gt; 16) &amp; 255, (value &gt;&gt;&gt; 8) &amp; 255, value &amp; 255]; }
+  function put16(bytes, offset, value) { bytes[offset] = (value &gt;&gt;&gt; 8) &amp; 255; bytes[offset + 1] = value &amp; 255; }
+  function get16(bytes, offset) { return bytes[offset] * 256 + bytes[offset + 1]; }
+
+  function encodeText(message, encoding) {
+    encoding = choose(encoding, &#x27;utf8&#x27;, [&#x27;utf8&#x27;, &#x27;utf16le&#x27;, &#x27;ascii&#x27;], &#x27;kódovanie textu&#x27;);
+    if (typeof message !== &#x27;string&#x27;) throw new Error(&#x27;Správa musí byť text.&#x27;);
+    var bytes = [];
+    for (var i = 0; i &lt; message.length; i += 1) {
+      var code = message.charCodeAt(i);
+      if (encoding === &#x27;ascii&#x27;) {
+        if (code &gt; 127) throw new Error(&#x27;ASCII podporuje iba znaky 0–127. Odstráň diakritiku a emoji alebo zvoľ UTF-8/UTF-16LE.&#x27;);
+        bytes.push(code);
+        continue;
+      }
+      if (code &gt;= 0xd800 &amp;&amp; code &lt;= 0xdbff) {
+        var low = message.charCodeAt(i + 1);
+        if (!(low &gt;= 0xdc00 &amp;&amp; low &lt;= 0xdfff)) throw new Error(&#x27;Správa obsahuje neplatný znak Unicode.&#x27;);
+        if (encoding === &#x27;utf16le&#x27;) bytes.push(code &amp; 255, code &gt;&gt;&gt; 8, low &amp; 255, low &gt;&gt;&gt; 8);
+        code = 0x10000 + ((code - 0xd800) &lt;&lt; 10) + low - 0xdc00;
+        i += 1;
+        if (encoding === &#x27;utf16le&#x27;) continue;
+      } else if (code &gt;= 0xdc00 &amp;&amp; code &lt;= 0xdfff) {
+        throw new Error(&#x27;Správa obsahuje neplatný znak Unicode.&#x27;);
+      } else if (encoding === &#x27;utf16le&#x27;) {
+        bytes.push(code &amp; 255, code &gt;&gt;&gt; 8);
+        continue;
+      }
+      if (code &lt; 0x80) bytes.push(code);
+      else if (code &lt; 0x800) bytes.push(0xc0 | (code &gt;&gt;&gt; 6), 0x80 | (code &amp; 63));
+      else if (code &lt; 0x10000) bytes.push(0xe0 | (code &gt;&gt;&gt; 12), 0x80 | ((code &gt;&gt;&gt; 6) &amp; 63), 0x80 | (code &amp; 63));
+      else bytes.push(0xf0 | (code &gt;&gt;&gt; 18), 0x80 | ((code &gt;&gt;&gt; 12) &amp; 63), 0x80 | ((code &gt;&gt;&gt; 6) &amp; 63), 0x80 | (code &amp; 63));
+    }
+    return bytes;
+  }
+
+  function ipv4(text, label) {
+    var groups = String(text).trim().split(&#x27;.&#x27;);
+    if (groups.length !== 4 || groups.some(function (x) { return !/^(0|[1-9][0-9]{0,2})$/.test(x) || Number(x) &gt; 255; })) {
+      throw new Error(label + &#x27; musí byť platná IPv4 adresa, napr. 192.0.2.10.&#x27;);
+    }
+    return { bytes: groups.map(Number), text: groups.join(&#x27;.&#x27;) };
+  }
+
+  function ipv6(text, label) {
+    var address = String(text).trim().toLowerCase();
+    function invalid() { throw new Error(label + &#x27; musí byť platná IPv6 adresa, napr. 2001:db8::10.&#x27;); }
+    if (address.indexOf(&#x27;.&#x27;) !== -1) {
+      var lastColon = address.lastIndexOf(&#x27;:&#x27;);
+      if (lastColon &lt; 0) invalid();
+      var embedded;
+      try { embedded = ipv4(address.slice(lastColon + 1), label).bytes; } catch (_) { invalid(); }
+      address = address.slice(0, lastColon + 1) + get16(embedded, 0).toString(16) + &#x27;:&#x27; + get16(embedded, 2).toString(16);
+    }
+    var halves = address.split(&#x27;::&#x27;);
+    if (halves.length &gt; 2) invalid();
+    var left = halves[0] ? halves[0].split(&#x27;:&#x27;) : [];
+    var right = halves.length === 2 &amp;&amp; halves[1] ? halves[1].split(&#x27;:&#x27;) : [];
+    var count = left.length + right.length;
+    if (left.concat(right).some(function (part) { return !/^[0-9a-f]{1,4}$/.test(part); })) invalid();
+    if ((halves.length === 1 &amp;&amp; count !== 8) || (halves.length === 2 &amp;&amp; count &gt;= 8)) invalid();
+    var groups = left.concat(new Array(8 - count).fill(&#x27;0&#x27;), right).map(function (part) { return parseInt(part, 16); });
+    // RFC 5952 style compression: the first longest run, at least two zero words.
+    var bestStart = -1, bestLength = 1;
+    for (var i = 0; i &lt; 8;) {
+      if (groups[i] !== 0) { i += 1; continue; }
+      var start = i;
+      while (i &lt; 8 &amp;&amp; groups[i] === 0) i += 1;
+      if (i - start &gt; bestLength) { bestStart = start; bestLength = i - start; }
+    }
+    var words = groups.map(function (part) { return part.toString(16); });
+    var normalized = bestStart === -1 ? words.join(&#x27;:&#x27;) : words.slice(0, bestStart).join(&#x27;:&#x27;) + &#x27;::&#x27; + words.slice(bestStart + bestLength).join(&#x27;:&#x27;);
+    return { bytes: groups.reduce(function (bytes, word) { return bytes.concat(u16(word)); }, []), text: normalized };
+  }
+
+  function mac(text, label) {
+    var address = String(text).trim().toLowerCase();
+    if (!/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/.test(address) &amp;&amp; !/^([0-9a-f]{2}-){5}[0-9a-f]{2}$/.test(address)) {
+      throw new Error(label + &#x27; musí mať šesť dvojíc hexadecimálnych číslic, napr. 02:00:00:00:00:0a.&#x27;);
+    }
+    address = address.replace(/-/g, &#x27;:&#x27;);
+    return { bytes: address.split(&#x27;:&#x27;).map(function (part) { return parseInt(part, 16); }), text: address };
+  }
+
+  // RFC 1071: one&#x27;s-complement sum over 16-bit words, odd byte zero-padded.
+  function checksum(bytes) {
+    var sum = 0;
+    for (var i = 0; i &lt; bytes.length; i += 2) sum += (bytes[i] &lt;&lt; 8) + (bytes[i + 1] || 0);
+    while (sum &gt;&gt;&gt; 16) sum = (sum &amp; 0xffff) + (sum &gt;&gt;&gt; 16);
+    return (~sum) &amp; 0xffff;
+  }
+
+  // CRC-32/ISO-HDLC, reflected polynomial, used by Ethernet and 802.11 FCS.
+  function crc32(bytes) {
+    var crc = 0xffffffff;
+    bytes.forEach(function (byte) {
+      crc ^= byte;
+      for (var bit = 0; bit &lt; 8; bit += 1) crc = (crc &gt;&gt;&gt; 1) ^ ((crc &amp; 1) ? 0xedb88320 : 0);
+    });
+    return (crc ^ 0xffffffff) &gt;&gt;&gt; 0;
+  }
+
+  function field(bytes, key, label, offset, length, value, description) {
+    return { key: key, label: label, offset: offset, length: length, bytes: bytes.slice(offset, offset + length), value: value, description: description };
+  }
+  function header(label, bytes, description, fields) {
+    return { label: label, bytes: bytes, length: bytes.length, description: description, fields: fields };
+  }
+
+  function build(input) {
+    input = input || {};
+    var cfg = {
+      message: input.message == null ? defaultConfig.message : input.message,
+      textEncoding: choose(input.textEncoding, &#x27;utf8&#x27;, [&#x27;utf8&#x27;, &#x27;utf16le&#x27;, &#x27;ascii&#x27;], &#x27;kódovanie&#x27;),
+      link: choose(input.link, &#x27;ethernet&#x27;, [&#x27;ethernet&#x27;, &#x27;wifi&#x27;], &#x27;linková vrstva&#x27;),
+      transport: choose(input.transport, &#x27;tcp&#x27;, [&#x27;tcp&#x27;, &#x27;udp&#x27;], &#x27;transportný protokol&#x27;),
+      ipVersion: choose(input.ipVersion, &#x27;ipv4&#x27;, [&#x27;ipv4&#x27;, &#x27;ipv6&#x27;], &#x27;verzia IP&#x27;),
+      sourcePort: integer(input.sourcePort, defaultConfig.sourcePort, 1, 65535, &#x27;Zdrojový port&#x27;),
+      destPort: integer(input.destPort == null ? input.destinationPort : input.destPort, defaultConfig.destPort, 1, 65535, &#x27;Cieľový port&#x27;),
+      ttl: integer(input.ttl, 64, 1, 255, &#x27;TTL / Hop limit&#x27;)
+    };
+    var isV6 = cfg.ipVersion === &#x27;ipv6&#x27;;
+    var parseIp = isV6 ? ipv6 : ipv4;
+    var srcIp = parseIp(input.sourceIp || (isV6 ? &#x27;2001:db8:1::10&#x27; : defaultConfig.sourceIp), &#x27;Zdrojová IP&#x27;);
+    var dstIp = parseIp(input.destIp || input.destinationIp || (isV6 ? &#x27;2001:db8:2::20&#x27; : defaultConfig.destIp), &#x27;Cieľová IP&#x27;);
+    var srcMac = mac(input.sourceMac || defaultConfig.sourceMac, &#x27;Zdrojová MAC&#x27;);
+    var dstMac = mac(input.destMac || input.destinationMac || defaultConfig.destMac, &#x27;Cieľová MAC&#x27;);
+    cfg.sourceIp = srcIp.text; cfg.destIp = dstIp.text;
+    cfg.sourceMac = srcMac.text; cfg.destMac = dstMac.text;
+    var payload = encodeText(cfg.message, cfg.textEncoding);
+    if (payload.length &gt; 512) throw new Error(&#x27;Správa má &#x27; + payload.length + &#x27; B. Tento model podporuje najviac 512 B po zakódovaní.&#x27;);
+    var protocol = cfg.transport === &#x27;tcp&#x27; ? 6 : 17;
+    var transportLength = cfg.transport === &#x27;tcp&#x27; ? 20 : 8;
+    var th = new Array(transportLength).fill(0);
+    put16(th, 0, cfg.sourcePort); put16(th, 2, cfg.destPort);
+    if (cfg.transport === &#x27;tcp&#x27;) {
+      th[7] = 1; th[11] = 1; th[12] = 0x50; th[13] = 0x18; put16(th, 14, 65535);
+    } else put16(th, 4, th.length + payload.length);
+    var pseudo = srcIp.bytes.concat(dstIp.bytes, isV6 ? u32(th.length + payload.length).concat([0, 0, 0, protocol]) : [0, protocol].concat(u16(th.length + payload.length)));
+    var transportChecksum = checksum(pseudo.concat(th, payload));
+    if (cfg.transport === &#x27;udp&#x27; &amp;&amp; transportChecksum === 0) transportChecksum = 0xffff;
+    put16(th, cfg.transport === &#x27;tcp&#x27; ? 16 : 6, transportChecksum);
+    var tf = [
+      field(th, &#x27;source-port&#x27;, &#x27;Zdrojový port&#x27;, 0, 2, cfg.sourcePort, &#x27;Identifikuje odosielajúcu aplikáciu.&#x27;),
+      field(th, &#x27;destination-port&#x27;, &#x27;Cieľový port&#x27;, 2, 2, cfg.destPort, &#x27;Identifikuje cieľovú aplikáciu; samotné číslo portu neurčuje obsah správy.&#x27;)
+    ];
+    if (cfg.transport === &#x27;tcp&#x27;) {
+      tf.push(field(th, &#x27;sequence&#x27;, &#x27;Sequence number&#x27;, 4, 4, 1, &#x27;Poradové číslo prvého dátového bajtu. Ukážka už vytvoreného TCP spojenia.&#x27;));
+      tf.push(field(th, &#x27;acknowledgment&#x27;, &#x27;Acknowledgment number&#x27;, 8, 4, 1, &#x27;Číslo ďalšieho očakávaného bajtu od druhej strany.&#x27;));
+      tf.push(field(th, &#x27;flags&#x27;, &#x27;Dĺžka + príznaky&#x27;, 12, 2, &#x27;20 B; PSH, ACK&#x27;, &#x27;TCP hlavička má 5 × 4 B bez voliteľných polí.&#x27;));
+      tf.push(field(th, &#x27;window&#x27;, &#x27;Okno&#x27;, 14, 2, 65535, &#x27;Prijímacie okno pre riadenie toku.&#x27;));
+      tf.push(field(th, &#x27;checksum&#x27;, &#x27;TCP checksum&#x27;, 16, 2, hex(transportChecksum), &#x27;Kontroluje TCP hlavičku, dáta a pseudohlavičku s IP adresami.&#x27;));
+      tf.push(field(th, &#x27;urgent&#x27;, &#x27;Urgent pointer&#x27;, 18, 2, 0, &#x27;V tejto ukážke sa nepoužíva.&#x27;));
+    } else {
+      tf.push(field(th, &#x27;length&#x27;, &#x27;Dĺžka UDP&#x27;, 4, 2, th.length + payload.length, &#x27;8 B hlavičky plus zakódovaná správa.&#x27;));
+      tf.push(field(th, &#x27;checksum&#x27;, &#x27;UDP checksum&#x27;, 6, 2, hex(transportChecksum), &#x27;Kontroluje UDP hlavičku, dáta a pseudohlavičku s IP adresami.&#x27;));
+    }
+    var transportHeader = header(cfg.transport.toUpperCase(), th, cfg.transport === &#x27;tcp&#x27; ? &#x27;20 B základnej TCP hlavičky: porty, poradie, potvrdenie, príznaky, okno a kontrolný súčet.&#x27; : &#x27;8 B UDP hlavičky: dva porty, dĺžka a kontrolný súčet.&#x27;, tf);
+    var segment = th.concat(payload);
+    var ih;
+    if (isV6) {
+      ih = [0x60, 0, 0, 0].concat(u16(segment.length), [protocol, cfg.ttl], srcIp.bytes, dstIp.bytes);
+    } else {
+      ih = [0x45, 0].concat(u16(20 + segment.length), [0, 1, 0x40, 0, cfg.ttl, protocol, 0, 0], srcIp.bytes, dstIp.bytes);
+      put16(ih, 10, checksum(ih));
+    }
+    var nf = isV6 ? [
+      field(ih, &#x27;version&#x27;, &#x27;Verzia + trieda + flow label&#x27;, 0, 4, &#x27;IPv6; 0; 0&#x27;, &#x27;Pevná základná hlavička IPv6 má 40 B.&#x27;),
+      field(ih, &#x27;length&#x27;, &#x27;Payload length&#x27;, 4, 2, segment.length, &#x27;Počet bajtov za základnou IPv6 hlavičkou.&#x27;),
+      field(ih, &#x27;protocol&#x27;, &#x27;Next header&#x27;, 6, 1, protocol + &#x27; (&#x27; + cfg.transport.toUpperCase() + &#x27;)&#x27;, &#x27;Určuje nasledujúci protokol.&#x27;),
+      field(ih, &#x27;ttl&#x27;, &#x27;Hop limit&#x27;, 7, 1, cfg.ttl, &#x27;Smerovač pri preposlaní znižuje hodnotu o 1.&#x27;),
+      field(ih, &#x27;source-ip&#x27;, &#x27;Zdrojová IPv6&#x27;, 8, 16, cfg.sourceIp, &#x27;IP adresa odosielateľa.&#x27;),
+      field(ih, &#x27;destination-ip&#x27;, &#x27;Cieľová IPv6&#x27;, 24, 16, cfg.destIp, &#x27;IP adresa konečného príjemcu.&#x27;)
+    ] : [
+      field(ih, &#x27;version&#x27;, &#x27;Verzia + IHL&#x27;, 0, 1, &#x27;IPv4; 20 B&#x27;, &#x27;Verzia 4 a 5 × 4 B základnej hlavičky.&#x27;),
+      field(ih, &#x27;dscp&#x27;, &#x27;DSCP + ECN&#x27;, 1, 1, 0, &#x27;Základná trieda služby bez označenia preťaženia.&#x27;),
+      field(ih, &#x27;length&#x27;, &#x27;Celková dĺžka IP&#x27;, 2, 2, ih.length + segment.length, &#x27;IPv4 hlavička plus celá transportná jednotka.&#x27;),
+      field(ih, &#x27;identification&#x27;, &#x27;Identification&#x27;, 4, 2, 1, &#x27;Ukážkový identifikátor; paket sa nefragmentuje.&#x27;),
+      field(ih, &#x27;fragment&#x27;, &#x27;Flags + fragment offset&#x27;, 6, 2, &#x27;DF = 1; offset = 0&#x27;, &#x27;Príznak Don’t Fragment. Správa má najviac 512 B.&#x27;),
+      field(ih, &#x27;ttl&#x27;, &#x27;TTL&#x27;, 8, 1, cfg.ttl, &#x27;Smerovač pri preposlaní znižuje hodnotu; bráni nekonečnému obehu.&#x27;),
+      field(ih, &#x27;protocol&#x27;, &#x27;Protocol&#x27;, 9, 1, protocol + &#x27; (&#x27; + cfg.transport.toUpperCase() + &#x27;)&#x27;, &#x27;Určuje transportný protokol.&#x27;),
+      field(ih, &#x27;checksum&#x27;, &#x27;IPv4 checksum&#x27;, 10, 2, hex(get16(ih, 10)), &#x27;Chráni iba IPv4 hlavičku, nie prenášané dáta.&#x27;),
+      field(ih, &#x27;source-ip&#x27;, &#x27;Zdrojová IPv4&#x27;, 12, 4, cfg.sourceIp, &#x27;IP adresa odosielateľa.&#x27;),
+      field(ih, &#x27;destination-ip&#x27;, &#x27;Cieľová IPv4&#x27;, 16, 4, cfg.destIp, &#x27;IP adresa konečného príjemcu.&#x27;)
+    ];
+    var ipHeader = header(isV6 ? &#x27;IPv6&#x27; : &#x27;IPv4&#x27;, ih, isV6 ? &#x27;40 B základnej IPv6 hlavičky. IPv6 nemá kontrolný súčet hlavičky.&#x27; : &#x27;20 B základnej IPv4 hlavičky bez voliteľných polí.&#x27;, nf);
+    var packet = ih.concat(segment);
+    var etherType = isV6 ? 0x86dd : 0x0800;
+    var lh, lf;
+    if (cfg.link === &#x27;ethernet&#x27;) {
+      lh = dstMac.bytes.concat(srcMac.bytes, u16(etherType));
+      lf = [
+        field(lh, &#x27;destination-mac&#x27;, &#x27;Cieľová MAC&#x27;, 0, 6, cfg.destMac, &#x27;Adresa príjemcu na tomto linkovom úseku; pri vzdialenej IP sieti typicky MAC brány.&#x27;),
+        field(lh, &#x27;source-mac&#x27;, &#x27;Zdrojová MAC&#x27;, 6, 6, cfg.sourceMac, &#x27;Adresa odosielajúceho rozhrania na tomto úseku.&#x27;),
+        field(lh, &#x27;ethertype&#x27;, &#x27;EtherType&#x27;, 12, 2, hex(etherType), &#x27;Identifikuje vnorený protokol &#x27; + ipHeader.label + &#x27;.&#x27;)
+      ];
+    } else {
+      // Unencrypted, non-QoS infrastructure Data frame sent by a station to AP.
+      lh = [0x08, 0x01, 0, 0].concat(mac(AP_MAC, &#x27;AP MAC&#x27;).bytes, srcMac.bytes, dstMac.bytes, [0x10, 0], [0xaa, 0xaa, 0x03, 0, 0, 0], u16(etherType));
+      lf = [
+        field(lh, &#x27;frame-control&#x27;, &#x27;Frame control&#x27;, 0, 2, &#x27;Data; To DS = 1&#x27;, &#x27;Nešifrovaný dátový rámec bez QoS, zo stanice k prístupovému bodu.&#x27;),
+        field(lh, &#x27;duration&#x27;, &#x27;Duration&#x27;, 2, 2, 0, &#x27;Ilustračná nulová rezervácia média; časovanie Wi-Fi sa nemodeluje.&#x27;),
+        field(lh, &#x27;receiver-ap&#x27;, &#x27;Address 1: AP / BSSID&#x27;, 4, 6, AP_MAC, &#x27;Bezprostredný rádiový príjemca je prístupový bod.&#x27;),
+        field(lh, &#x27;source-mac&#x27;, &#x27;Address 2: zdrojová MAC&#x27;, 10, 6, cfg.sourceMac, &#x27;Odosielajúca Wi-Fi stanica.&#x27;),
+        field(lh, &#x27;destination-mac&#x27;, &#x27;Address 3: cieľová MAC&#x27;, 16, 6, cfg.destMac, &#x27;Linkový cieľ v distribučnom systéme; môže ním byť brána.&#x27;),
+        field(lh, &#x27;sequence&#x27;, &#x27;Sequence control&#x27;, 22, 2, &#x27;Seq = 1; fragment = 0&#x27;, &#x27;Poradové číslo Wi-Fi rámca, odlišné od TCP Sequence number.&#x27;),
+        field(lh, &#x27;llc-snap&#x27;, &#x27;LLC / SNAP&#x27;, 24, 8, &#x27;AA AA 03 00 00 00 &#x27; + hex(etherType), &#x27;8 B určujúcich vnorený protokol &#x27; + ipHeader.label + &#x27;.&#x27;)
+      ];
+    }
+    var linkHeader = header(cfg.link === &#x27;ethernet&#x27; ? &#x27;Ethernet II&#x27; : &#x27;Wi-Fi + LLC/SNAP&#x27;, lh, cfg.link === &#x27;ethernet&#x27; ? &#x27;14 B Ethernet II hlavičky; bez VLAN.&#x27; : &#x27;24 B MAC hlavičky + 8 B LLC/SNAP. Zjednodušená nešifrovaná Wi-Fi bez QoS.&#x27;, lf);
+    var padding = cfg.link === &#x27;ethernet&#x27; ? new Array(Math.max(0, 46 - packet.length)).fill(0) : [];
+    var withoutFcs = lh.concat(packet, padding);
+    var crc = crc32(withoutFcs);
+    var fcs = [crc &amp; 255, (crc &gt;&gt;&gt; 8) &amp; 255, (crc &gt;&gt;&gt; 16) &amp; 255, (crc &gt;&gt;&gt; 24) &amp; 255];
+    var frame = withoutFcs.concat(fcs);
+    var parts = [], offset = 0;
+    function add(key, label, bytes, description, fields) {
+      parts.push({ key: key, label: label, bytes: bytes, length: bytes.length, offset: offset, description: description, fields: fields || [] });
+      offset += bytes.length;
+    }
+    add(&#x27;link&#x27;, linkHeader.label, lh, linkHeader.description, lf);
+    add(&#x27;ip&#x27;, ipHeader.label, ih, ipHeader.description, nf);
+    add(&#x27;transport&#x27;, transportHeader.label, th, transportHeader.description, tf);
+    add(&#x27;payload&#x27;, &#x27;Dáta · &#x27; + encodingLabels[cfg.textEncoding], payload, &#x27;Zakódovaná správa. Kódovanie mení reprezentáciu textu, nie jeho význam; nejde o šifrovanie.&#x27;);
+    if (padding.length) add(&#x27;padding&#x27;, &#x27;Výplň Ethernet&#x27;, padding, &#x27;Doplní obsah Ethernet rámca aspoň na 46 B. Výplň nepatrí do IP paketu ani do správy.&#x27;);
+    add(&#x27;fcs&#x27;, &#x27;FCS · CRC-32&#x27;, fcs, &#x27;4 B na detekciu poškodenia celého rámca pred FCS. Vypočítaná hodnota &#x27; + hex(crc, 8) + &#x27;, bajty v poradí little-endian.&#x27;);
+    return {
+      config: cfg, payloadText: cfg.message, payloadBytes: payload,
+      transportBytes: segment, packetBytes: packet, frameBytes: frame,
+      parts: parts, headers: { transport: transportHeader, ip: ipHeader, link: linkHeader },
+      summary: {
+        payloadBytes: payload.length, transportHeaderBytes: th.length, ipHeaderBytes: ih.length,
+        linkHeaderBytes: lh.length, paddingBytes: padding.length, fcsBytes: 4,
+        transportBytes: segment.length, packetBytes: packet.length, frameBytes: frame.length,
+        overheadBytes: frame.length - payload.length, efficiency: payload.length / frame.length,
+        frameBits: frame.length * 8, transportChecksum: transportChecksum,
+        ipChecksum: isV6 ? null : get16(ih, 10), fcs: crc
+      },
+      notes: [
+        &#x27;Jeden ilustračný dátový prenos, najviac 512 B správy. Bez fragmentácie, IP/TCP voliteľných polí a VLAN.&#x27;,
+        &#x27;Dĺžka rámca zahŕňa FCS; nezahŕňa fyzickú preambulu, medzeru medzi rámcami, potvrdenia ani opakovania.&#x27;,
+        cfg.transport === &#x27;tcp&#x27; ? &#x27;TCP ukazuje dátový segment už vytvoreného spojenia. Handshake, odpovede a opakované prenosy sa tu nepočítajú.&#x27; : &#x27;UDP samo neposkytuje potvrdenie, poradie ani opakovanie prenosu.&#x27;,
+        cfg.link === &#x27;wifi&#x27; ? &#x27;Wi-Fi: model Data, To DS = 1, 24 B MAC + 8 B LLC/SNAP + 4 B FCS; bez QoS, WPA a agregácie. AP má pevnú BSSID &#x27; + AP_MAC + &#x27;.&#x27; : &#x27;Ethernet II: 14 B hlavičky + najmenej 46 B obsahu + 4 B FCS.&#x27;
+      ]
+    };
+  }
+
+  var api = Object.freeze({ build: build, encodeText: encodeText, checksum: checksum, crc32: crc32, defaultConfig: defaultConfig, encodingLabels: encodingLabels });
+  root.EncapsulationModel = api;
+  if (typeof module !== &#x27;undefined&#x27; &amp;&amp; module.exports) module.exports = api;
+})(typeof globalThis !== &#x27;undefined&#x27; ? globalThis : this);
+
+&lt;/script&gt;
+&lt;style&gt;
+  #encapsulation-lab { --enc-app: var(--viz-series-3, #9b72f6); --enc-transport: var(--viz-series-2, #e0a33b); --enc-ip: var(--viz-series-4, #49b6a1); --enc-link: var(--viz-series-1, #547dff); --enc-signal: var(--viz-series-5, #e2749d); color: var(--foreground); padding: 22px 0 32px; }
+  #encapsulation-lab *, #encapsulation-lab *::before, #encapsulation-lab *::after { box-sizing: border-box; }
+  #encapsulation-lab button, #encapsulation-lab input, #encapsulation-lab select, #encapsulation-lab textarea { font: inherit; }
+  #encapsulation-lab button { cursor: pointer; }
+  #encapsulation-lab button:disabled { opacity: .42; cursor: default; }
+  #encapsulation-lab :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+  #encapsulation-lab h2, #encapsulation-lab h3, #encapsulation-lab p { margin: 0; }
+  #encapsulation-lab .enc-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; margin-bottom: 20px; }
+  #encapsulation-lab h2 { font-size: clamp(23px, 3vw, 32px); letter-spacing: -.035em; line-height: 1.15; }
+  #encapsulation-lab .enc-subtitle { max-width: 760px; margin-top: 9px; color: var(--muted-foreground); font-size: 14px; line-height: 1.55; }
+  #encapsulation-lab .enc-eyebrow { font-size: 10px; line-height: 1.5; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; color: var(--muted-foreground); }
+  #encapsulation-lab .enc-reference { font-size: 11px; color: var(--muted-foreground); padding: 8px 11px; border: 1px solid var(--border); border-radius: 99px; white-space: nowrap; }
+  #encapsulation-lab .enc-layout { display: grid; grid-template-columns: 278px minmax(0, 1fr); gap: 18px; align-items: start; }
+  #encapsulation-lab .enc-panel { border: 1px solid var(--border); background: var(--card); border-radius: 16px; padding: 18px; min-width: 0; }
+  #encapsulation-lab .enc-settings { display: grid; gap: 15px; }
+  #encapsulation-lab .enc-settings h3, #encapsulation-lab .enc-section-title { font-size: 15px; line-height: 1.3; font-weight: 700; }
+  #encapsulation-lab .enc-field { display: grid; gap: 6px; font-size: 12px; font-weight: 650; }
+  #encapsulation-lab .enc-field &gt; input, #encapsulation-lab .enc-field &gt; select, #encapsulation-lab .enc-field &gt; textarea, #encapsulation-lab .enc-inline-select { width: 100%; min-width: 0; border: 1px solid var(--border); background: var(--background); color: var(--foreground); border-radius: 8px; padding: 9px 10px; font-size: 13px; font-weight: 450; }
+  #encapsulation-lab .enc-field &gt; textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
+  #encapsulation-lab .enc-field select, #encapsulation-lab .enc-inline-select { min-height: 38px; }
+  #encapsulation-lab .enc-field small, #encapsulation-lab .enc-help { font-size: 11px; color: var(--muted-foreground); line-height: 1.5; font-weight: 400; }
+  #encapsulation-lab .enc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #encapsulation-lab .enc-presets { display: flex; gap: 5px; flex-wrap: wrap; }
+  #encapsulation-lab .enc-small-button { border: 1px solid var(--border); background: transparent; color: var(--foreground); border-radius: 7px; padding: 5px 8px; font-size: 11px; }
+  #encapsulation-lab .enc-small-button:hover { background: var(--muted); }
+  #encapsulation-lab .enc-settings details { border-top: 1px solid var(--border); padding-top: 12px; }
+  #encapsulation-lab .enc-settings summary { cursor: pointer; font-size: 12px; font-weight: 650; }
+  #encapsulation-lab .enc-addresses { display: grid; gap: 11px; margin-top: 13px; }
+  #encapsulation-lab .enc-error { padding: 12px; border: 1px solid #c35353; border-radius: 10px; color: var(--foreground); background: color-mix(in srgb, #c35353 13%, var(--background)); font-size: 12px; line-height: 1.5; }
+  #encapsulation-lab .enc-error[hidden] { display: none; }
+  #encapsulation-lab .enc-main { display: grid; gap: 14px; min-width: 0; }
+  #encapsulation-lab .enc-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
+  #encapsulation-lab .enc-metric { border: 1px solid var(--border); border-radius: 12px; padding: 12px 13px; background: var(--card); }
+  #encapsulation-lab .enc-metric span { display: block; color: var(--muted-foreground); font-size: 11px; line-height: 1.4; }
+  #encapsulation-lab .enc-metric strong { display: block; font-size: clamp(19px, 2.4vw, 25px); font-weight: 750; line-height: 1.4; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  #encapsulation-lab .enc-metric:first-child strong { color: var(--enc-app); }
+  #encapsulation-lab .enc-metric:last-child strong { color: var(--enc-link); }
+  #encapsulation-lab .enc-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+  #encapsulation-lab .enc-direction { font-size: 11px; color: var(--muted-foreground); }
+  #encapsulation-lab .enc-network { display: grid; grid-template-columns: minmax(0, 1fr) 94px minmax(0, 1fr); gap: 13px; align-items: center; }
+  #encapsulation-lab .enc-host-title { display: flex; justify-content: space-between; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  #encapsulation-lab .enc-host-title small { color: var(--muted-foreground); font-size: 10px; font-weight: 450; }
+  #encapsulation-lab .enc-stack { display: grid; gap: 5px; }
+  #encapsulation-lab .enc-layer { --layer-color: var(--enc-app); width: 100%; border: 1px solid var(--border); border-left: 3px solid var(--layer-color); border-radius: 7px; background: var(--background); color: var(--foreground); padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; gap: 6px; min-height: 37px; text-align: left; transition: background .18s, border-color .18s, transform .18s; }
+  #encapsulation-lab .enc-layer-name { font-size: 11px; font-weight: 650; }
+  #encapsulation-lab .enc-layer-protocol { color: var(--muted-foreground); font-size: 10px; font-variant-numeric: tabular-nums; }
+  #encapsulation-lab .enc-layer[aria-current=&quot;step&quot;] { background: color-mix(in srgb, var(--layer-color) 17%, var(--background)); border-color: var(--layer-color); box-shadow: 0 0 0 1px color-mix(in srgb, var(--layer-color) 20%, transparent); transform: translateX(2px); }
+  #encapsulation-lab .enc-layer.enc-completed { background: color-mix(in srgb, var(--layer-color) 5%, var(--background)); }
+  #encapsulation-lab .enc-route { text-align: center; color: var(--muted-foreground); font-size: 10px; line-height: 1.6; }
+  #encapsulation-lab .enc-wire { position: relative; height: 32px; display: grid; align-items: center; margin: 10px 0; }
+  #encapsulation-lab .enc-wire::before { content: &quot;&quot;; border-top: 2px dashed var(--border); width: 100%; }
+  #encapsulation-lab .enc-wire::after { content: &quot;&quot;; position: absolute; width: 9px; height: 9px; border-radius: 50%; left: 0; background: var(--enc-signal); opacity: .6; }
+  #encapsulation-lab .enc-wire.enc-sending::after { animation: enc-travel 1.25s linear infinite; opacity: 1; }
+  #encapsulation-lab .enc-route-symbol { font-size: 24px; color: var(--enc-signal); line-height: 1; }
+  #encapsulation-lab .enc-transport-controls { margin-top: 17px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  #encapsulation-lab .enc-buttons { display: flex; gap: 6px; }
+  #encapsulation-lab .enc-button { min-height: 35px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 8px; color: var(--foreground); background: var(--background); font-size: 12px; font-weight: 600; }
+  #encapsulation-lab .enc-button.enc-primary { background: var(--primary); color: var(--primary-foreground, #fff); border-color: var(--primary); }
+  #encapsulation-lab .enc-step-count { color: var(--muted-foreground); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  #encapsulation-lab .enc-progress { display: flex; gap: 4px; margin-top: 12px; }
+  #encapsulation-lab .enc-progress button { height: 5px; min-width: 0; flex: 1; border: 0; border-radius: 8px; background: var(--border); padding: 0; }
+  #encapsulation-lab .enc-progress button.enc-done { background: var(--primary); opacity: .5; }
+  #encapsulation-lab .enc-progress button[aria-current=&quot;step&quot;] { background: var(--primary); opacity: 1; }
+  #encapsulation-lab .enc-step-caption { min-height: 76px; margin-top: 17px; }
+  #encapsulation-lab .enc-step-caption h3 { font-size: 17px; line-height: 1.4; letter-spacing: -.015em; }
+  #encapsulation-lab .enc-step-caption p { font-size: 12px; line-height: 1.65; color: var(--muted-foreground); margin-top: 5px; }
+  #encapsulation-lab .enc-packet { display: flex; align-items: stretch; gap: 4px; min-height: 63px; margin-top: 15px; flex-wrap: wrap; }
+  #encapsulation-lab .enc-part { --part-color: var(--enc-app); flex: 1 1 75px; min-width: 0; border: 1px solid color-mix(in srgb, var(--part-color) 45%, var(--border)); border-top: 3px solid var(--part-color); color: var(--foreground); border-radius: 7px; background: color-mix(in srgb, var(--part-color) 9%, var(--background)); padding: 10px 8px; text-align: left; }
+  #encapsulation-lab .enc-part[aria-pressed=&quot;true&quot;] { box-shadow: inset 0 0 0 1px var(--part-color); background: color-mix(in srgb, var(--part-color) 20%, var(--background)); }
+  #encapsulation-lab .enc-part strong, #encapsulation-lab .enc-part span { display: block; overflow-wrap: anywhere; }
+  #encapsulation-lab .enc-part strong { font-size: 11px; }
+  #encapsulation-lab .enc-part span { font-size: 10px; margin-top: 5px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+  #encapsulation-lab .enc-message-preview { flex: 1; border: 1px dashed var(--enc-app); border-radius: 9px; padding: 15px; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-wrap; background: color-mix(in srgb, var(--enc-app) 7%, var(--background)); }
+  #encapsulation-lab .enc-packet-note { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; font-size: 10px; color: var(--muted-foreground); }
+  #encapsulation-lab .enc-inspector-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+  #encapsulation-lab .enc-inspector-head .enc-inline-select { width: auto; font-size: 11px; padding: 5px 8px; min-height: 30px; }
+  #encapsulation-lab .enc-part-description { font-size: 12px; line-height: 1.6; color: var(--muted-foreground); }
+  #encapsulation-lab .enc-fields { display: flex; flex-wrap: wrap; gap: 5px; margin: 12px 0; }
+  #encapsulation-lab .enc-header-field { min-width: 58px; max-width: 100%; padding: 6px 9px; background: var(--background); border: 1px solid var(--border); border-radius: 7px; color: var(--foreground); text-align: left; }
+  #encapsulation-lab .enc-header-field[aria-pressed=&quot;true&quot;] { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, var(--background)); }
+  #encapsulation-lab .enc-header-field strong, #encapsulation-lab .enc-header-field span { display: block; font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
+  #encapsulation-lab .enc-header-field span { color: var(--muted-foreground); font-weight: 400; }
+  #encapsulation-lab .enc-byte-title { font-size: 10px; color: var(--muted-foreground); margin: 10px 0 7px; }
+  #encapsulation-lab .enc-bytes { margin: 0; padding: 12px; background: var(--background); border: 1px solid var(--border); border-radius: 9px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; line-height: 1.9; letter-spacing: .035em; white-space: pre-wrap; word-break: break-word; max-height: 180px; overflow: auto; }
+  #encapsulation-lab .enc-field-description { min-height: 35px; font-size: 11px; color: var(--muted-foreground); line-height: 1.6; margin-top: 9px; }
+  #encapsulation-lab .enc-signal-top { display: flex; gap: 12px; align-items: start; justify-content: space-between; }
+  #encapsulation-lab .enc-signal-controls { display: flex; gap: 7px; max-width: 58%; }
+  #encapsulation-lab .enc-signal-controls .enc-inline-select { font-size: 11px; padding: 6px 8px; min-height: 32px; }
+  #encapsulation-lab .enc-signal-meta { font-size: 11px; line-height: 1.5; color: var(--muted-foreground); margin: 10px 0 3px; font-family: var(--font-mono, ui-monospace, monospace); }
+  #encapsulation-lab .enc-signal-view { overflow-x: auto; margin: 4px -4px 7px; }
+  #encapsulation-lab .enc-signal-view svg { display: block; width: 100%; min-width: 460px; height: 150px; }
+  #encapsulation-lab .enc-signal-explanation { font-size: 12px; line-height: 1.6; }
+  #encapsulation-lab .enc-signal-caveat { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 10px; font-size: 11px; color: var(--muted-foreground); line-height: 1.65; }
+  #encapsulation-lab .enc-notes { margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 11px; line-height: 1.65; }
+  #encapsulation-lab .enc-notes summary { cursor: pointer; font-weight: 650; color: var(--foreground); }
+  #encapsulation-lab .enc-notes ul { margin: 8px 0 0; padding-left: 17px; }
+  #encapsulation-lab .enc-invalid .enc-main { opacity: .45; }
+  @keyframes enc-travel { from { left: 0; } to { left: calc(100% - 9px); } }
+  @media (min-width: 1080px) { #encapsulation-lab .enc-settings { position: sticky; top: 14px; } }
+  @media (max-width: 950px) { #encapsulation-lab .enc-layout { grid-template-columns: 230px minmax(0, 1fr); gap: 12px; } #encapsulation-lab .enc-panel { padding: 14px; } #encapsulation-lab .enc-network { grid-template-columns: minmax(0, 1fr) 45px minmax(0, 1fr); gap: 7px; } #encapsulation-lab .enc-layer { padding: 8px 6px; } #encapsulation-lab .enc-layer-protocol { font-size: 9px; } #encapsulation-lab .enc-host-title small { display: none; } #encapsulation-lab .enc-reference { display: none; } #encapsulation-lab .enc-signal-top { flex-direction: column; } #encapsulation-lab .enc-signal-controls { max-width: 100%; width: 100%; } }
+  @media (max-width: 700px) { #encapsulation-lab .enc-layout { grid-template-columns: 1fr; } #encapsulation-lab .enc-settings { grid-template-columns: 1fr 1fr; gap: 13px; } #encapsulation-lab .enc-settings &gt; h3, #encapsulation-lab .enc-settings &gt; .enc-message-field, #encapsulation-lab .enc-settings &gt; .enc-error, #encapsulation-lab .enc-settings &gt; details, #encapsulation-lab .enc-settings &gt; .enc-help { grid-column: 1 / -1; } #encapsulation-lab .enc-settings &gt; .enc-row { display: contents; } #encapsulation-lab .enc-network { grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr); } #encapsulation-lab .enc-layer-protocol { font-size: 10px; } #encapsulation-lab .enc-metrics { gap: 6px; } #encapsulation-lab .enc-metric { padding: 10px 8px; } #encapsulation-lab .enc-metric span { font-size: 10px; } #encapsulation-lab .enc-step-caption { min-height: 80px; } }
+  @media (max-width: 420px) { #encapsulation-lab .enc-layer { flex-direction: column; align-items: start; gap: 1px; min-height: 46px; } #encapsulation-lab .enc-network { grid-template-columns: minmax(0, 1fr) 35px minmax(0, 1fr); gap: 5px; } #encapsulation-lab .enc-button { padding: 7px 8px; font-size: 11px; } #encapsulation-lab .enc-transport-controls { flex-wrap: wrap; } #encapsulation-lab .enc-step-count { margin-left: auto; } }
+  @media (prefers-reduced-motion: reduce) { #encapsulation-lab *, #encapsulation-lab *::before, #encapsulation-lab *::after { animation: none !important; transition: none !important; } }
+&lt;/style&gt;
+&lt;section id=&quot;encapsulation-lab&quot; aria-labelledby=&quot;enc-title&quot;&gt;
+  &lt;div class=&quot;enc-heading&quot;&gt;
+    &lt;div&gt;&lt;div class=&quot;enc-eyebrow&quot;&gt;Interaktívne laboratórium · OSI&lt;/div&gt;&lt;h2 id=&quot;enc-title&quot;&gt;Od správy k signálu. A späť.&lt;/h2&gt;&lt;p class=&quot;enc-subtitle&quot;&gt;Zmeň správu, protokol alebo kódovanie. Sleduj, ako odosielateľ pridáva obaly a prijímateľ ich postupne odoberá.&lt;/p&gt;&lt;/div&gt;
+    &lt;span class=&quot;enc-reference&quot;&gt;Podľa postupu zo strán 8–16&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;enc-layout&quot;&gt;
+    &lt;form class=&quot;enc-panel enc-settings&quot; id=&quot;enc-form&quot; novalidate&gt;
+      &lt;h3&gt;Nastav prenos&lt;/h3&gt;
+      &lt;label class=&quot;enc-field enc-message-field&quot;&gt;Správa aplikácie&lt;textarea id=&quot;enc-message&quot; maxlength=&quot;512&quot; spellcheck=&quot;false&quot;&gt;Ahoj&lt;/textarea&gt;&lt;span class=&quot;enc-presets&quot;&gt;&lt;button class=&quot;enc-small-button&quot; type=&quot;button&quot; data-message=&quot;Ahoj&quot;&gt;Ahoj&lt;/button&gt;&lt;button class=&quot;enc-small-button&quot; type=&quot;button&quot; data-message=&quot;Ahoj, sieť!&quot;&gt;Diakritika&lt;/button&gt;&lt;button class=&quot;enc-small-button&quot; type=&quot;button&quot; data-message=&quot;Ahoj 🌍&quot;&gt;Emoji&lt;/button&gt;&lt;/span&gt;&lt;/label&gt;
+      &lt;label class=&quot;enc-field&quot;&gt;Kódovanie textu&lt;select id=&quot;enc-text-encoding&quot;&gt;&lt;option value=&quot;utf8&quot;&gt;UTF-8&lt;/option&gt;&lt;option value=&quot;utf16le&quot;&gt;UTF-16 LE&lt;/option&gt;&lt;option value=&quot;ascii&quot;&gt;ASCII (7-bitové znaky)&lt;/option&gt;&lt;/select&gt;&lt;small&gt;Mení bajty správy, nie hlavičky protokolov.&lt;/small&gt;&lt;/label&gt;
+      &lt;label class=&quot;enc-field&quot;&gt;Spojová vrstva&lt;select id=&quot;enc-link&quot;&gt;&lt;option value=&quot;ethernet&quot;&gt;Ethernet II · kábel&lt;/option&gt;&lt;option value=&quot;wifi&quot;&gt;Wi-Fi · 802.11&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
+      &lt;div class=&quot;enc-row&quot;&gt;&lt;label class=&quot;enc-field&quot;&gt;Transport&lt;select id=&quot;enc-transport&quot;&gt;&lt;option value=&quot;tcp&quot;&gt;TCP&lt;/option&gt;&lt;option value=&quot;udp&quot;&gt;UDP&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label class=&quot;enc-field&quot;&gt;Sieť&lt;select id=&quot;enc-ip-version&quot;&gt;&lt;option value=&quot;ipv4&quot;&gt;IPv4&lt;/option&gt;&lt;option value=&quot;ipv6&quot;&gt;IPv6&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;
+      &lt;div class=&quot;enc-row&quot;&gt;&lt;label class=&quot;enc-field&quot;&gt;Zdrojový port&lt;input id=&quot;enc-source-port&quot; type=&quot;number&quot; min=&quot;0&quot; max=&quot;65535&quot; step=&quot;1&quot; value=&quot;51514&quot;&gt;&lt;/label&gt;&lt;label class=&quot;enc-field&quot;&gt;Cieľový port&lt;input id=&quot;enc-dest-port&quot; type=&quot;number&quot; min=&quot;0&quot; max=&quot;65535&quot; step=&quot;1&quot; value=&quot;443&quot;&gt;&lt;/label&gt;&lt;/div&gt;
+      &lt;details&gt;&lt;summary&gt;IP a MAC adresy&lt;/summary&gt;&lt;div class=&quot;enc-addresses&quot;&gt;&lt;label class=&quot;enc-field&quot;&gt;Zdrojová IP&lt;input id=&quot;enc-source-ip&quot; value=&quot;192.0.2.10&quot; spellcheck=&quot;false&quot;&gt;&lt;/label&gt;&lt;label class=&quot;enc-field&quot;&gt;Cieľová IP&lt;input id=&quot;enc-dest-ip&quot; value=&quot;198.51.100.20&quot; spellcheck=&quot;false&quot;&gt;&lt;/label&gt;&lt;label class=&quot;enc-field&quot;&gt;Zdrojová MAC&lt;input id=&quot;enc-source-mac&quot; value=&quot;02:00:00:00:00:0a&quot; spellcheck=&quot;false&quot;&gt;&lt;/label&gt;&lt;label class=&quot;enc-field&quot;&gt;Cieľová MAC&lt;input id=&quot;enc-dest-mac&quot; value=&quot;02:00:00:00:00:14&quot; spellcheck=&quot;false&quot;&gt;&lt;/label&gt;&lt;p class=&quot;enc-help&quot;&gt;MAC adresy patria tomuto lokálnemu spoju; cez smerovač sa spojový obal mení.&lt;/p&gt;&lt;/div&gt;&lt;/details&gt;
+      &lt;div id=&quot;enc-error&quot; class=&quot;enc-error&quot; role=&quot;alert&quot; hidden&gt;&lt;/div&gt;
+      &lt;p class=&quot;enc-help&quot;&gt;Ukážka jedného dátového prenosu. Hlavičky, dĺžky a kontrolné súčty sa pri zmenách prepočítajú.&lt;/p&gt;
+    &lt;/form&gt;
+    &lt;div class=&quot;enc-main&quot;&gt;
+      &lt;div class=&quot;enc-metrics&quot; aria-label=&quot;Veľkosť prenosu&quot;&gt;&lt;div class=&quot;enc-metric&quot;&gt;&lt;span&gt;Dáta aplikácie&lt;/span&gt;&lt;strong id=&quot;enc-metric-payload&quot;&gt;4 B&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;enc-metric&quot;&gt;&lt;span&gt;Réžia + výplň&lt;/span&gt;&lt;strong id=&quot;enc-metric-overhead&quot;&gt;60 B&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;enc-metric&quot;&gt;&lt;span&gt;Celý rámec&lt;/span&gt;&lt;strong id=&quot;enc-metric-frame&quot;&gt;64 B&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;enc-metric&quot;&gt;&lt;span&gt;Podiel dát&lt;/span&gt;&lt;strong id=&quot;enc-metric-efficiency&quot;&gt;6,3 %&lt;/strong&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;section class=&quot;enc-panel&quot; aria-labelledby=&quot;enc-path-title&quot; id=&quot;enc-journey&quot; tabindex=&quot;0&quot; aria-label=&quot;Cesta správy. Šípka doprava posunie krok, šípka doľava vráti krok.&quot;&gt;
+        &lt;div class=&quot;enc-topline&quot;&gt;&lt;h3 class=&quot;enc-section-title&quot; id=&quot;enc-path-title&quot;&gt;Jedna správa, sedem vrstiev&lt;/h3&gt;&lt;span id=&quot;enc-direction&quot; class=&quot;enc-direction&quot;&gt;Enkapsulácia ↓&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;enc-network&quot;&gt;&lt;div&gt;&lt;div class=&quot;enc-host-title&quot;&gt;Odosielateľ &lt;small&gt;pridáva obaly ↓&lt;/small&gt;&lt;/div&gt;&lt;div id=&quot;enc-sender-stack&quot; class=&quot;enc-stack&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;enc-route&quot;&gt;&lt;div class=&quot;enc-route-symbol&quot; id=&quot;enc-medium-icon&quot; aria-hidden=&quot;true&quot;&gt;↝&lt;/div&gt;&lt;div id=&quot;enc-wire&quot; class=&quot;enc-wire&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;&lt;span id=&quot;enc-medium&quot;&gt;Ethernet&lt;/span&gt;&lt;br&gt;&lt;span&gt;jeden spoj →&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;div class=&quot;enc-host-title&quot;&gt;Prijímateľ &lt;small&gt;odoberá obaly ↑&lt;/small&gt;&lt;/div&gt;&lt;div id=&quot;enc-receiver-stack&quot; class=&quot;enc-stack&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class=&quot;enc-transport-controls&quot;&gt;&lt;div class=&quot;enc-buttons&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;enc-prev&quot; class=&quot;enc-button&quot; aria-label=&quot;Predchádzajúci krok&quot;&gt;← Späť&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;enc-play&quot; class=&quot;enc-button enc-primary&quot;&gt;▶ Prehrať&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;enc-next&quot; class=&quot;enc-button&quot; aria-label=&quot;Nasledujúci krok&quot;&gt;Ďalej →&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;enc-reset&quot; class=&quot;enc-button&quot; aria-label=&quot;Vrátiť animáciu na začiatok&quot;&gt;↺&lt;/button&gt;&lt;/div&gt;&lt;span id=&quot;enc-step-count&quot; class=&quot;enc-step-count&quot;&gt;Krok 1 / 14&lt;/span&gt;&lt;/div&gt;
+        &lt;nav id=&quot;enc-progress&quot; class=&quot;enc-progress&quot; aria-label=&quot;Kroky prenosu&quot;&gt;&lt;/nav&gt;
+        &lt;div class=&quot;enc-step-caption&quot; aria-live=&quot;polite&quot; aria-atomic=&quot;true&quot;&gt;&lt;h3 id=&quot;enc-step-title&quot;&gt;&lt;/h3&gt;&lt;p id=&quot;enc-step-description&quot;&gt;&lt;/p&gt;&lt;/div&gt;
+        &lt;div id=&quot;enc-packet&quot; class=&quot;enc-packet&quot; aria-label=&quot;Aktuálna podoba správy&quot;&gt;&lt;/div&gt;&lt;div class=&quot;enc-packet-note&quot;&gt;&lt;span id=&quot;enc-packet-label&quot;&gt;&lt;/span&gt;&lt;span id=&quot;enc-packet-length&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+      &lt;/section&gt;
+      &lt;section class=&quot;enc-panel&quot; aria-labelledby=&quot;enc-inspector-title&quot;&gt;&lt;div class=&quot;enc-inspector-head&quot;&gt;&lt;h3 id=&quot;enc-inspector-title&quot; class=&quot;enc-section-title&quot;&gt;Pozri sa do obalu&lt;/h3&gt;&lt;label class=&quot;enc-help&quot;&gt;Bajty &lt;select id=&quot;enc-byte-format&quot; class=&quot;enc-inline-select&quot; aria-label=&quot;Zobrazenie bajtov&quot;&gt;&lt;option value=&quot;hex&quot;&gt;HEX&lt;/option&gt;&lt;option value=&quot;binary&quot;&gt;Binárne&lt;/option&gt;&lt;option value=&quot;decimal&quot;&gt;Desiatkovo&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;p id=&quot;enc-part-description&quot; class=&quot;enc-part-description&quot;&gt;&lt;/p&gt;&lt;div id=&quot;enc-fields&quot; class=&quot;enc-fields&quot;&gt;&lt;/div&gt;&lt;div id=&quot;enc-byte-title&quot; class=&quot;enc-byte-title&quot;&gt;&lt;/div&gt;&lt;pre id=&quot;enc-bytes&quot; class=&quot;enc-bytes&quot; tabindex=&quot;0&quot;&gt;&lt;/pre&gt;&lt;p id=&quot;enc-field-description&quot; class=&quot;enc-field-description&quot;&gt;&lt;/p&gt;&lt;details class=&quot;enc-notes&quot;&gt;&lt;summary&gt;Čo tento model zahŕňa&lt;/summary&gt;&lt;ul id=&quot;enc-notes-list&quot;&gt;&lt;/ul&gt;&lt;/details&gt;&lt;/section&gt;
+      &lt;section class=&quot;enc-panel&quot; aria-labelledby=&quot;enc-signal-title&quot;&gt;&lt;div class=&quot;enc-signal-top&quot;&gt;&lt;div&gt;&lt;div class=&quot;enc-eyebrow&quot;&gt;Fyzická vrstva · L1&lt;/div&gt;&lt;h3 id=&quot;enc-signal-title&quot; class=&quot;enc-section-title&quot;&gt;Tie isté bity, iný signál&lt;/h3&gt;&lt;/div&gt;&lt;div class=&quot;enc-signal-controls&quot;&gt;&lt;select id=&quot;enc-signal-source&quot; class=&quot;enc-inline-select&quot; aria-label=&quot;Ktoré bajty zobraziť ako signál&quot;&gt;&lt;option value=&quot;frame&quot;&gt;Začiatok rámca&lt;/option&gt;&lt;option value=&quot;payload&quot;&gt;Úsek s dátami&lt;/option&gt;&lt;/select&gt;&lt;select id=&quot;enc-signal-code&quot; class=&quot;enc-inline-select&quot; aria-label=&quot;Kódovanie alebo modulácia signálu&quot;&gt;&lt;option value=&quot;nrz&quot;&gt;NRZ-L&lt;/option&gt;&lt;option value=&quot;manchester&quot;&gt;Manchester&lt;/option&gt;&lt;option value=&quot;4b5b&quot;&gt;4B/5B + NRZI&lt;/option&gt;&lt;option value=&quot;bpsk&quot;&gt;BPSK&lt;/option&gt;&lt;option value=&quot;qpsk&quot;&gt;QPSK&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;&lt;p id=&quot;enc-signal-meta&quot; class=&quot;enc-signal-meta&quot;&gt;&lt;/p&gt;&lt;div id=&quot;enc-signal-view&quot; class=&quot;enc-signal-view&quot;&gt;&lt;/div&gt;&lt;p id=&quot;enc-signal-explanation&quot; class=&quot;enc-signal-explanation&quot;&gt;&lt;/p&gt;&lt;p class=&quot;enc-signal-caveat&quot;&gt;Didaktická ukážka vybraných bajtov: bity kreslíme od najvyššieho po najnižší (MSB → LSB). Schému vyberáš nezávisle od spojovej vrstvy. Nejde o úplný PHY Ethernetu ani Wi-Fi; nezobrazuje preambulu, OFDM, scrambling ani opravu chýb.&lt;/p&gt;&lt;/section&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;script&gt;
+(function () {
+  &#x27;use strict&#x27;;
+  const root = document.getElementById(&#x27;encapsulation-lab&#x27;);
+  if (!root || !window.EncapsulationModel) return;
+  const $ = (name) =&gt; document.getElementById(&#x27;enc-&#x27; + name);
+  const modelAPI = window.EncapsulationModel;
+  const colors = { payload: &#x27;var(--enc-app)&#x27;, transport: &#x27;var(--enc-transport)&#x27;, ip: &#x27;var(--enc-ip)&#x27;, link: &#x27;var(--enc-link)&#x27;, padding: &#x27;var(--muted-foreground)&#x27;, fcs: &#x27;var(--enc-link)&#x27; };
+  let model = null, step = 0, timer = null, selectedPart = &#x27;payload&#x27;, selectedField = null;
+  let visibleParts = [];
+  const el = (tag, className, text) =&gt; { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; };
+  const bytesText = (bytes, format) =&gt; bytes.map((b) =&gt; format === &#x27;binary&#x27; ? b.toString(2).padStart(8, &#x27;0&#x27;) : format === &#x27;decimal&#x27; ? String(b).padStart(3, &#x27;0&#x27;) : b.toString(16).padStart(2, &#x27;0&#x27;).toUpperCase()).join(&#x27; &#x27;);
+  const layerDefs = [
+    { name: &#x27;7 · Aplikácia&#x27;, color: colors.payload, protocol: () =&gt; &#x27;správa&#x27; },
+    { name: &#x27;6 · Prezentácia&#x27;, color: colors.payload, protocol: () =&gt; ({ utf8: &#x27;UTF-8&#x27;, utf16le: &#x27;UTF-16 LE&#x27;, ascii: &#x27;ASCII&#x27; }[model.config.textEncoding]) },
+    { name: &#x27;5 · Relácia&#x27;, color: colors.payload, protocol: () =&gt; &#x27;kontext&#x27; },
+    { name: &#x27;4 · Transport&#x27;, color: colors.transport, protocol: () =&gt; model.config.transport.toUpperCase() },
+    { name: &#x27;3 · Sieť&#x27;, color: colors.ip, protocol: () =&gt; model.config.ipVersion === &#x27;ipv4&#x27; ? &#x27;IPv4&#x27; : &#x27;IPv6&#x27; },
+    { name: &#x27;2 · Spojová&#x27;, color: colors.link, protocol: () =&gt; model.config.link === &#x27;ethernet&#x27; ? &#x27;Ethernet II&#x27; : &#x27;802.11&#x27; },
+    { name: &#x27;1 · Fyzická&#x27;, color: &#x27;var(--enc-signal)&#x27;, protocol: () =&gt; &#x27;signál&#x27; }
+  ];
+  const stages = [
+    { title: &#x27;7 · Aplikácia vytvorí správu&#x27;, description: () =&gt; &#x27;Začíname textom, ktorý chce aplikácia poslať. V ďalšom kroku z neho zvolené kódovanie vytvorí bajty.&#x27;, parts: [], unit: &#x27;Text aplikácie&#x27; },
+    { title: &#x27;6 · Kódovanie: text sa zmení na bajty&#x27;, description: () =&gt; &#x27;V kódovaní &#x27; + layerDefs[1].protocol() + &#x27; má správa &#x27; + model.summary.payloadBytes + &#x27; B. Jeden znak nemusí znamenať jeden bajt. Skús diakritiku alebo emoji a porovnaj UTF-8 s UTF-16 LE.&#x27;, parts: [&#x27;payload&#x27;], unit: &#x27;Zakódované dáta&#x27; },
+    { title: &#x27;5 · Relácia: kontext komunikácie&#x27;, description: () =&gt; &#x27;Aplikácia si drží kontext rozhovoru. Vrstva relácie je tu názorný krok modelu OSI: nepridáva sa žiadna univerzálna „relačná hlavička“ a počet bajtov sa nemení.&#x27;, parts: [&#x27;payload&#x27;], unit: &#x27;Dáta v kontexte relácie&#x27; },
+    { title: &#x27;4 · Transport pridá porty&#x27;, description: () =&gt; model.config.transport === &#x27;tcp&#x27; ? &#x27;TCP pridá 20 B základnej hlavičky: porty, poradové čísla, príznaky a kontrolný súčet. Ukážka nesimuluje nadviazanie spojenia ani potvrdenia.&#x27; : &#x27;UDP pridá 8 B hlavičky: zdrojový a cieľový port, dĺžku a kontrolný súčet. Samotné UDP nezabezpečuje potvrdenie ani opakovanie doručenia.&#x27;, parts: [&#x27;transport&#x27;, &#x27;payload&#x27;], unit: () =&gt; model.config.transport === &#x27;tcp&#x27; ? &#x27;TCP segment&#x27; : &#x27;UDP datagram&#x27; },
+    { title: &#x27;3 · Sieťová vrstva pridá IP adresy&#x27;, description: () =&gt; layerDefs[4].protocol() + &#x27; obalí transportné dáta hlavičkou s IP adresami. Označí tiež transportný protokol: TCP = 6, UDP = 17. IP adresy slúžia na smerovanie medzi sieťami.&#x27;, parts: [&#x27;ip&#x27;, &#x27;transport&#x27;, &#x27;payload&#x27;], unit: &#x27;IP paket&#x27; },
+    { title: &#x27;2 · Spojová vrstva vytvorí rámec&#x27;, description: () =&gt; model.config.link === &#x27;ethernet&#x27; ? &#x27;Ethernet II pridá MAC adresy a EtherType; za dáta patrí FCS. Pri krátkom IP pakete doplní výplň do minimálnej dĺžky rámca. MAC adresy sú pre tento lokálny spoj.&#x27; : &#x27;Model Wi-Fi pridá 24 B hlavičky 802.11, 8 B LLC/SNAP a 4 B FCS. Reálne Wi-Fi rámce môžu mať ďalšie polia podľa režimu a zabezpečenia.&#x27;, parts: [&#x27;link&#x27;, &#x27;ip&#x27;, &#x27;transport&#x27;, &#x27;payload&#x27;, &#x27;padding&#x27;, &#x27;fcs&#x27;], unit: &#x27;Rámec na lokálnom spoji&#x27; },
+    { title: &#x27;1 · Fyzická vrstva vyšle signál&#x27;, description: () =&gt; &#x27;Celý rámec sa prenáša ako signál v médiu. Dole porovnaj, ako vyzerajú vybrané bity pri rôznych spôsoboch linkového kódovania alebo modulácie.&#x27;, parts: [&#x27;link&#x27;, &#x27;ip&#x27;, &#x27;transport&#x27;, &#x27;payload&#x27;, &#x27;padding&#x27;, &#x27;fcs&#x27;], unit: &#x27;Bity celého rámca → signál&#x27; },
+    { title: &#x27;1 · Prijímateľ obnoví bity zo signálu&#x27;, description: () =&gt; &#x27;Prijímač zo signálu obnoví bity a zostaví rámec. Táto ukážka predpokladá prenos bez chyby; nedáva falošný dojem, že signál prenáša iba text správy.&#x27;, parts: [&#x27;link&#x27;, &#x27;ip&#x27;, &#x27;transport&#x27;, &#x27;payload&#x27;, &#x27;padding&#x27;, &#x27;fcs&#x27;], unit: &#x27;Signál → bity celého rámca&#x27; },
+    { title: &#x27;2 · Prijímateľ spracuje spojový obal&#x27;, description: () =&gt; &#x27;Na spojovej vrstve sa kontroluje rámec vrátane FCS a adresovania. Linková hlavička, FCS a prípadná ethernetová výplň sa odoberú; zostane IP paket.&#x27;, parts: [&#x27;ip&#x27;, &#x27;transport&#x27;, &#x27;payload&#x27;], unit: &#x27;IP paket po odobratí rámca&#x27; },
+    { title: &#x27;3 · Prijímateľ spracuje IP hlavičku&#x27;, description: () =&gt; &#x27;IP vrstva vyhodnotí adresu a protokol nasledujúcej vrstvy. IP hlavičku odoberie a dáta odovzdá TCP alebo UDP.&#x27;, parts: [&#x27;transport&#x27;, &#x27;payload&#x27;], unit: () =&gt; model.config.transport === &#x27;tcp&#x27; ? &#x27;TCP segment po odobratí IP&#x27; : &#x27;UDP datagram po odobratí IP&#x27; },
+    { title: &#x27;4 · Port určí prijímajúcu aplikáciu&#x27;, description: () =&gt; &#x27;Transport spracuje hlavičku a odovzdá dáta aplikácii podľa cieľového portu &#x27; + model.config.destPort + &#x27;. Port označuje komunikačný koncový bod; jeho číslo samo osebe neurčuje obsah ani šifrovanie.&#x27;, parts: [&#x27;payload&#x27;], unit: &#x27;Dáta po odobratí transportu&#x27; },
+    { title: &#x27;5 · Dáta sa zaradia do relácie&#x27;, description: () =&gt; &#x27;Prijaté dáta sa priradia ku kontextu komunikácie. Ani tu neodoberáme vymyslenú univerzálnu hlavičku relácie. Bajty správy zostávajú rovnaké.&#x27;, parts: [&#x27;payload&#x27;], unit: &#x27;Dáta v kontexte relácie&#x27; },
+    { title: &#x27;6 · Dekódovanie obnoví text&#x27;, description: () =&gt; &#x27;Prijímateľ interpretuje bajty pomocou rovnakého kódovania &#x27; + layerDefs[1].protocol() + &#x27;. Nesprávne kódovanie by mohlo vytvoriť iné alebo nečitateľné znaky.&#x27;, parts: [&#x27;payload&#x27;], unit: &#x27;Bajty → text&#x27; },
+    { title: &#x27;7 · Aplikácia dostane pôvodnú správu&#x27;, description: () =&gt; &#x27;Hotovo. Všetky prenosové obaly boli spracované a aplikácia dostáva pôvodný obsah. Zmeň nastavenia a prejdi cestu znova — bajty aj veľkosti sa okamžite prepočítajú.&#x27;, parts: [], unit: &#x27;Prijatý text aplikácie&#x27; }
+  ];
+  function getConfig() {
+    return { message: $(&#x27;message&#x27;).value, textEncoding: $(&#x27;text-encoding&#x27;).value, link: $(&#x27;link&#x27;).value, transport: $(&#x27;transport&#x27;).value, ipVersion: $(&#x27;ip-version&#x27;).value, sourcePort: $(&#x27;source-port&#x27;).value, destPort: $(&#x27;dest-port&#x27;).value, sourceIp: $(&#x27;source-ip&#x27;).value, destIp: $(&#x27;dest-ip&#x27;).value, sourceMac: $(&#x27;source-mac&#x27;).value, destMac: $(&#x27;dest-mac&#x27;).value, ttl: 64 };
+  }
+  function pause() { if (timer !== null) window.clearInterval(timer); timer = null; $(&#x27;play&#x27;).textContent = &#x27;▶ Prehrať&#x27;; $(&#x27;play&#x27;).setAttribute(&#x27;aria-pressed&#x27;, &#x27;false&#x27;); $(&#x27;wire&#x27;).classList.remove(&#x27;enc-sending&#x27;); }
+  function changeStep(value) { if (!model || !$(&#x27;error&#x27;).hidden) return; step = Math.max(0, Math.min(stages.length - 1, value)); selectedField = null; renderStage(); if (step === stages.length - 1) pause(); }
+  function buildNavigation() {
+    [&#x27;sender-stack&#x27;, &#x27;receiver-stack&#x27;].forEach((hostId, side) =&gt; {
+      const host = $(hostId); host.replaceChildren();
+      layerDefs.forEach((layer, i) =&gt; {
+        const index = side === 0 ? i : 13 - i;
+        const button = el(&#x27;button&#x27;, &#x27;enc-layer&#x27;); button.type = &#x27;button&#x27;; button.dataset.step = String(index); button.style.setProperty(&#x27;--layer-color&#x27;, layer.color);
+        button.append(el(&#x27;span&#x27;, &#x27;enc-layer-name&#x27;, layer.name), el(&#x27;span&#x27;, &#x27;enc-layer-protocol&#x27;, layer.protocol()));
+        button.setAttribute(&#x27;aria-label&#x27;, (side === 0 ? &#x27;Odosielateľ: &#x27; : &#x27;Prijímateľ: &#x27;) + layer.name + &#x27;, &#x27; + layer.protocol());
+        button.addEventListener(&#x27;click&#x27;, () =&gt; { pause(); changeStep(index); }); host.append(button);
+      });
+    });
+    $(&#x27;progress&#x27;).replaceChildren();
+    stages.forEach((stage, i) =&gt; { const button = el(&#x27;button&#x27;); button.type = &#x27;button&#x27;; button.dataset.step = String(i); button.title = stage.title; button.setAttribute(&#x27;aria-label&#x27;, &#x27;Krok &#x27; + (i + 1) + &#x27;: &#x27; + stage.title); button.addEventListener(&#x27;click&#x27;, () =&gt; { pause(); changeStep(i); }); $(&#x27;progress&#x27;).append(button); });
+  }
+  function renderMetrics() {
+    const s = model.summary;
+    $(&#x27;metric-payload&#x27;).textContent = s.payloadBytes + &#x27; B&#x27;; $(&#x27;metric-overhead&#x27;).textContent = s.overheadBytes + &#x27; B&#x27;; $(&#x27;metric-frame&#x27;).textContent = s.frameBytes + &#x27; B&#x27;;
+    const efficiency = s.frameBytes ? s.payloadBytes / s.frameBytes * 100 : 0;
+    $(&#x27;metric-efficiency&#x27;).textContent = efficiency.toLocaleString(&#x27;sk-SK&#x27;, { maximumFractionDigits: 1 }) + &#x27; %&#x27;;
+    $(&#x27;metric-overhead&#x27;).parentElement.title = &#x27;Transport &#x27; + s.transportHeaderBytes + &#x27; B + IP &#x27; + s.ipHeaderBytes + &#x27; B + spojová hlavička &#x27; + s.linkHeaderBytes + &#x27; B + výplň &#x27; + s.paddingBytes + &#x27; B + FCS &#x27; + s.fcsBytes + &#x27; B&#x27;;
+    $(&#x27;metric-frame&#x27;).parentElement.title = &#x27;Veľkosť rámca vrátane FCS; bez fyzickej preambuly, časových medzier a ďalšej réžie média.&#x27;;
+    $(&#x27;medium&#x27;).textContent = model.config.link === &#x27;ethernet&#x27; ? &#x27;Ethernet&#x27; : &#x27;Wi-Fi&#x27;;
+    $(&#x27;notes-list&#x27;).replaceChildren();
+    const notes = [&#x27;Sedem vrstiev zodpovedá vysvetľovaniu OSI. Internetový zásobník často spája aplikačnú, prezentačnú a relačnú funkciu.&#x27;, &#x27;Výpočet zahŕňa základné hlavičky a FCS. Podiel dát sa počíta zo samotného rámca, bez preambuly, medzier a ďalšej réžie média.&#x27;].concat(model.notes || []);
+    notes.forEach((note) =&gt; $(&#x27;notes-list&#x27;).append(el(&#x27;li&#x27;, &#x27;&#x27;, String(note))));
+  }
+  function renderStage() {
+    const current = stages[step];
+    root.querySelectorAll(&#x27;[data-step]&#x27;).forEach((button) =&gt; { const i = Number(button.dataset.step); button.classList.toggle(&#x27;enc-completed&#x27;, i &lt; step); button.classList.toggle(&#x27;enc-done&#x27;, i &lt; step); if (i === step) button.setAttribute(&#x27;aria-current&#x27;, &#x27;step&#x27;); else button.removeAttribute(&#x27;aria-current&#x27;); });
+    $(&#x27;direction&#x27;).textContent = step &lt; 7 ? &#x27;Enkapsulácia ↓&#x27; : &#x27;Deenkapsulácia ↑&#x27;;
+    $(&#x27;step-count&#x27;).textContent = &#x27;Krok &#x27; + (step + 1) + &#x27; / &#x27; + stages.length;
+    $(&#x27;step-title&#x27;).textContent = current.title; $(&#x27;step-description&#x27;).textContent = current.description();
+    $(&#x27;prev&#x27;).disabled = step === 0; $(&#x27;next&#x27;).disabled = step === stages.length - 1;
+    $(&#x27;wire&#x27;).classList.toggle(&#x27;enc-sending&#x27;, timer !== null &amp;&amp; (step === 6 || step === 7));
+    visibleParts = model.parts.filter((part) =&gt; current.parts.includes(part.key));
+    $(&#x27;packet&#x27;).replaceChildren();
+    if (!current.parts.length) { $(&#x27;packet&#x27;).append(el(&#x27;div&#x27;, &#x27;enc-message-preview&#x27;, model.config.message || &#x27;(prázdna správa)&#x27;)); selectedPart = &#x27;payload&#x27;; }
+    else {
+      if (!visibleParts.some((part) =&gt; part.key === selectedPart)) selectedPart = visibleParts.length ? visibleParts[0].key : &#x27;payload&#x27;;
+      visibleParts.forEach((part) =&gt; {
+        const button = el(&#x27;button&#x27;, &#x27;enc-part&#x27;); button.type = &#x27;button&#x27;; button.style.setProperty(&#x27;--part-color&#x27;, colors[part.key] || colors.payload); button.dataset.part = part.key;
+        button.setAttribute(&#x27;aria-pressed&#x27;, String(part.key === selectedPart)); button.append(el(&#x27;strong&#x27;, &#x27;&#x27;, part.label), el(&#x27;span&#x27;, &#x27;&#x27;, part.length + &#x27; B&#x27;));
+        button.addEventListener(&#x27;click&#x27;, () =&gt; { selectedPart = part.key; selectedField = null; root.querySelectorAll(&#x27;[data-part]&#x27;).forEach((node) =&gt; node.setAttribute(&#x27;aria-pressed&#x27;, String(node.dataset.part === selectedPart))); renderInspector(); });
+        $(&#x27;packet&#x27;).append(button);
+      });
+    }
+    $(&#x27;packet-label&#x27;).textContent = typeof current.unit === &#x27;function&#x27; ? current.unit() : current.unit;
+    $(&#x27;packet-length&#x27;).textContent = current.parts.length ? visibleParts.reduce((sum, part) =&gt; sum + part.length, 0) + &#x27; B · klikni na časť&#x27; : &#x27;text aplikácie&#x27;;
+    renderInspector();
+  }
+  function renderInspector() {
+    const part = model.parts.find((item) =&gt; item.key === selectedPart) || model.parts.find((item) =&gt; item.key === &#x27;payload&#x27;);
+    if (!part) return;
+    const rawText = step === 0 || step === 13;
+    $(&#x27;inspector-title&#x27;).textContent = rawText ? &#x27;Text a jeho bajtová reprezentácia&#x27; : &#x27;Detail: &#x27; + part.label;
+    $(&#x27;part-description&#x27;).textContent = rawText ? &#x27;Pre porovnanie už vidíš bajty správy v zvolenom kódovaní. V samotnom postupe sa kódovanie vykoná na prezentačnej vrstve.&#x27; : part.description;
+    const header = model.headers &amp;&amp; model.headers[selectedPart === &#x27;ip&#x27; ? &#x27;ip&#x27; : selectedPart];
+    const fields = part.fields || (header &amp;&amp; header.fields) || [];
+    $(&#x27;fields&#x27;).replaceChildren();
+    fields.forEach((field, i) =&gt; {
+      const button = el(&#x27;button&#x27;, &#x27;enc-header-field&#x27;); button.type = &#x27;button&#x27;; button.setAttribute(&#x27;aria-pressed&#x27;, String(selectedField === i));
+      button.append(el(&#x27;strong&#x27;, &#x27;&#x27;, field.label), el(&#x27;span&#x27;, &#x27;&#x27;, String(field.value) + &#x27; · &#x27; + field.length + &#x27; B&#x27;));
+      button.addEventListener(&#x27;click&#x27;, () =&gt; { selectedField = selectedField === i ? null : i; renderInspector(); }); $(&#x27;fields&#x27;).append(button);
+    });
+    const field = selectedField !== null ? fields[selectedField] : null;
+    const bytes = field ? field.bytes : part.bytes;
+    const maximum = $(&#x27;byte-format&#x27;).value === &#x27;binary&#x27; ? 80 : 160;
+    $(&#x27;byte-title&#x27;).textContent = (field ? field.label + &#x27; · &#x27; : &#x27;&#x27;) + bytes.length + &#x27; B&#x27; + (field ? &#x27; · posun &#x27; + field.offset + &#x27; B v hlavičke&#x27; : &#x27; · posun &#x27; + part.offset + &#x27; B od začiatku hotového rámca&#x27;);
+    $(&#x27;bytes&#x27;).textContent = bytes.length ? bytesText(bytes.slice(0, maximum), $(&#x27;byte-format&#x27;).value) + (bytes.length &gt; maximum ? &#x27;\n… ďalších &#x27; + (bytes.length - maximum) + &#x27; B&#x27; : &#x27;&#x27;) : &#x27;(žiadne bajty)&#x27;;
+    $(&#x27;field-description&#x27;).textContent = field ? field.description : fields.length ? &#x27;Klikni na pole hlavičky: zobrazí sa jeho význam a presné bajty. Ďalším kliknutím zobrazíš celú hlavičku.&#x27; : selectedPart === &#x27;payload&#x27; ? &#x27;HEX ukazuje hodnotu každého bajtu. Binárne zobrazenie ukazuje tých istých 8 bitov; zmenou zobrazenia sa prenášané dáta nemenia.&#x27; : part.description;
+  }
+  function drawSignal() {
+    const payloadPart = model.parts.find((part) =&gt; part.key === &#x27;payload&#x27;);
+    const isPayload = $(&#x27;signal-source&#x27;).value === &#x27;payload&#x27;;
+    const source = isPayload ? model.payloadBytes : model.frameBytes;
+    const bytes = source.slice(0, 2), bits = bytes.flatMap((byte) =&gt; Array.from({ length: 8 }, (_, i) =&gt; (byte &gt;&gt; (7 - i)) &amp; 1));
+    const offset = isPayload &amp;&amp; payloadPart ? payloadPart.offset : 0;
+    const code = $(&#x27;signal-code&#x27;).value;
+    $(&#x27;signal-meta&#x27;).textContent = (isPayload ? &#x27;Dátový úsek rámca&#x27; : &#x27;Začiatok celého rámca&#x27;) + &#x27; · offset &#x27; + offset + &#x27; B · &#x27; + (bytes.length ? bytesText(bytes, &#x27;hex&#x27;) + &#x27; HEX · &#x27; + bits.length + &#x27; vstupných bitov&#x27; : &#x27;prázdne dáta&#x27;);
+    const namespace = &#x27;http://www.w3.org/2000/svg&#x27;;
+    const svg = document.createElementNS(namespace, &#x27;svg&#x27;); svg.setAttribute(&#x27;viewBox&#x27;, &#x27;0 0 760 150&#x27;); svg.setAttribute(&#x27;role&#x27;, &#x27;img&#x27;);
+    const svgTitle = document.createElementNS(namespace, &#x27;title&#x27;); svgTitle.textContent = &#x27;Signál &#x27; + $(&#x27;signal-code&#x27;).selectedOptions[0].textContent + &#x27; pre bajty &#x27; + bytesText(bytes, &#x27;hex&#x27;); svg.append(svgTitle);
+    function shape(tag, attrs, text) { const node = document.createElementNS(namespace, tag); Object.keys(attrs).forEach((key) =&gt; node.setAttribute(key, String(attrs[key]))); if (text !== undefined) node.textContent = text; svg.append(node); return node; }
+    const x0 = 24, x1 = 744, high = 43, low = 105, mid = 74;
+    shape(&#x27;line&#x27;, { x1: x0, y1: mid, x2: x1, y2: mid, stroke: &#x27;var(--border)&#x27;, &#x27;stroke-dasharray&#x27;: &#x27;3 5&#x27; });
+    let signalBits = bits.slice(), symbols = bits.map(String), explanation = &#x27;&#x27;, path = &#x27;&#x27;;
+    if (code === &#x27;4b5b&#x27;) {
+      const lookup = [&#x27;11110&#x27;, &#x27;01001&#x27;, &#x27;10100&#x27;, &#x27;10101&#x27;, &#x27;01010&#x27;, &#x27;01011&#x27;, &#x27;01110&#x27;, &#x27;01111&#x27;, &#x27;10010&#x27;, &#x27;10011&#x27;, &#x27;10110&#x27;, &#x27;10111&#x27;, &#x27;11010&#x27;, &#x27;11011&#x27;, &#x27;11100&#x27;, &#x27;11101&#x27;];
+      signalBits = [];
+      for (let i = 0; i &lt; bits.length; i += 4) { const nibble = parseInt(bits.slice(i, i + 4).join(&#x27;&#x27;), 2); signalBits.push(...lookup[nibble].split(&#x27;&#x27;).map(Number)); }
+      symbols = signalBits.map(String);
+      explanation = &#x27;4B/5B zmení každé 4 dátové bity na 5 kódových bitov (&#x27; + bits.length + &#x27; → &#x27; + signalBits.length + &#x27;). Pri tu zvolenom NRZI sa úroveň zmení na začiatku bitu 1; pri 0 zostane rovnaká. Nad grafom sú už kódové bity.&#x27;;
+    } else if (code === &#x27;nrz&#x27;) explanation = &#x27;NRZ-L: bit 1 je vyššia úroveň, bit 0 nižšia úroveň. Dlhý sled rovnakých bitov nevytvára prechody, z ktorých by prijímač ľahko obnovil časovanie.&#x27;;
+    else if (code === &#x27;manchester&#x27;) explanation = &#x27;Manchester má prechod uprostred každého bitu. V tejto konvencii: 0 = vysoká → nízka, 1 = nízka → vysoká. Jeden dátový bit zaberá dve polovice bitového intervalu.&#x27;;
+    else if (code === &#x27;bpsk&#x27;) explanation = &#x27;BPSK nesie 1 bit v jednom symbole. Tu 0 zodpovedá fáze 0° a 1 fáze 180°. Mení sa fáza nosnej vlny; jej amplitúda zostáva rovnaká.&#x27;;
+    else { symbols = []; for (let i = 0; i &lt; bits.length; i += 2) symbols.push(bits.slice(i, i + 2).join(&#x27;&#x27;)); explanation = &#x27;QPSK nesie 2 bity v jednom symbole. Tu mapujeme 00 → 45°, 01 → 135°, 11 → 225°, 10 → 315°. Dva vstupné bity tvoria jeden symbol; počet symbolov je polovičný oproti BPSK.&#x27;; }
+    if (!bits.length) { shape(&#x27;text&#x27;, { x: 380, y: 79, &#x27;text-anchor&#x27;: &#x27;middle&#x27;, fill: &#x27;var(--muted-foreground)&#x27;, &#x27;font-size&#x27;: 13 }, &#x27;Prázdna správa nemá dátové bity. Zvoľ začiatok rámca alebo napíš správu.&#x27;); }
+    else {
+      const width = (x1 - x0) / symbols.length;
+      symbols.forEach((symbol, i) =&gt; { const x = x0 + i * width; shape(&#x27;line&#x27;, { x1: x, y1: 29, x2: x, y2: 118, stroke: &#x27;var(--border)&#x27;, opacity: .6 }); shape(&#x27;text&#x27;, { x: x + width / 2, y: 19, fill: &#x27;var(--muted-foreground)&#x27;, &#x27;font-size&#x27;: symbols.length &gt; 20 ? 10 : 12, &#x27;font-family&#x27;: &#x27;monospace&#x27;, &#x27;text-anchor&#x27;: &#x27;middle&#x27; }, symbol); });
+      if (code === &#x27;nrz&#x27; || code === &#x27;manchester&#x27; || code === &#x27;4b5b&#x27;) {
+        let level = low;
+        signalBits.forEach((bit, i) =&gt; {
+          const x = x0 + i * width, end = x + width;
+          if (code === &#x27;manchester&#x27;) { const first = bit ? low : high, second = bit ? high : low; path += (i ? &#x27; L &#x27; : &#x27;M &#x27;) + x + &#x27; &#x27; + first + &#x27; L &#x27; + (x + width / 2) + &#x27; &#x27; + first + &#x27; L &#x27; + (x + width / 2) + &#x27; &#x27; + second + &#x27; L &#x27; + end + &#x27; &#x27; + second; }
+          else { if (code === &#x27;4b5b&#x27;) { if (bit) level = level === low ? high : low; } else level = bit ? high : low; path += (i ? &#x27; L &#x27; : &#x27;M &#x27;) + x + &#x27; &#x27; + level + &#x27; L &#x27; + end + &#x27; &#x27; + level; }
+        });
+      } else {
+        const phaseMap = { &#x27;00&#x27;: Math.PI / 4, &#x27;01&#x27;: 3 * Math.PI / 4, &#x27;11&#x27;: 5 * Math.PI / 4, &#x27;10&#x27;: 7 * Math.PI / 4 };
+        symbols.forEach((symbol, i) =&gt; { const phase = code === &#x27;bpsk&#x27; ? Number(symbol) * Math.PI : phaseMap[symbol]; for (let j = 0; j &lt;= 40; j++) { const x = x0 + (i + j / 40) * width; const y = mid - 28 * Math.sin(2 * Math.PI * j / 40 + phase); path += (j === 0 ? &#x27; M &#x27; : &#x27; L &#x27;) + x.toFixed(2) + &#x27; &#x27; + y.toFixed(2); } });
+      }
+      shape(&#x27;path&#x27;, { d: path, fill: &#x27;none&#x27;, stroke: &#x27;var(--enc-signal)&#x27;, &#x27;stroke-width&#x27;: 2.7, &#x27;stroke-linecap&#x27;: &#x27;round&#x27;, &#x27;stroke-linejoin&#x27;: &#x27;round&#x27; });
+      shape(&#x27;text&#x27;, { x: x0, y: 140, fill: &#x27;var(--muted-foreground)&#x27;, &#x27;font-size&#x27;: 10 }, code === &#x27;qpsk&#x27; || code === &#x27;bpsk&#x27; ? symbols.length + &#x27; symbolov · schematická nosná vlna&#x27; : signalBits.length + &#x27; bitových intervalov&#x27;);
+      shape(&#x27;text&#x27;, { x: x1, y: 140, fill: &#x27;var(--muted-foreground)&#x27;, &#x27;font-size&#x27;: 10, &#x27;text-anchor&#x27;: &#x27;end&#x27; }, &#x27;čas →&#x27;);
+    }
+    $(&#x27;signal-view&#x27;).replaceChildren(svg); $(&#x27;signal-explanation&#x27;).textContent = explanation;
+  }
+  function refresh() {
+    pause();
+    try {
+      model = modelAPI.build(getConfig()); $(&#x27;error&#x27;).hidden = true; $(&#x27;error&#x27;).textContent = &#x27;&#x27;; root.classList.remove(&#x27;enc-invalid&#x27;);
+      $(&#x27;journey&#x27;).removeAttribute(&#x27;inert&#x27;); $(&#x27;play&#x27;).disabled = false; $(&#x27;reset&#x27;).disabled = false;
+      buildNavigation(); renderMetrics(); renderStage(); drawSignal();
+    } catch (error) {
+      $(&#x27;error&#x27;).hidden = false; $(&#x27;error&#x27;).textContent = (error &amp;&amp; error.message ? error.message : &#x27;Nastavenia prenosu nie sú platné.&#x27;) + &#x27; Zobrazený prenos zostáva z posledného platného nastavenia.&#x27;;
+      root.classList.add(&#x27;enc-invalid&#x27;); $(&#x27;journey&#x27;).setAttribute(&#x27;inert&#x27;, &#x27;&#x27;); $(&#x27;play&#x27;).disabled = true; $(&#x27;reset&#x27;).disabled = true;
+    }
+  }
+  $(&#x27;form&#x27;).addEventListener(&#x27;submit&#x27;, (event) =&gt; event.preventDefault());
+  $(&#x27;form&#x27;).addEventListener(&#x27;input&#x27;, (event) =&gt; { if (event.target.matches(&#x27;input, textarea&#x27;)) refresh(); });
+  $(&#x27;form&#x27;).addEventListener(&#x27;change&#x27;, (event) =&gt; {
+    if (event.target === $(&#x27;ip-version&#x27;)) { const ipv6 = $(&#x27;ip-version&#x27;).value === &#x27;ipv6&#x27;; $(&#x27;source-ip&#x27;).value = ipv6 ? &#x27;2001:db8:1::10&#x27; : &#x27;192.0.2.10&#x27;; $(&#x27;dest-ip&#x27;).value = ipv6 ? &#x27;2001:db8:2::20&#x27; : &#x27;198.51.100.20&#x27;; }
+    if (event.target === $(&#x27;link&#x27;)) $(&#x27;signal-code&#x27;).value = $(&#x27;link&#x27;).value === &#x27;wifi&#x27; ? &#x27;qpsk&#x27; : &#x27;nrz&#x27;;
+    if (event.target.matches(&#x27;select&#x27;)) refresh();
+  });
+  root.querySelectorAll(&#x27;[data-message]&#x27;).forEach((button) =&gt; button.addEventListener(&#x27;click&#x27;, () =&gt; { $(&#x27;message&#x27;).value = button.dataset.message; refresh(); }));
+  $(&#x27;prev&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { pause(); changeStep(step - 1); });
+  $(&#x27;next&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { pause(); changeStep(step + 1); });
+  $(&#x27;reset&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { pause(); changeStep(0); });
+  $(&#x27;play&#x27;).setAttribute(&#x27;aria-pressed&#x27;, &#x27;false&#x27;);
+  $(&#x27;play&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+    if (timer !== null) { pause(); return; }
+    if (!model || !$(&#x27;error&#x27;).hidden) return;
+    if (step === stages.length - 1) changeStep(0);
+    $(&#x27;play&#x27;).textContent = &#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;play&#x27;).setAttribute(&#x27;aria-pressed&#x27;, &#x27;true&#x27;);
+    timer = window.setInterval(() =&gt; changeStep(step + 1), 2500); renderStage();
+  });
+  $(&#x27;byte-format&#x27;).addEventListener(&#x27;change&#x27;, () =&gt; { if (model) renderInspector(); });
+  $(&#x27;signal-code&#x27;).addEventListener(&#x27;change&#x27;, () =&gt; { if (model) drawSignal(); });
+  $(&#x27;signal-source&#x27;).addEventListener(&#x27;change&#x27;, () =&gt; { if (model) drawSignal(); });
+  $(&#x27;journey&#x27;).addEventListener(&#x27;keydown&#x27;, (event) =&gt; { if (event.key === &#x27;ArrowRight&#x27; || event.key === &#x27;ArrowLeft&#x27;) { event.preventDefault(); pause(); changeStep(step + (event.key === &#x27;ArrowRight&#x27; ? 1 : -1)); } });
+  document.addEventListener(&#x27;visibilitychange&#x27;, () =&gt; { if (document.hidden) pause(); });
+  window.EncapsulationLab = { pause: pause, refresh: refresh, getState: () =&gt; ({ step: step, playing: timer !== null, config: model ? Object.assign({}, model.config) : null }) };
+  refresh();
+}());
+&lt;/script&gt;
+
+&lt;/section&gt;
+&lt;section id=&quot;switching-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;switching-tab&quot; hidden&gt;
+&lt;script&gt;
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === &#x27;object&#x27; &amp;&amp; module.exports) module.exports = api;
+  else root.SwitchingModel = api;
+}(typeof globalThis === &#x27;object&#x27; ? globalThis : this, function () {
+  &#x27;use strict&#x27;;
+  const BROADCAST = &#x27;FF:FF:FF:FF:FF:FF&#x27;;
+  const mac = n =&gt; &#x27;02:00:00:00:00:0&#x27; + n;
+  const lesson = [[1,3],[3,1],[2,4],[4,2],[2,&#x27;broadcast&#x27;]];
+  const exercise = [[1,3],[3,1],[2,3],[1,4],[4,&#x27;broadcast&#x27;],[3,4]];
+  function process(table, frame, vlans = [1,1,1,1], now = 0) {
+    const next = table.map(row =&gt; ({ ...row }));
+    const vlan = vlans[frame.source - 1];
+    const source = mac(frame.source);
+    const destination = frame.destination === &#x27;broadcast&#x27; ? BROADCAST : mac(frame.destination);
+    const found = next.find(row =&gt; row.mac === source &amp;&amp; row.vlan === vlan);
+    const learned = !found;
+    if (found) { found.port = frame.source; found.seen = now; }
+    else next.push({ vlan, mac: source, port: frame.source, seen: now });
+    next.sort((a,b) =&gt; a.vlan - b.vlan || a.mac.localeCompare(b.mac));
+    const target = next.find(row =&gt; row.mac === destination &amp;&amp; row.vlan === vlan);
+    const kind = destination === BROADCAST ? &#x27;broadcast&#x27; : !target ? &#x27;unknown&#x27; : target.port === frame.source ? &#x27;filtered&#x27; : &#x27;known&#x27;;
+    const ports = kind === &#x27;known&#x27; ? [target.port] : kind === &#x27;filtered&#x27; ? [] : vlans.flatMap((v,i) =&gt; v === vlan &amp;&amp; i + 1 !== frame.source ? [i+1] : []);
+    return { table: next, source, destination, vlan, kind, ports, learned, ingress: frame.source };
+  }
+  function age(table, now, timeout = 300) { return table.filter(row =&gt; now - row.seen &lt; timeout).map(row =&gt; ({...row})); }
+  // Equal-size frames; one tick equals one frame&#x27;s serialization time at 10 Mb/s.
+  function bufferTick(state, incoming, output, mode, port = 4) {
+    const queues = state.queues.map(q =&gt; q.slice());
+    let sent = 0, dropped = 0;
+    for (let i=0;i&lt;4;i++) sent += queues[i].splice(0, output).length;
+    for (let i=0;i&lt;incoming;i++) {
+      const available = mode === &#x27;shared&#x27; ? queues.reduce((n,q) =&gt; n + q.length, 0) &lt; 16 : queues[port-1].length &lt; 4;
+      if (available) queues[port-1].push(port); else dropped++;
+    }
+    return { queues, sent: state.sent + sent, dropped: state.dropped + dropped };
+  }
+  return { BROADCAST, mac, lesson, exercise, process, age, bufferTick };
+}));
+
+&lt;/script&gt;
+&lt;style&gt;
+  #switching-lab { --sw-blue: var(--primary); --sw-green: var(--green); --sw-orange: var(--orange); color: var(--foreground); padding: 10px 0 30px; font-size: 14px; line-height: 1.55; }
+  #switching-lab *, #switching-lab *::before, #switching-lab *::after { box-sizing: border-box; }
+  #switching-lab [hidden] { display: none !important; }
+  #switching-lab h2, #switching-lab h3, #switching-lab p { margin: 0; }
+  #switching-lab h2 { font-size: clamp(24px, 3.2vw, 36px); letter-spacing: -.04em; line-height: 1.2; }
+  #switching-lab h3 { font-size: 16px; letter-spacing: -.015em; }
+  #switching-lab .sw-eyebrow { text-transform: uppercase; letter-spacing: .13em; font-size: 10px; color: var(--muted-foreground); font-weight: 700; margin-bottom: 7px; }
+  #switching-lab .sw-muted { color: var(--muted-foreground); font-size: 12px; }
+  #switching-lab .sw-intro { margin-top: 10px; max-width: 780px; color: var(--muted-foreground); }
+  #switching-lab .sw-topics, #switching-lab .sw-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+  #switching-lab .sw-topics { margin: 22px 0; }
+  #switching-lab button, #switching-lab select, #switching-lab input { font: inherit; }
+  #switching-lab button, #switching-lab select { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--foreground); background: var(--background); min-height: 36px; max-width: 100%; }
+  #switching-lab button { cursor: pointer; font-size: 12px; }
+  #switching-lab button:disabled { opacity: .4; cursor: default; }
+  #switching-lab :focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+  #switching-lab button[aria-pressed=&quot;true&quot;], #switching-lab .sw-primary { color: var(--accent-foreground); background: var(--accent); border-color: var(--primary); }
+  #switching-lab .sw-grid { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(270px,1fr); gap: 16px; align-items: start; }
+  #switching-lab .sw-card { min-width: 0; border: 1px solid var(--border); border-radius: 15px; padding: 20px; background: var(--card); }
+  #switching-lab .sw-stack { display: grid; gap: 16px; }
+  #switching-lab .sw-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  #switching-lab .sw-badge { display: inline-block; border-radius: 20px; background: var(--accent); color: var(--accent-foreground); padding: 5px 10px; font-size: 11px; }
+  #switching-lab .sw-diagram { width: 100%; display: block; height: auto; }
+  #switching-lab .sw-diagram text { font-family: var(--font-sans); fill: var(--foreground); }
+  #switching-lab .sw-diagram .sw-wire { stroke: var(--border); stroke-width: 3; }
+  #switching-lab .sw-diagram .sw-input { stroke: var(--sw-blue); stroke-width: 4; }
+  #switching-lab .sw-diagram .sw-output { stroke: var(--sw-green); stroke-width: 4; }
+  #switching-lab .sw-diagram .sw-reject { stroke: var(--sw-orange); stroke-width: 4; }
+  #switching-lab .sw-diagram .sw-node { fill: var(--background); stroke: var(--border); stroke-width: 1.5; }
+  #switching-lab .sw-diagram .sw-dot { fill: var(--sw-blue); }
+  #switching-lab .sw-diagram .sw-dot-out { fill: var(--sw-green); }
+  #switching-lab .sw-frame { display: grid; grid-template-columns: 1.4fr 1.4fr 1fr .65fr; gap: 4px; margin: 14px 0; }
+  #switching-lab .sw-frame &gt; div { min-width: 0; padding: 9px; border-radius: 7px; background: var(--background); border-top: 3px solid var(--border); }
+  #switching-lab .sw-frame &gt; div:nth-child(1) { border-color: var(--sw-green); }
+  #switching-lab .sw-frame &gt; div:nth-child(2) { border-color: var(--sw-blue); }
+  #switching-lab .sw-frame small, #switching-lab .sw-frame strong { display: block; font-size: 10px; overflow-wrap: anywhere; }
+  #switching-lab .sw-frame small { color: var(--muted-foreground); }
+  #switching-lab .sw-caption { margin: 15px 0; min-height: 88px; }
+  #switching-lab .sw-caption p { color: var(--muted-foreground); font-size: 13px; margin-top: 7px; }
+  #switching-lab .sw-stages { display: flex; gap: 5px; margin: 12px 0; }
+  #switching-lab .sw-stages span { flex: 1; font-size: 10px; padding-top: 6px; border-top: 3px solid var(--border); }
+  #switching-lab .sw-stages .sw-active { border-color: var(--primary); color: var(--accent-foreground); }
+  #switching-lab table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 12px 0; }
+  #switching-lab th, #switching-lab td { text-align: left; padding: 9px 5px; border-bottom: 1px solid var(--border); }
+  #switching-lab th { font-size: 10px; color: var(--muted-foreground); font-weight: 500; }
+  #switching-lab .sw-learned { background: var(--accent); }
+  #switching-lab code { font-family: var(--font-mono); font-size: 11px; overflow-wrap: anywhere; }
+  #switching-lab label { display: grid; gap: 5px; font-size: 12px; min-width: 0; }
+  #switching-lab .sw-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  #switching-lab label.sw-check { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+  #switching-lab .sw-note { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); }
+  #switching-lab .sw-callout { border-left: 3px solid var(--primary); padding: 10px 13px; background: var(--accent); font-size: 13px; margin: 14px 0; }
+  #switching-lab .sw-timeline { margin: 20px 0; }
+  #switching-lab .sw-track { position: relative; height: 38px; border-radius: 7px; background: var(--background); margin: 7px 0 16px; overflow: hidden; }
+  #switching-lab .sw-track &gt; span { display: block; height: 100%; width: 0; background: var(--primary); }
+  #switching-lab .sw-track.sw-send &gt; span { background: var(--sw-green); }
+  #switching-lab .sw-track &gt; small { position: absolute; inset: 9px; color: var(--foreground); font-size: 11px; }
+  #switching-lab .sw-slider { width: 100%; accent-color: var(--primary); }
+  #switching-lab .sw-slots { display: flex; gap: 4px; margin: 8px 0 14px; flex-wrap: wrap; }
+  #switching-lab .sw-slot { flex: 0 0 27px; height: 27px; border-radius: 5px; border: 1px solid var(--border); background: var(--background); font-size: 10px; display: grid; place-items: center; }
+  #switching-lab .sw-slot.sw-filled { background: var(--accent); border-color: var(--primary); color: var(--accent-foreground); }
+  #switching-lab .sw-stats { display: flex; flex-wrap: wrap; gap: 20px; margin: 14px 0; }
+  #switching-lab .sw-stats strong { display: block; font-size: 25px; letter-spacing: -.04em; }
+  #switching-lab .sw-stats span { font-size: 11px; color: var(--muted-foreground); }
+  #switching-lab details { margin-top: 12px; }
+  #switching-lab summary { cursor: pointer; font-weight: 600; }
+  #switching-lab details p { margin-top: 9px; color: var(--muted-foreground); font-size: 13px; }
+  #switching-lab .sw-octets { display: grid; grid-template-columns: repeat(6,1fr); gap: 5px; margin: 18px 0; }
+  #switching-lab .sw-octets span { display: grid; text-align: center; padding: 10px 2px; background: var(--accent); border-radius: 7px; font-family: var(--font-mono); }
+  #switching-lab .sw-octets small { font-size: 9px; color: var(--muted-foreground); }
+  #switching-lab .sw-answers { display: grid; gap: 7px; margin-top: 14px; }
+  #switching-lab .sw-answers button { text-align: left; }
+  #switching-lab .sw-feedback { margin-top: 12px; font-size: 13px; min-height: 42px; }
+  #switching-lab .sw-footer { margin-top: 22px; color: var(--muted-foreground); font-size: 11px; }
+  #switching-lab a { color: var(--accent-foreground); }
+  @media (max-width: 900px) { #switching-lab .sw-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { #switching-lab .sw-card { padding: 13px; } #switching-lab .sw-frame { grid-template-columns: 1fr 1fr; } #switching-lab .sw-fields { grid-template-columns: 1fr; } #switching-lab .sw-topics button { flex: 1 1 42%; } #switching-lab .sw-diagram text { font-size: 20px; } #switching-lab .sw-diagram rect + text { font-size: 30px; } #switching-lab .sw-diagram rect + text + text, #switching-lab .sw-diagram text[font-size=&quot;10&quot;] { display: none; } }
+&lt;/style&gt;
+&lt;div id=&quot;switching-lab&quot;&gt;
+  &lt;div class=&quot;sw-eyebrow&quot;&gt;Ethernet / L2 / interaktívna lekcia&lt;/div&gt;
+  &lt;h2&gt;Ako switch spracúva rámce&lt;/h2&gt;
+  &lt;p class=&quot;sw-intro&quot;&gt;SOURCE učí. DESTINATION rozhoduje. Sleduj rámec cez switch, buduj MAC tabuľku a vyskúšaj, čo sa stane pri neznámom cieli, chybe alebo plnom bufferi.&lt;/p&gt;
+  &lt;nav class=&quot;sw-topics&quot; aria-label=&quot;Témy o switchi&quot;&gt;
+    &lt;button type=&quot;button&quot; data-sw-topic=&quot;learning&quot; aria-controls=&quot;sw-learning&quot; aria-pressed=&quot;true&quot;&gt;01 · Rámce a MAC tabuľka&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-sw-topic=&quot;forwarding&quot; aria-controls=&quot;sw-forwarding&quot; aria-pressed=&quot;false&quot;&gt;02 · FCS a prepínanie&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-sw-topic=&quot;buffers&quot; aria-controls=&quot;sw-buffers&quot; aria-pressed=&quot;false&quot;&gt;03 · Buffery&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-sw-topic=&quot;basics&quot; aria-controls=&quot;sw-basics&quot; aria-pressed=&quot;false&quot;&gt;04 · MAC a broadcast&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-sw-topic=&quot;exercise&quot; aria-controls=&quot;sw-exercise&quot; aria-pressed=&quot;false&quot;&gt;05 · Ty si switch&lt;/button&gt;
+  &lt;/nav&gt;
+  &lt;section id=&quot;sw-learning&quot; aria-label=&quot;Učenie MAC tabuľky&quot;&gt;
+    &lt;div class=&quot;sw-grid&quot;&gt;
+      &lt;div class=&quot;sw-card&quot;&gt;
+        &lt;div class=&quot;sw-toolbar&quot;&gt;&lt;h3&gt;Jedna sieť. Štyri počítače.&lt;/h3&gt;&lt;span id=&quot;sw-frame-count&quot; class=&quot;sw-badge&quot;&gt;Rámec 1 / 5&lt;/span&gt;&lt;/div&gt;
+        &lt;div id=&quot;sw-network&quot;&gt;&lt;/div&gt;
+        &lt;p class=&quot;sw-muted&quot;&gt;Modrá: vstup · zelená: výstup · oranžová: rámec dorazil, ale PC ho neprijme ako svoj.&lt;/p&gt;
+        &lt;div class=&quot;sw-frame&quot; aria-label=&quot;Ethernetový rámec&quot;&gt;
+          &lt;div&gt;&lt;small&gt;Destination MAC&lt;/small&gt;&lt;strong id=&quot;sw-destination&quot;&gt;&lt;/strong&gt;&lt;/div&gt;&lt;div&gt;&lt;small&gt;Source MAC&lt;/small&gt;&lt;strong id=&quot;sw-source&quot;&gt;&lt;/strong&gt;&lt;/div&gt;&lt;div&gt;&lt;small&gt;Dáta&lt;/small&gt;&lt;strong&gt;IP paket&lt;/strong&gt;&lt;/div&gt;&lt;div&gt;&lt;small&gt;FCS&lt;/small&gt;&lt;strong&gt;4 B · CRC&lt;/strong&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;sw-stages&quot; class=&quot;sw-stages&quot;&gt;&lt;span&gt;1 · Príjem&lt;/span&gt;&lt;span&gt;2 · Učenie&lt;/span&gt;&lt;span&gt;3 · Cieľ&lt;/span&gt;&lt;span&gt;4 · Odoslanie&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;sw-caption&quot; aria-live=&quot;polite&quot;&gt;&lt;h3 id=&quot;sw-step-title&quot;&gt;&lt;/h3&gt;&lt;p id=&quot;sw-step-text&quot;&gt;&lt;/p&gt;&lt;/div&gt;
+        &lt;div class=&quot;sw-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sw-prev&quot;&gt;← Späť&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-play&quot; aria-pressed=&quot;false&quot;&gt;▶ Prehrať&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-next&quot; class=&quot;sw-primary&quot;&gt;Ďalší krok →&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-reset&quot;&gt;Od začiatku&lt;/button&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;sw-stack&quot;&gt;
+        &lt;div class=&quot;sw-card&quot;&gt;&lt;div class=&quot;sw-toolbar&quot;&gt;&lt;h3&gt;MAC tabuľka SW1&lt;/h3&gt;&lt;span id=&quot;sw-clock&quot; class=&quot;sw-muted&quot;&gt;t = 0 s&lt;/span&gt;&lt;/div&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;VLAN&lt;/th&gt;&lt;th&gt;MAC adresa&lt;/th&gt;&lt;th&gt;Port&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody id=&quot;sw-mac-table&quot;&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p id=&quot;sw-table-note&quot; class=&quot;sw-muted&quot;&gt;&lt;/p&gt;&lt;div class=&quot;sw-actions&quot; style=&quot;margin-top:12px&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sw-age&quot;&gt;Posunúť čas o 300 s&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-clear&quot;&gt;Vymazať tabuľku&lt;/button&gt;&lt;/div&gt;&lt;p class=&quot;sw-note&quot;&gt;Dynamické záznamy sa učia zo source MAC. V tomto modeli vypršia po 300 s bez obnovenia. Čas posúvaš ručne.&lt;/p&gt;&lt;/div&gt;
+        &lt;div class=&quot;sw-card&quot;&gt;&lt;h3&gt;Vyskúšaj vlastný rámec&lt;/h3&gt;&lt;div class=&quot;sw-fields&quot;&gt;&lt;label&gt;Odosielateľ&lt;select id=&quot;sw-custom-source&quot;&gt;&lt;option value=&quot;1&quot;&gt;PC1 · Fa0/1&lt;/option&gt;&lt;option value=&quot;2&quot;&gt;PC2 · Fa0/2&lt;/option&gt;&lt;option value=&quot;3&quot;&gt;PC3 · Fa0/3&lt;/option&gt;&lt;option value=&quot;4&quot;&gt;PC4 · Fa0/4&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Príjemca&lt;select id=&quot;sw-custom-destination&quot;&gt;&lt;option value=&quot;1&quot;&gt;PC1 · M1&lt;/option&gt;&lt;option value=&quot;2&quot;&gt;PC2 · M2&lt;/option&gt;&lt;option value=&quot;3&quot; selected&gt;PC3 · M3&lt;/option&gt;&lt;option value=&quot;4&quot;&gt;PC4 · M4&lt;/option&gt;&lt;option value=&quot;broadcast&quot;&gt;Broadcast · všetci&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;button type=&quot;button&quot; id=&quot;sw-custom&quot; class=&quot;sw-primary&quot;&gt;Odoslať vlastný rámec&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-lesson&quot; style=&quot;margin-top:8px&quot;&gt;Načítať príklad z prezentácie&lt;/button&gt;&lt;label class=&quot;sw-check&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sw-vlans&quot;&gt; Rozdeliť: PC1/PC2 → VLAN 1, PC3/PC4 → VLAN 2&lt;/label&gt;&lt;p class=&quot;sw-muted&quot;&gt;Zmena VLAN začne s prázdnou tabuľkou. Flooding ostáva v rovnakej VLAN. Cieľ na vstupnom porte sa neprepošle.&lt;/p&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;sw-forwarding&quot; aria-label=&quot;Metódy prepínania&quot; hidden&gt;
+    &lt;div class=&quot;sw-grid&quot;&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;div class=&quot;sw-toolbar&quot;&gt;&lt;h3&gt;Kedy sa začne odosielanie?&lt;/h3&gt;&lt;span class=&quot;sw-badge&quot;&gt;Schematický čas&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;sw-fields&quot;&gt;&lt;label&gt;Metóda&lt;select id=&quot;sw-method&quot;&gt;&lt;option value=&quot;store&quot;&gt;Store-and-forward&lt;/option&gt;&lt;option value=&quot;cut&quot;&gt;Cut-through&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Rámec&lt;select id=&quot;sw-corrupt&quot;&gt;&lt;option value=&quot;valid&quot;&gt;Platný FCS&lt;/option&gt;&lt;option value=&quot;bad&quot;&gt;Poškodený rámec · FCS nesedí&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;div class=&quot;sw-timeline&quot;&gt;&lt;span class=&quot;sw-muted&quot;&gt;Príjem: Destination → Source → dáta → FCS&lt;/span&gt;&lt;div class=&quot;sw-track&quot;&gt;&lt;span id=&quot;sw-rx-bar&quot;&gt;&lt;/span&gt;&lt;small id=&quot;sw-rx-label&quot;&gt;&lt;/small&gt;&lt;/div&gt;&lt;span class=&quot;sw-muted&quot;&gt;Výstup do cieľového portu&lt;/span&gt;&lt;div class=&quot;sw-track sw-send&quot;&gt;&lt;span id=&quot;sw-tx-bar&quot;&gt;&lt;/span&gt;&lt;small id=&quot;sw-tx-label&quot;&gt;&lt;/small&gt;&lt;/div&gt;&lt;/div&gt;&lt;label&gt;Čas &lt;input class=&quot;sw-slider&quot; id=&quot;sw-forward-time&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;210&quot; value=&quot;0&quot;&gt;&lt;/label&gt;&lt;div class=&quot;sw-actions&quot; style=&quot;margin-top:14px&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sw-forward-play&quot; aria-pressed=&quot;false&quot;&gt;▶ Prehrať&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-forward-reset&quot;&gt;Vynulovať čas&lt;/button&gt;&lt;/div&gt;&lt;p id=&quot;sw-forward-status&quot; class=&quot;sw-callout&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;p class=&quot;sw-muted&quot;&gt;Rovnaké rýchlosti vstupu a výstupu, voľný cieľový port, známa destination MAC. Bez preambuly a medzirámcovej medzery; oneskorenia sú ilustračné.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;h3&gt;FCS odhalí chybu, neopraví ju&lt;/h3&gt;&lt;p class=&quot;sw-note&quot;&gt;FCS má 4 bajty na konci rámca. Príjemca porovná prijatú hodnotu s CRC vypočítaným z prijatého rámca. Pri nezhode je rámec chybný.&lt;/p&gt;&lt;div class=&quot;sw-callout&quot;&gt;Store-and-forward čaká na celý rámec a kontrolu FCS. Cut-through môže začať už po prečítaní cieľovej MAC.&lt;/div&gt;&lt;p class=&quot;sw-muted&quot;&gt;Cut-through skracuje čakanie, ale môže poslať aj poškodený rámec. Cieľová sieťová karta ho po kontrole FCS zahodí.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;sw-buffers&quot; aria-label=&quot;Pamäť switcha&quot; hidden&gt;
+    &lt;div class=&quot;sw-grid&quot;&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;div class=&quot;sw-toolbar&quot;&gt;&lt;h3&gt;100 Mb/s dovnútra → 10 Mb/s von&lt;/h3&gt;&lt;span class=&quot;sw-badge&quot;&gt;Cieľ: Fa0/4&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;sw-fields&quot;&gt;&lt;label&gt;Pamäť&lt;select id=&quot;sw-buffer-mode&quot;&gt;&lt;option value=&quot;port&quot;&gt;Port-based · 4 miesta na port&lt;/option&gt;&lt;option value=&quot;shared&quot;&gt;Shared memory · 16 spoločných miest&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Prísun rámcov&lt;select id=&quot;sw-buffer-load&quot;&gt;&lt;option value=&quot;10&quot;&gt;100 Mb/s · preťaženie&lt;/option&gt;&lt;option value=&quot;1&quot;&gt;10 Mb/s · vyrovnaný prenos&lt;/option&gt;&lt;option value=&quot;0&quot;&gt;0 Mb/s · vyprázdniť front&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;div id=&quot;sw-buffer-view&quot;&gt;&lt;/div&gt;&lt;div class=&quot;sw-stats&quot;&gt;&lt;div&gt;&lt;strong id=&quot;sw-buffer-waiting&quot;&gt;0&lt;/strong&gt;&lt;span&gt;čaká&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;strong id=&quot;sw-buffer-sent&quot;&gt;0&lt;/strong&gt;&lt;span&gt;odoslaných&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;strong id=&quot;sw-buffer-dropped&quot;&gt;0&lt;/strong&gt;&lt;span&gt;zahodených&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sw-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sw-buffer-tick&quot; class=&quot;sw-primary&quot;&gt;Jeden časový krok&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-buffer-play&quot; aria-pressed=&quot;false&quot;&gt;▶ Spustiť&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-buffer-reset&quot;&gt;Vyprázdniť a vynulovať&lt;/button&gt;&lt;/div&gt;&lt;p id=&quot;sw-buffer-status&quot; class=&quot;sw-callout&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;p class=&quot;sw-muted&quot;&gt;Model rovnako veľkých rámcov: za krok odíde najviac 1 čakajúci rámec na port a potom príde dávka. Jeden krok zodpovedá času odoslania rámca pri 10 Mb/s. Zmena typu pamäte vynuluje simuláciu.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;h3&gt;Rovnaká kapacita, iné využitie&lt;/h3&gt;&lt;p class=&quot;sw-note&quot;&gt;Port-based: každý výstup má v tejto ukážke 4 vyhradené miesta. Fa0/4 sa zaplní, hoci pri ostatných portoch zostáva voľná pamäť.&lt;/p&gt;&lt;p class=&quot;sw-note&quot;&gt;Shared memory: všetkých 16 miest môže využiť práve preťažený port. Pridelenie sa mení podľa potreby.&lt;/p&gt;&lt;div class=&quot;sw-callout&quot;&gt;Buffer vyrovná krátku špičku. Pri trvalom preťažení sa zaplní aj spoločná pamäť a ďalšie rámce sa zahodia.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;sw-basics&quot; aria-label=&quot;MAC adresy a broadcast&quot; hidden&gt;
+    &lt;div class=&quot;sw-grid&quot;&gt;&lt;div class=&quot;sw-stack&quot;&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;h3&gt;MAC adresa = 48 bitov = 6 bajtov&lt;/h3&gt;&lt;div class=&quot;sw-octets&quot;&gt;&lt;span&gt;02&lt;small&gt;8 bitov&lt;/small&gt;&lt;/span&gt;&lt;span&gt;00&lt;small&gt;8 bitov&lt;/small&gt;&lt;/span&gt;&lt;span&gt;00&lt;small&gt;8 bitov&lt;/small&gt;&lt;/span&gt;&lt;span&gt;00&lt;small&gt;8 bitov&lt;/small&gt;&lt;/span&gt;&lt;span&gt;00&lt;small&gt;8 bitov&lt;/small&gt;&lt;/span&gt;&lt;span&gt;01&lt;small&gt;8 bitov&lt;/small&gt;&lt;/span&gt;&lt;/div&gt;&lt;p&gt;12 hexadecimálnych číslic · každá predstavuje 4 bity · číslice 0–9 a A–F.&lt;/p&gt;&lt;p class=&quot;sw-note&quot;&gt;MAC označuje sieťové rozhranie. Pri univerzálne pridelenej adrese tvorí prvých 24 bitov OUI výrobcu a ďalších 24 bitov časť pridelenú výrobcom. Naše adresy 02:00:00:00:00:01 až :04 sú lokálne pridelené príklady; prefix 02 tu neurčuje výrobcu.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;h3&gt;Tri situácie doručovania&lt;/h3&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Cieľ&lt;/th&gt;&lt;th&gt;Čo switch urobí&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;Known unicast&lt;/td&gt;&lt;td&gt;Jeden port z MAC tabuľky&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Unknown unicast&lt;/td&gt;&lt;td&gt;Flooding v rovnakej VLAN&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Broadcast&lt;/td&gt;&lt;td&gt;Flooding v rovnakej VLAN&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p class=&quot;sw-muted&quot;&gt;Flooding nemení destination MAC a vynecháva vstupný port. Ak je známy cieľ na vstupnom porte, switch rámec ďalej neprepošle.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sw-stack&quot;&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;h3&gt;FF:FF:FF:FF:FF:FF&lt;/h3&gt;&lt;p class=&quot;sw-note&quot;&gt;Broadcast MAC obsahuje 48 jednotiek. Napríklad ARP request sa odošle všetkým ostatným zariadeniam v danej broadcastovej doméne, aj keď je MAC tabuľka plná.&lt;/p&gt;&lt;div class=&quot;sw-callout&quot;&gt;Jedna VLAN = jedna L2 broadcastová doména. Samotné porty switcha ju nerozdelia.&lt;/div&gt;&lt;button type=&quot;button&quot; id=&quot;sw-demo-vlan&quot;&gt;Vyskúšať broadcast vo VLAN&lt;/button&gt;&lt;details&gt;&lt;summary&gt;Čo spôsobuje priveľa broadcastov?&lt;/summary&gt;&lt;p&gt;Obsadzujú linky a zaťažujú zariadenia. L2 slučka môže spôsobiť broadcastovú búrku. STP bráni slučkám, VLAN zmenšujú domény a storm control obmedzuje príslušnú prevádzku.&lt;/p&gt;&lt;/details&gt;&lt;/div&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;h3&gt;Rýchle opakovanie&lt;/h3&gt;&lt;details&gt;&lt;summary&gt;Čo prenáša Ethernet?&lt;/summary&gt;&lt;p&gt;Rámce v spojovej vrstve OSI, L2. Source MAC označuje odosielateľa, destination MAC príjemcu na lokálnej linke.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;MAC alebo IP?&lt;/summary&gt;&lt;p&gt;L2 switch vyberá výstup podľa destination MAC. Router smeruje IP paket podľa cieľovej IP adresy.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;Full-duplex a CSMA/CD?&lt;/summary&gt;&lt;p&gt;Obe strany môžu súčasne vysielať aj prijímať. Pri full-duplex sa CSMA/CD nepoužíva.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;Ako zobrazím tabuľku?&lt;/summary&gt;&lt;p&gt;Na switchi: &lt;code&gt;show mac address-table&lt;/code&gt;. Na PC: &lt;code&gt;arp -a&lt;/code&gt; zobrazuje ARP cache, nie MAC tabuľku switcha.&lt;/p&gt;&lt;/details&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;sw-exercise&quot; aria-label=&quot;Praktická úloha Ty si switch&quot; hidden&gt;
+    &lt;div class=&quot;sw-grid&quot;&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;div class=&quot;sw-toolbar&quot;&gt;&lt;h3&gt;Ty si switch&lt;/h3&gt;&lt;span id=&quot;sw-exercise-count&quot; class=&quot;sw-badge&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;p class=&quot;sw-muted&quot;&gt;A → Fa0/1 · B → Fa0/2 · C → Fa0/3 · D → Fa0/4. Jedna VLAN, na začiatku prázdna tabuľka, bez starnutia. A = 02:00:00:00:00:0A, ostatní končia :0B, :0C, :0D.&lt;/p&gt;&lt;h3 id=&quot;sw-question&quot; style=&quot;margin-top:20px&quot;&gt;&lt;/h3&gt;&lt;p class=&quot;sw-muted&quot; style=&quot;margin-top:8px&quot;&gt;Ktorými portmi switch rámec odošle? Tabuľka sa medzi rámcami zachováva.&lt;/p&gt;&lt;div id=&quot;sw-answers&quot; class=&quot;sw-answers&quot;&gt;&lt;/div&gt;&lt;div id=&quot;sw-exercise-feedback&quot; class=&quot;sw-feedback&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;&lt;div class=&quot;sw-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sw-exercise-next&quot; disabled class=&quot;sw-primary&quot;&gt;Ďalší rámec →&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sw-exercise-reset&quot;&gt;Začať znova&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sw-card&quot;&gt;&lt;h3&gt;Tabuľka po vyriešených krokoch&lt;/h3&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;VLAN&lt;/th&gt;&lt;th&gt;MAC&lt;/th&gt;&lt;th&gt;Port&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody id=&quot;sw-exercise-table&quot;&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p id=&quot;sw-exercise-score&quot; class=&quot;sw-muted&quot;&gt;&lt;/p&gt;&lt;div class=&quot;sw-note&quot;&gt;Pri každom rámci si najprv všimni SOURCE: tú sa switch naučí alebo obnoví. Až potom hľadaj DESTINATION.&lt;/div&gt;&lt;details&gt;&lt;summary&gt;Celé zadanie z prezentácie&lt;/summary&gt;&lt;p&gt;1. A → C&lt;br&gt;2. C → A&lt;br&gt;3. B → C&lt;br&gt;4. A → D&lt;br&gt;5. D → broadcast&lt;br&gt;6. C → D&lt;/p&gt;&lt;/details&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;p class=&quot;sw-footer&quot;&gt;Podľa &lt;a href=&quot;https://www.canva.com/design/DAHXIU0CIbg/bNhIl6QAwFyafuUssmY5aQ/edit&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;prezentácie „Ako switch spracováva ethernetové rámce – pokračovanie“&lt;/a&gt; · &lt;a href=&quot;https://www.ciscopress.com/articles/article.asp?p=3089352&amp;amp;seqNum=7&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;Cisco Press: prepínanie a buffery&lt;/a&gt;. Topológia bez slučiek, aktívne porty; VLAN sú v ukážke priradené access portom.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+(() =&gt; {
+  &#x27;use strict&#x27;;
+  const M = window.SwitchingModel;
+  const $ = id =&gt; document.getElementById(&#x27;sw-&#x27; + id);
+  const root = $(&#x27;learning&#x27;).parentElement;
+  const names = { unknown: &#x27;Unknown unicast · flooding&#x27;, known: &#x27;Known unicast&#x27;, broadcast: &#x27;Broadcast · flooding&#x27;, filtered: &#x27;Filtrovanie · rovnaký port&#x27; };
+  let topic = &#x27;learning&#x27;, timer = null, forwardTimer = null, bufferTimer = null;
+  let sequence = M.lesson, frameIndex = 0, phase = 0, baseTable = [], history = [], clock = 0, custom = false;
+  const getVlans = () =&gt; $(&#x27;vlans&#x27;).checked ? [1,1,2,2] : [1,1,1,1];
+  const currentFrame = () =&gt; ({ source: sequence[frameIndex][0], destination: sequence[frameIndex][1] });
+  const result = () =&gt; M.process(baseTable, currentFrame(), getVlans(), clock);
+  const visibleTable = () =&gt; phase &gt;= 1 ? result().table : baseTable;
+  const portText = ports =&gt; ports.length ? ports.map(p =&gt; &#x27;Fa0/&#x27; + p).join(&#x27;, &#x27;) : &#x27;žiadny port&#x27;;
+  function pause() {
+    clearInterval(timer); clearInterval(forwardTimer); clearInterval(bufferTimer);
+    timer = forwardTimer = bufferTimer = null;
+    for (const [id,label] of [[&#x27;play&#x27;,&#x27;▶ Prehrať&#x27;],[&#x27;forward-play&#x27;,&#x27;▶ Prehrať&#x27;],[&#x27;buffer-play&#x27;,&#x27;▶ Spustiť&#x27;]]) {
+      $(id).textContent = label; $(id).setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;);
+    }
+    drawNetwork(result());
+  }
+  function showTopic(next) {
+    pause(); topic = next;
+    root.querySelectorAll(&#x27;[data-sw-topic]&#x27;).forEach(button =&gt; {
+      const selected = button.dataset.swTopic === topic;
+      button.setAttribute(&#x27;aria-pressed&#x27;, String(selected));
+      $(button.dataset.swTopic).hidden = !selected;
+    });
+  }
+  root.querySelectorAll(&#x27;[data-sw-topic]&#x27;).forEach(button =&gt; button.addEventListener(&#x27;click&#x27;, () =&gt; showTopic(button.dataset.swTopic)));
+  function tableHTML(table, highlight) {
+    return table.length ? table.map(row =&gt; `&lt;tr${row.mac === highlight ? &#x27; class=&quot;sw-learned&quot;&#x27; : &#x27;&#x27;}&gt;&lt;td&gt;${row.vlan}&lt;/td&gt;&lt;td&gt;&lt;code&gt;${row.mac}&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Fa0/${row.port}&lt;/td&gt;&lt;/tr&gt;`).join(&#x27;&#x27;) : &#x27;&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;Zatiaľ žiadny záznam&lt;/td&gt;&lt;/tr&gt;&#x27;;
+  }
+  function drawNetwork(r) {
+    const positions = [[100,75],[540,75],[100,295],[540,295]], vlans = getVlans();
+    const reduce = matchMedia(&#x27;(prefers-reduced-motion: reduce)&#x27;).matches;
+    let content = &#x27;&lt;title id=&quot;sw-net-title&quot;&gt;Štyri PC pripojené k switchu SW1&lt;/title&gt;&lt;desc id=&quot;sw-net-description&quot;&gt;&#x27; + (phase === 3 ? names[r.kind] + &#x27;. Výstup: &#x27; + portText(r.ports) : &#x27;Vstup Fa0/&#x27; + r.ingress + &#x27;. &#x27; + [&#x27;Príjem rámca&#x27;,&#x27;Učenie source MAC&#x27;,&#x27;Vyhľadanie destination MAC&#x27;][phase]) + &#x27;&lt;/desc&gt;&#x27;;
+    positions.forEach(([x,y],i) =&gt; {
+      const p = i+1, input = p === r.ingress, output = phase === 3 &amp;&amp; r.ports.includes(p);
+      const accepted = r.destination === M.BROADCAST || r.destination === M.mac(p);
+      const endX = x &lt; 300 ? 255 : 385, endY = y &lt; 180 ? 155 : 215;
+      content += `&lt;path class=&quot;sw-wire ${input ? &#x27;sw-input&#x27; : output ? &#x27;sw-output&#x27; : &#x27;&#x27;}&quot; d=&quot;M${x},${y} L${endX},${endY}&quot;/&gt;`;
+      content += `&lt;rect class=&quot;sw-node&quot; x=&quot;${x-62}&quot; y=&quot;${y-32}&quot; width=&quot;124&quot; height=&quot;64&quot; rx=&quot;10&quot;${output ? &#x27; style=&quot;stroke:var(&#x27; + (accepted ? &#x27;--sw-green&#x27; : &#x27;--sw-orange&#x27;) + &#x27;)&quot;&#x27; : &#x27;&#x27;}/&gt;&lt;text x=&quot;${x}&quot; y=&quot;${y-6}&quot; text-anchor=&quot;middle&quot; font-size=&quot;17&quot; font-weight=&quot;700&quot;&gt;PC${p}&lt;/text&gt;&lt;text x=&quot;${x}&quot; y=&quot;${y+15}&quot; text-anchor=&quot;middle&quot; font-size=&quot;11&quot;&gt;M${p} · …:0${p} · VLAN ${vlans[i]}&lt;/text&gt;`;
+      content += `&lt;text x=&quot;${x &lt; 300 ? 200 : 440}&quot; y=&quot;${y &lt; 180 ? 119 : 255}&quot; text-anchor=&quot;middle&quot; font-size=&quot;11&quot;&gt;Fa0/${p}&lt;/text&gt;`;
+      if ((phase === 0 &amp;&amp; input) || output) {
+        const start = input ? [x,y] : [endX,endY], end = input ? [endX,endY] : [x,y];
+        content += timer !== null &amp;&amp; !reduce ? `&lt;circle r=&quot;6&quot; class=&quot;${input ? &#x27;sw-dot&#x27; : &#x27;sw-dot-out&#x27;}&quot;&gt;&lt;animateMotion dur=&quot;1.4s&quot; repeatCount=&quot;indefinite&quot; path=&quot;M${start[0]},${start[1]} L${end[0]},${end[1]}&quot;/&gt;&lt;/circle&gt;` : `&lt;circle r=&quot;6&quot; class=&quot;${input ? &#x27;sw-dot&#x27; : &#x27;sw-dot-out&#x27;}&quot; cx=&quot;${(start[0]+end[0])/2}&quot; cy=&quot;${(start[1]+end[1])/2}&quot;/&gt;`;
+      }
+      if (output) content += `&lt;text x=&quot;${x}&quot; y=&quot;${y+49}&quot; text-anchor=&quot;middle&quot; font-size=&quot;10&quot; style=&quot;fill:var(${accepted ? &#x27;--sw-green&#x27; : &#x27;--sw-orange&#x27;})&quot;&gt;${accepted ? &#x27;Prijme rámec&#x27; : &#x27;Iná cieľová MAC → ignoruje&#x27;}&lt;/text&gt;`;
+    });
+    content += &#x27;&lt;rect class=&quot;sw-node&quot; x=&quot;255&quot; y=&quot;140&quot; width=&quot;130&quot; height=&quot;90&quot; rx=&quot;13&quot; style=&quot;fill:var(--accent);stroke:var(--primary)&quot;/&gt;&lt;text x=&quot;320&quot; y=&quot;177&quot; text-anchor=&quot;middle&quot; font-size=&quot;23&quot; font-weight=&quot;700&quot;&gt;SW1&lt;/text&gt;&lt;text x=&quot;320&quot; y=&quot;202&quot; text-anchor=&quot;middle&quot; font-size=&quot;11&quot;&gt;L2 switch&lt;/text&gt;&#x27;;
+    $(&#x27;network&#x27;).innerHTML = `&lt;svg class=&quot;sw-diagram&quot; viewBox=&quot;0 0 640 365&quot; role=&quot;img&quot; aria-labelledby=&quot;sw-net-title sw-net-description&quot;&gt;${content}&lt;/svg&gt;`;
+  }
+  function renderLearning() {
+    const r = result(), frame = currentFrame();
+    drawNetwork(r);
+    $(&#x27;source&#x27;).textContent = r.source; $(&#x27;destination&#x27;).textContent = r.destination;
+    $(&#x27;frame-count&#x27;).textContent = custom ? &#x27;Vlastný rámec&#x27; : `Rámec ${frameIndex+1} / ${sequence.length}`;
+    $(&#x27;clock&#x27;).textContent = `t = ${clock} s`;
+    $(&#x27;mac-table&#x27;).innerHTML = tableHTML(visibleTable(), phase &gt;= 1 ? r.source : null);
+    const decision = r.kind === &#x27;known&#x27; ? `Destination MAC pozná: ${r.destination} → ${portText(r.ports)}.` : r.kind === &#x27;unknown&#x27; ? `Destination ${r.destination} v tejto VLAN nepozná. Použije ostatné porty VLAN ${r.vlan}; cieľová MAC zostáva nezmenená.` : r.kind === &#x27;broadcast&#x27; ? `FF:FF:FF:FF:FF:FF je broadcast. Odošle ho ostatným portom VLAN ${r.vlan}, aj pri plnej tabuľke.` : &#x27;Cieľ je dostupný cez ten istý port, cez ktorý rámec prišiel. Switch ho ďalej neprepošle.&#x27;;
+    const captions = [
+      [`PC${frame.source} → ${frame.destination === &#x27;broadcast&#x27; ? &#x27;všetci v rovnakej VLAN&#x27; : &#x27;PC&#x27;+frame.destination}`, `Rámec prichádza cez Fa0/${frame.source}. Sleduj najprv source MAC a potom destination MAC. Ukážka pracuje s platným rámcom; FCS skúmaj v druhej téme.`],
+      [r.learned ? &#x27;Nový záznam zo SOURCE MAC&#x27; : &#x27;Obnovenie záznamu zo SOURCE MAC&#x27;, `${r.source} → Fa0/${frame.source}, VLAN ${r.vlan}. Switch sa učí adresu odosielateľa, nie príjemcu.`],
+      [names[r.kind], decision],
+      [r.ports.length ? &#x27;Výstup: &#x27; + portText(r.ports) : &#x27;Rámec sa ďalej neprepošle&#x27;, decision + (r.kind === &#x27;unknown&#x27; ? &#x27; Ostatné PC s inou cieľovou MAC rámec ignorujú.&#x27; : &#x27;&#x27;)]
+    ];
+    $(&#x27;step-title&#x27;).textContent = captions[phase][0]; $(&#x27;step-text&#x27;).textContent = captions[phase][1];
+    $(&#x27;table-note&#x27;).textContent = phase &gt;= 1 ? `${r.learned ? &#x27;Naučené&#x27; : &#x27;Obnovené&#x27;}: M${frame.source} → Fa0/${frame.source}. Cieľ sa samotným doručením nenaučí.` : &#x27;Tabuľka pred spracovaním tohto rámca.&#x27;;
+    [...$(&#x27;stages&#x27;).children].forEach((item,i) =&gt; item.classList.toggle(&#x27;sw-active&#x27;,i &lt;= phase));
+    $(&#x27;prev&#x27;).disabled = frameIndex === 0 &amp;&amp; phase === 0;
+    $(&#x27;next&#x27;).disabled = frameIndex === sequence.length-1 &amp;&amp; phase === 3;
+    $(&#x27;next&#x27;).textContent = phase === 3 &amp;&amp; frameIndex &lt; sequence.length-1 ? &#x27;Ďalší rámec →&#x27; : &#x27;Ďalší krok →&#x27;;
+  }
+  function advance() {
+    if (phase &lt; 3) phase++;
+    else if (frameIndex &lt; sequence.length-1) { history[frameIndex] = baseTable.map(row =&gt; ({...row})); baseTable = result().table; frameIndex++; phase = 0; }
+    else { pause(); return; }
+    renderLearning();
+    if (frameIndex === sequence.length-1 &amp;&amp; phase === 3) pause();
+  }
+  function startSequence(frames, own = false, table = []) {
+    pause(); sequence = frames; custom = own; baseTable = table; history = []; frameIndex = phase = 0; renderLearning();
+  }
+  $(&#x27;next&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { pause(); advance(); });
+  $(&#x27;prev&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { pause(); if (phase) phase--; else if (frameIndex) { frameIndex--; baseTable = history[frameIndex].map(row =&gt; ({...row})); phase=3; } renderLearning(); });
+  $(&#x27;play&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+    if (timer !== null) { pause(); return; }
+    if (frameIndex === sequence.length-1 &amp;&amp; phase === 3) startSequence(sequence,custom);
+    timer = setInterval(advance,1800); $(&#x27;play&#x27;).textContent = &#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;); renderLearning();
+  });
+  $(&#x27;reset&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; startSequence(sequence,custom));
+  $(&#x27;lesson&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { $(&#x27;vlans&#x27;).checked=false; startSequence(M.lesson); });
+  $(&#x27;custom&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; startSequence([[Number($(&#x27;custom-source&#x27;).value), $(&#x27;custom-destination&#x27;).value === &#x27;broadcast&#x27; ? &#x27;broadcast&#x27; : Number($(&#x27;custom-destination&#x27;).value)]], true, visibleTable()));
+  $(&#x27;clear&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; startSequence(sequence,custom));
+  $(&#x27;age&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { const table = visibleTable(), frame = sequence[frameIndex]; clock += 300; startSequence([frame],true,M.age(table,clock)); $(&#x27;table-note&#x27;).textContent = &#x27;Uplynulo 300 s bez prevádzky: neobnovené dynamické záznamy vypršali. Ďalší rámec ich môže znovu naučiť.&#x27;; });
+  $(&#x27;vlans&#x27;).addEventListener(&#x27;change&#x27;, () =&gt; startSequence(sequence,custom));
+  $(&#x27;demo-vlan&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { showTopic(&#x27;learning&#x27;); $(&#x27;vlans&#x27;).checked=true; startSequence([[1,&#x27;broadcast&#x27;]],true); });
+
+  function renderForward() {
+    const time = Number($(&#x27;forward-time&#x27;).value), cut = $(&#x27;method&#x27;).value === &#x27;cut&#x27;, bad = $(&#x27;corrupt&#x27;).value === &#x27;bad&#x27;;
+    const received = Math.min(time,100), sent = !cut &amp;&amp; bad ? 0 : Math.max(0,Math.min(100,time-(cut ? 8 : 110)));
+    $(&#x27;rx-bar&#x27;).style.width = received+&#x27;%&#x27;; $(&#x27;tx-bar&#x27;).style.width = sent+&#x27;%&#x27;;
+    $(&#x27;rx-label&#x27;).textContent = `Prijaté ${received} %${received === 100 ? &#x27; · FCS dorazilo&#x27; : &#x27;&#x27;}`;
+    $(&#x27;tx-label&#x27;).textContent = !cut &amp;&amp; bad &amp;&amp; time &gt;= 100 ? &#x27;Zahodený · žiadny výstup&#x27; : `Odoslané ${sent} %`;
+    let status;
+    if (cut) status = time &lt; 8 ? &#x27;Switch čaká na prečítanie destination MAC.&#x27; : time &lt; 100 ? &#x27;Odosielanie sa už začalo, hoci zvyšok rámca vrátane FCS ešte prichádza.&#x27; : bad ? &#x27;Poškodený rámec už smeruje k príjemcovi. Jeho sieťová karta pri kontrole FCS odhalí chybu a rámec zahodí.&#x27; : &#x27;Príjem je dokončený; výstup sa začal ešte počas prijímania.&#x27;;
+    else status = time &lt; 100 ? &#x27;Switch najprv prijíma celý rámec. Na výstupe zatiaľ nič neposiela.&#x27; : bad ? &#x27;CRC nesúhlasí s prijatým FCS. Switch rámec zahodí a neodošle ho.&#x27; : time &lt; 110 ? &#x27;Celý rámec je prijatý. Switch overuje FCS pred odoslaním.&#x27; : &#x27;FCS je platné. Až teraz switch odošle rámec.&#x27;;
+    $(&#x27;forward-status&#x27;).textContent = status;
+  }
+  for (const id of [&#x27;method&#x27;,&#x27;corrupt&#x27;]) $(id).addEventListener(&#x27;change&#x27;, () =&gt; { pause(); $(&#x27;forward-time&#x27;).value=0; renderForward(); });
+  $(&#x27;forward-time&#x27;).addEventListener(&#x27;input&#x27;, () =&gt; { pause(); renderForward(); });
+  $(&#x27;forward-reset&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { pause(); $(&#x27;forward-time&#x27;).value=0; renderForward(); });
+  $(&#x27;forward-play&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+    if (forwardTimer !== null) { pause(); return; }
+    if (Number($(&#x27;forward-time&#x27;).value) &gt;= 210) $(&#x27;forward-time&#x27;).value=0;
+    $(&#x27;forward-play&#x27;).textContent=&#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;forward-play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;);
+    forwardTimer=setInterval(() =&gt; { $(&#x27;forward-time&#x27;).value = Math.min(210,Number($(&#x27;forward-time&#x27;).value)+2); renderForward(); if (Number($(&#x27;forward-time&#x27;).value)===210) pause(); },60);
+  });
+
+  const emptyBuffer = () =&gt; ({ queues: [[],[],[],[]], sent: 0, dropped: 0 });
+  let buffer = emptyBuffer();
+  const slot = filled =&gt; `&lt;span class=&quot;sw-slot${filled ? &#x27; sw-filled&#x27; : &#x27;&#x27;}&quot;&gt;${filled ? &#x27;→4&#x27; : &#x27;·&#x27;}&lt;/span&gt;`;
+  function renderBuffer() {
+    const shared = $(&#x27;buffer-mode&#x27;).value === &#x27;shared&#x27;, count = buffer.queues.reduce((n,q) =&gt; n+q.length,0);
+    $(&#x27;buffer-view&#x27;).innerHTML = shared ? &#x27;&lt;p class=&quot;sw-muted&quot;&gt;Spoločná pamäť · všetky porty&lt;/p&gt;&lt;div class=&quot;sw-slots&quot;&gt;&#x27;+Array.from({length:16},(_,i)=&gt;slot(i&lt;count)).join(&#x27;&#x27;)+&#x27;&lt;/div&gt;&#x27; : buffer.queues.map((q,i)=&gt;`&lt;p class=&quot;sw-muted&quot;&gt;Fa0/${i+1} · ${q.length} / 4&lt;/p&gt;&lt;div class=&quot;sw-slots&quot;&gt;${Array.from({length:4},(_,j)=&gt;slot(j&lt;q.length)).join(&#x27;&#x27;)}&lt;/div&gt;`).join(&#x27;&#x27;);
+    $(&#x27;buffer-waiting&#x27;).textContent=count; $(&#x27;buffer-sent&#x27;).textContent=buffer.sent; $(&#x27;buffer-dropped&#x27;).textContent=buffer.dropped;
+    $(&#x27;buffer-status&#x27;).textContent = count === (shared ? 16 : 4) ? &#x27;Front Fa0/4 je plný. Ďalšie príchody bez voľného miesta sa zahodia.&#x27; : !count ? &#x27;Buffer je prázdny. Spusť prísun rámcov.&#x27; : `Vo fronte pre Fa0/4 čaká ${count} rámcov. Výstup zvládne jeden za krok.`;
+  }
+  function tickBuffer() { buffer=M.bufferTick(buffer,Number($(&#x27;buffer-load&#x27;).value),1,$(&#x27;buffer-mode&#x27;).value); renderBuffer(); }
+  $(&#x27;buffer-tick&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { pause(); tickBuffer(); });
+  $(&#x27;buffer-reset&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { pause(); buffer=emptyBuffer(); renderBuffer(); });
+  $(&#x27;buffer-mode&#x27;).addEventListener(&#x27;change&#x27;, () =&gt; { pause(); buffer=emptyBuffer(); renderBuffer(); });
+  $(&#x27;buffer-play&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { if (bufferTimer !== null) { pause(); return; } $(&#x27;buffer-play&#x27;).textContent=&#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;buffer-play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;); bufferTimer=setInterval(tickBuffer,800); });
+
+  let exerciseIndex=0, exerciseTable=[], solved=false, score=0, tried=false;
+  const letter = n =&gt; String.fromCharCode(64+n);
+  const exerciseMac = row =&gt; ({...row, mac: row.mac.slice(0,-2)+&#x27;0&#x27;+letter(Number(row.mac.slice(-1)))});
+  function renderExercise() {
+    const [source,destination]=M.exercise[exerciseIndex], r=M.process(exerciseTable,{source,destination});
+    $(&#x27;exercise-count&#x27;).textContent=`Rámec ${exerciseIndex+1} / 6`;
+    $(&#x27;question&#x27;).textContent=`${letter(source)} → ${destination === &#x27;broadcast&#x27; ? &#x27;FF:FF:FF:FF:FF:FF&#x27; : letter(destination)}`;
+    $(&#x27;exercise-table&#x27;).innerHTML=tableHTML(exerciseTable.map(exerciseMac));
+    $(&#x27;exercise-score&#x27;).textContent=`Správne na prvý pokus: ${score} / ${solved ? exerciseIndex+1 : exerciseIndex}`;
+    $(&#x27;exercise-next&#x27;).disabled=!solved || exerciseIndex===5;
+    $(&#x27;exercise-next&#x27;).textContent=solved &amp;&amp; exerciseIndex===5 ? &#x27;Všetkých 6 rámcov vyriešených&#x27; : &#x27;Ďalší rámec →&#x27;;
+    const options = [[1],[2],[3],[4],[1,2,3,4].filter(p=&gt;p!==source),[]];
+    $(&#x27;answers&#x27;).replaceChildren(...options.map(ports =&gt; {
+      const button=document.createElement(&#x27;button&#x27;); button.type=&#x27;button&#x27;; button.textContent=portText(ports)+(ports.length&gt;1 ? &#x27; · flooding&#x27; : &#x27;&#x27;); button.disabled=solved;
+      button.addEventListener(&#x27;click&#x27;, () =&gt; {
+        const correct=ports.join(&#x27;,&#x27;)===r.ports.join(&#x27;,&#x27;);
+        if (!correct) { tried=true; $(&#x27;exercise-feedback&#x27;).textContent=&#x27;Skús ešte raz. Nauč sa source a hľadaj destination v tabuľke z predchádzajúcich krokov. Vstupný port sa vynecháva.&#x27;; return; }
+        if (!tried) score++;
+        solved=true; exerciseTable=r.table;
+        renderExercise();
+        $(&#x27;exercise-feedback&#x27;).textContent=`Správne. ${r.learned ? &#x27;Naučí&#x27; : &#x27;Obnoví&#x27;} ${letter(source)} → Fa0/${source}. ${names[r.kind]}; výstup: ${portText(r.ports)}.`+(exerciseIndex===5 ? ` Hotovo! Na prvý pokus: ${score} zo 6.` : &#x27;&#x27;);
+      });
+      return button;
+    }));
+  }
+  $(&#x27;exercise-next&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { if (!solved || exerciseIndex&gt;=5) return; exerciseIndex++; solved=tried=false; $(&#x27;exercise-feedback&#x27;).textContent=&#x27;&#x27;; renderExercise(); });
+  $(&#x27;exercise-reset&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { exerciseIndex=score=0; exerciseTable=[]; solved=tried=false; $(&#x27;exercise-feedback&#x27;).textContent=&#x27;&#x27;; renderExercise(); });
+  document.addEventListener(&#x27;visibilitychange&#x27;, () =&gt; { if (document.hidden) pause(); });
+  window.SwitchingLab = { pause, getState: () =&gt; ({ topic, frameIndex, phase, table: visibleTable().map(row=&gt;({...row})), playing: timer!==null || forwardTimer!==null || bufferTimer!==null, clock }) };
+  renderLearning(); renderForward(); renderBuffer(); renderExercise();
+})();
+
+&lt;/script&gt;
+&lt;/section&gt;
+&lt;script&gt;
+(() =&gt; {
+  const tabs = [...document.querySelectorAll(&#x27;.network-lab-tabs [role=&quot;tab&quot;]&#x27;)];
+  function activate(tab, focus = false) {
+    for (const item of tabs) {
+      const selected = item === tab;
+      item.setAttribute(&#x27;aria-selected&#x27;, String(selected));
+      item.tabIndex = selected ? 0 : -1;
+      document.getElementById(item.getAttribute(&#x27;aria-controls&#x27;)).hidden = !selected;
+    }
+    if (tab.id !== &#x27;throughput-tab&#x27;) window.NetworkFlow?.pause();
+    else requestAnimationFrame(() =&gt; window.NetworkFlow?.redraw());
+    if (tab.id !== &#x27;encapsulation-tab&#x27;) window.EncapsulationLab?.pause();
+    if (tab.id !== &#x27;switching-tab&#x27;) window.SwitchingLab?.pause();
+    if (focus) tab.focus();
+  }
+  tabs.forEach((tab, index) =&gt; {
+    tab.addEventListener(&#x27;click&#x27;, () =&gt; activate(tab));
+    tab.addEventListener(&#x27;keydown&#x27;, event =&gt; {
+      let next;
+      if (event.key === &#x27;ArrowRight&#x27;) next = (index + 1) % tabs.length;
+      if (event.key === &#x27;ArrowLeft&#x27;) next = (index + tabs.length - 1) % tabs.length;
+      if (event.key === &#x27;Home&#x27;) next = 0;
+      if (event.key === &#x27;End&#x27;) next = tabs.length - 1;
+      if (next !== undefined) { event.preventDefault(); activate(tabs[next], true); }
+    });
+  });
+})();
+
+&lt;/script&gt;
 &lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;

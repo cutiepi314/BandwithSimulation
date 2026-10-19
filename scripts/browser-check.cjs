@@ -66,7 +66,7 @@ async function screenshot(name, width, height) {
     for (const [id, context] of contexts) {
       if (!context.auxData?.isDefault) continue;
       try {
-        const value = await cdp('Runtime.evaluate', { expression: '!!window.EncapsulationLab && !!window.SwitchingLab', contextId: id, returnByValue: true });
+        const value = await cdp('Runtime.evaluate', { expression: '!!window.EncapsulationLab && !!window.SwitchingLab && !!window.SpeedLab', contextId: id, returnByValue: true });
         if (value.result?.value) { contextId = id; return true; }
       } catch { contexts.delete(id); }
     }
@@ -186,14 +186,79 @@ async function screenshot(name, width, height) {
   await select('sw-buffer-load','0'); for(let i=0;i<16;i++) await click('sw-buffer-tick');
   assert.equal(await evaluate("document.getElementById('sw-buffer-waiting').textContent"),'0');
   await screenshot('switching-buffers',1440,1100);
-  // Keyboard tab order wraps across all three primary tabs.
+  // Keyboard tab order reaches the fourth primary tab and wraps to the first.
   await evaluate("document.getElementById('switching-tab').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))");
+  assert.equal(await evaluate("document.getElementById('speed-tab').getAttribute('aria-selected')"),'true');
+  assert.equal(await evaluate('window.SpeedLab.getState().path.seconds'),80);
+  assert.equal(await evaluate('window.SpeedLab.getState().path.goodput'),100);
+  await evaluate("document.querySelector('[data-sp-preset=upgrade]').click()");
+  assert.equal(await evaluate('window.SpeedLab.getState().path.seconds'),8);
+  await evaluate("document.querySelector('[data-sp-preset=disk]').click()");
+  assert.equal(await evaluate('window.SpeedLab.getState().path.goodput'),320);
+  await input('sp-efficiency','90');
+  assert.equal(await evaluate('window.SpeedLab.getState().path.goodput'),288);
+  await input('sp-file','0');assert.equal(await evaluate("document.getElementById('sp-path-error').hidden"),false);
+  assert.equal(await evaluate("document.getElementById('sp-transfer-play').disabled"),true);
+  await input('sp-file','1000');await input('sp-efficiency','100');
+  await evaluate("document.querySelector('[data-sp-preset=bottleneck]').click()");
+  await click('sp-transfer-play');assert.equal(await evaluate('window.SpeedLab.getState().playing'),true);
+  await delay(250);assert.ok(await evaluate('window.SpeedLab.getState().transferred')>0);
+  await click('throughput-tab');assert.equal(await evaluate('window.SpeedLab.getState().playing'),false);
+  await click('speed-tab');
+  await screenshot('speed-bottleneck-desktop',1440,1250);
+  await screenshot('speed-bottleneck-mobile',390,1250);
+  assert.equal(await evaluate('document.documentElement.scrollWidth > innerWidth + 1'),false);
+  for(const name of ['sharing','duplex','timing','practice']) {
+    await evaluate(`document.querySelector('[data-sp-topic="${name}"]').click()`);
+    assert.equal(await evaluate('document.documentElement.scrollWidth > innerWidth + 1'),false,`${name} speed-lab mobile overflow`);
+  }
+  await evaluate("document.querySelector('[data-sp-topic=sharing]').click()");
+  assert.match(await evaluate("document.getElementById('sp-clients').textContent"),/250/);
+  await select('sp-uplink','10000');
+  assert.match(await evaluate("document.getElementById('sp-clients').textContent"),/250/);
+  await select('sp-server','10000');
+  assert.equal(await evaluate("document.getElementById('sp-sharing-explanation').textContent.includes('125 MB/s')"),true);
+  await click('sp-preset-two');await click('sp-queue-step');
+  assert.deepEqual(await evaluate('window.SpeedLab.getState().queue'),{queued:16,sent:125,dropped:59,elapsed:1});
+  await click('sp-queue-drain');await click('sp-queue-step');
+  assert.equal(await evaluate('window.SpeedLab.getState().queue.queued'),0);
+  await click('sp-queue-play');await click('encapsulation-tab');assert.equal(await evaluate('window.SpeedLab.getState().playing'),false);
+  await click('speed-tab');await click('sp-preset-four');
+  await screenshot('speed-sharing-desktop',1440,1250);
+  await evaluate("document.querySelector('[data-sp-topic=duplex]').click()");
+  assert.match(await evaluate("document.getElementById('sp-negotiated').textContent"),/100 Mb\/s/);
+  await select('sp-pc-cap','10,100,1000');assert.match(await evaluate("document.getElementById('sp-port-status').textContent"),/a-1000/);
+  await select('sp-duplex-mode','half');assert.equal(await evaluate("document.getElementById('sp-duplex-rate').value"),'100');
+  const beforeLane=await evaluate("document.getElementById('sp-lane-out').textContent");
+  await click('sp-duplex-step');assert.notEqual(await evaluate("document.getElementById('sp-lane-out').textContent"),beforeLane);
+  await select('sp-duplex-mode','mismatch');assert.match(await evaluate("document.getElementById('sp-duplex-explanation').textContent"),/mismatch/);
+  await click('sp-duplex-play');assert.equal(await evaluate("document.getElementById('speed-lab').classList.contains('sp-duplex-moving')"),true);
+  await click('switching-tab');assert.equal(await evaluate('window.SpeedLab.getState().playing'),false);
+  assert.equal(await evaluate("document.getElementById('speed-lab').classList.contains('sp-duplex-moving')"),false);
+  await click('speed-tab');await select('sp-duplex-mode','full');await select('sp-duplex-rate','1000');
+  await screenshot('speed-duplex-desktop',1440,1250);
+  await evaluate("document.querySelector('[data-sp-topic=timing]').click()");
+  assert.match(await evaluate("document.getElementById('sp-serialization').textContent"),/120 μs/);
+  await select('sp-timing-rate','1000');assert.match(await evaluate("document.getElementById('sp-serialization').textContent"),/12 μs/);
+  await screenshot('speed-timing-desktop',1440,1250);
+  await evaluate("document.querySelector('[data-sp-topic=practice]').click()");
+  for(const [i,answer] of [0,1,2,0,1,2,0,1,2].entries()) {
+    await evaluate(`document.querySelectorAll('#sp-quiz-answers button')[${answer}].click()`);
+    assert.match(await evaluate("document.getElementById('sp-quiz-feedback').textContent"),/Správne/);
+    if(i<8)await click('sp-quiz-next');
+  }
+  assert.match(await evaluate("document.getElementById('sp-quiz-feedback').textContent"),/9 z 9/);
+  await screenshot('speed-practice-desktop',1440,1250);
+  await cdp('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'dark'},{name:'prefers-reduced-motion',value:'reduce'}]});
+  await evaluate("document.querySelector('[data-sp-topic=path]').click()");
+  await screenshot('speed-bottleneck-dark',1440,1250);
+  await evaluate("document.getElementById('speed-tab').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))");
   assert.equal(await evaluate("document.getElementById('throughput-tab').getAttribute('aria-selected')"),'true');
   const duplicateIds=await evaluate("(()=>{const ids=[...document.querySelectorAll('[id]')].map(el=>el.id);return ids.filter((id,i)=>ids.indexOf(id)!==i)})()");
   assert.deepEqual(duplicateIds,[],'IDs remain unique across all labs');
   assert.deepEqual(errors, [], 'No browser runtime exceptions');
   fs.writeFileSync(path.join(output, 'results.json'), JSON.stringify({ combinations, runtimeErrors: errors, stages: 14, signalSchemes: 5, mobileOverflow: overflow }, null, 2));
-  console.log(`PASS: existing labs plus switch learning, aging, VLAN isolation, six exercise solutions, FCS methods, buffer overload/draining, three-tab keyboard navigation, playback pausing and mobile checks. Screenshots: ${output}`);
+  console.log(`PASS: all four labs; bottleneck upgrades, disk and overhead limits, fair sharing, queue conservation, negotiation, duplex, frame timing, nine quiz answers, four-tab keyboard navigation, animation pausing and mobile layouts. Screenshots: ${output}`);
 })().catch(async error => {
   console.error(error);
   console.error('Runtime errors:', errors);

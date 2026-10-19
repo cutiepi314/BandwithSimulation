@@ -11,6 +11,7 @@
     else requestAnimationFrame(() => window.NetworkFlow?.redraw());
     if (tab.id !== 'encapsulation-tab') window.EncapsulationLab?.pause();
     if (tab.id !== 'switching-tab') window.SwitchingLab?.pause();
+    if (tab.id !== 'speed-tab') window.SpeedLab?.pause();
     if (focus) tab.focus();
   }
   tabs.forEach((tab, index) => {

@@ -17,6 +17,7 @@ inner = replaceOnce(inner, '<!-- ENCAPSULATION_PANEL -->',
 inner = replaceOnce(inner, '<!-- NETWORK_LAB_CONTROLLER -->', '<script>\n' + read('tabs.js') + '\n</script>');
 inner = replaceOnce(inner, '<!-- SWITCHING_PANEL -->', '<script>\n' + read('switching-model.js') + '\n</script>\n' + read('switching.html') + '\n<script>\n' + read('switching.js') + '\n</script>');
 const shell = read('standalone-shell.html');
+inner = replaceOnce(inner, '<!-- SPEED_PANEL -->', '<script>\n' + read('speed-model.js') + '\n</script>\n' + read('speed.html') + '\n<script>\n' + read('speed.js') + '\n</script>');
 let checked = 0;
 for (const doc of [inner, shell]) {
   for (const [, attributes, source] of doc.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {

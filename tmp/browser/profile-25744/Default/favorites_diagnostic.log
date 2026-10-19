@@ -1,0 +1,54 @@
+2026-10-19 09:05:06.595: [INFO] CurrentProfilePath: C:\Users\bator\Downloads\BandwidthSimulation\tmp\browser\profile-25744\Default
+2026-10-19 09:05:06.595: [INFO] Profiles total count: 1
+2026-10-19 09:05:06.595: [INFO] Profile: name=Profile 1 path=C:\Users\bator\Downloads\BandwidthSimulation\tmp\browser\profile-25744\Default lastActive=null
+2026-10-19 09:05:06.595: [INFO] LastUsedProfileDir: C:\Users\bator\Downloads\BandwidthSimulation\tmp\browser\profile-25744\Default
+2026-10-19 09:05:06.595: [INFO] VisibilityChanged: 0
+2026-10-19 09:05:06.636: [INFO] OnDoneLoading sync enabled: 0
+2026-10-19 09:05:06.636: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-19 09:05:06.636: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-19 09:05:06.636: [INFO] BookmarksSnapshot Startup total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-10-19 09:05:06.668: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-19 09:05:07.262: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-19 09:05:07.275: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.288: [INFO] Primary account changed.
+2026-10-19 09:05:07.288: [INFO] OnPrimaryAccountChanged PrimaryAccountChangeEvent::Type::kSet
+2026-10-19 09:05:07.305: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.337: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.598: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.639: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.647: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.658: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.661: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.665: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-19 09:05:07.667: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 4
+2026-10-19 09:05:11.402: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.409: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.410: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.410: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.410: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.411: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.411: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.411: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.411: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.412: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.412: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.412: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.412: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.413: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.413: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.413: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.414: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.414: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.414: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.414: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.415: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.415: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.415: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.415: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.416: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.416: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.416: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.417: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.417: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-19 09:05:11.437: [INFO] BookmarkBarPrefChanged showBar=0 showBarNTP=0
+2026-10-19 09:05:11.495: [INFO] VisibilityChanged: 1

@@ -1803,6 +1803,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;button type=&quot;button&quot; id=&quot;throughput-tab&quot; role=&quot;tab&quot; aria-controls=&quot;throughput-panel&quot; aria-selected=&quot;true&quot; tabindex=&quot;0&quot;&gt;01 · Priepustnosť siete&lt;/button&gt;
   &lt;button type=&quot;button&quot; id=&quot;encapsulation-tab&quot; role=&quot;tab&quot; aria-controls=&quot;encapsulation-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;02 · Enkapsulácia a deenkapsulácia&lt;/button&gt;
   &lt;button type=&quot;button&quot; id=&quot;switching-tab&quot; role=&quot;tab&quot; aria-controls=&quot;switching-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;03 · Ako switch spracúva rámce&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;speed-tab&quot; role=&quot;tab&quot; aria-controls=&quot;speed-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;04 · Rýchlosť a úzke hrdlá&lt;/button&gt;
 &lt;/nav&gt;
 
 &lt;section id=&quot;throughput-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;throughput-tab&quot;&gt;
@@ -3117,6 +3118,354 @@ html&gt;body{padding:0}&lt;/style&gt;
 
 &lt;/script&gt;
 &lt;/section&gt;
+&lt;section id=&quot;speed-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;speed-tab&quot; hidden&gt;
+&lt;script&gt;
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === &#x27;object&#x27; &amp;&amp; module.exports) module.exports = api;
+  else root.SpeedModel = api;
+}(globalThis, function () {
+  &#x27;use strict&#x27;;
+  function path({ links, diskMBps = 0, efficiency = 100, fileMB = 1000 }) {
+    const linkLimit = Math.min(...links);
+    const limit = Math.min(linkLimit, diskMBps &gt; 0 ? diskMBps * 8 : Infinity);
+    const goodput = limit * efficiency / 100;
+    return { linkLimit, limit, goodput, megabytes: goodput / 8, seconds: fileMB * 8 / goodput,
+      bottlenecks: links.flatMap((rate,i) =&gt; rate === limit ? [i] : []), diskLimited: diskMBps &gt; 0 &amp;&amp; diskMBps * 8 === limit };
+  }
+  function sharing({ clients, demand, uplink, server, bufferMB }) {
+    const offered = clients * demand;
+    const capacity = Math.min(uplink, server);
+    const excess = Math.max(0, offered - capacity);
+    return { offered, capacity, excess, perClient: Math.min(demand, capacity / clients),
+      growthMB: excess / 8, fillSeconds: excess &gt; 0 ? bufferMB * 8 / excess : Infinity };
+  }
+  // Fluid-rate teaching model. Arrivals and output service occur throughout dt.
+  function queueStep(state, config, dt) {
+    const r = sharing(config), arriving = r.offered * dt / 8;
+    const sent = Math.min(state.queued + arriving, r.capacity * dt / 8);
+    const backlog = Math.max(0, state.queued + arriving - sent);
+    const dropped = Math.max(0, backlog - config.bufferMB);
+    return { queued: Math.min(config.bufferMB, backlog), sent: state.sent + sent,
+      dropped: state.dropped + dropped, elapsed: state.elapsed + dt };
+  }
+  function negotiate(a,b) { const common = a.filter(n=&gt;b.includes(n)); return common.length ? Math.max(...common) : null; }
+  function timing({ bytes, rate, propagation, processing, queue }) {
+    const serializationUs = bytes * 8 / rate;
+    const oneWay = serializationUs / 1000 + propagation + processing + queue;
+    return { serializationUs, oneWay, rtt: oneWay * 2 };
+  }
+  return { path, sharing, queueStep, negotiate, timing };
+}));
+
+&lt;/script&gt;
+&lt;style&gt;
+  #speed-lab { --sp-hot: var(--orange); --sp-ok: var(--green); color:var(--foreground); font-size:14px; line-height:1.6; padding:10px 0 30px; }
+  #speed-lab *, #speed-lab *::before, #speed-lab *::after { box-sizing:border-box; }
+  #speed-lab [hidden] { display:none !important; }
+  #speed-lab h2, #speed-lab h3, #speed-lab p { margin:0; }
+  #speed-lab h2 { font-size:clamp(25px,3vw,36px); line-height:1.2; letter-spacing:-.04em; }
+  #speed-lab h3 { font-size:16px; line-height:1.4; }
+  #speed-lab .sp-eyebrow { font-size:10px; text-transform:uppercase; letter-spacing:.13em; font-weight:700; color:var(--muted-foreground); margin-bottom:8px; }
+  #speed-lab .sp-intro { color:var(--muted-foreground); max-width:820px; margin-top:10px; }
+  #speed-lab .sp-muted { color:var(--muted-foreground); font-size:12px; }
+  #speed-lab .sp-topics, #speed-lab .sp-actions { display:flex; flex-wrap:wrap; gap:7px; }
+  #speed-lab .sp-topics { margin:22px 0; }
+  #speed-lab button, #speed-lab select, #speed-lab input { font:inherit; }
+  #speed-lab button, #speed-lab select, #speed-lab input[type=&quot;number&quot;] { border:1px solid var(--border); background:var(--background); color:var(--foreground); border-radius:8px; padding:8px 11px; min-height:37px; min-width:0; max-width:100%; }
+  #speed-lab button { cursor:pointer; font-size:12px; }
+  #speed-lab button:disabled { cursor:default; opacity:.45; }
+  #speed-lab button[aria-pressed=&quot;true&quot;], #speed-lab .sp-primary { border-color:var(--primary); background:var(--accent); color:var(--accent-foreground); }
+  #speed-lab :focus-visible { outline:3px solid var(--ring); outline-offset:3px; }
+  #speed-lab label { display:grid; gap:6px; font-size:12px; min-width:0; }
+  #speed-lab label &gt; small { font-size:11px; color:var(--muted-foreground); }
+  #speed-lab input[type=&quot;range&quot;] { width:100%; accent-color:var(--primary); }
+  #speed-lab .sp-grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:16px; align-items:start; }
+  #speed-lab .sp-card { min-width:0; border:1px solid var(--border); border-radius:15px; padding:20px; background:var(--card); }
+  #speed-lab .sp-stack { display:grid; gap:16px; }
+  #speed-lab .sp-fields { display:grid; gap:13px; margin:16px 0; }
+  #speed-lab .sp-fields.sp-two { grid-template-columns:1fr 1fr; }
+  #speed-lab .sp-heading { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+  #speed-lab .sp-badge { border:1px solid var(--border); border-radius:30px; padding:4px 9px; font-size:10px; color:var(--muted-foreground); }
+  #speed-lab .sp-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin-bottom:16px; }
+  #speed-lab .sp-metric { border:1px solid var(--border); border-radius:12px; padding:12px; background:var(--card); min-width:0; }
+  #speed-lab .sp-metric &gt; span { display:block; color:var(--muted-foreground); font-size:11px; }
+  #speed-lab .sp-metric &gt; strong { display:block; font-size:clamp(19px,2.4vw,29px); font-weight:700; letter-spacing:-.04em; line-height:1.5; overflow-wrap:anywhere; }
+  #speed-lab .sp-metric &gt; small { font-size:10px; color:var(--muted-foreground); }
+  #speed-lab .sp-metric:first-child strong { color:var(--sp-hot); }
+  #speed-lab .sp-route { display:grid; grid-template-columns:70px minmax(0,1fr) 70px minmax(0,1fr) 70px minmax(0,1fr) 70px; align-items:center; gap:7px; margin:35px 0 25px; }
+  #speed-lab .sp-node { border:1px solid var(--border); border-radius:10px; background:var(--background); text-align:center; padding:17px 3px; font-size:13px; font-weight:700; }
+  #speed-lab .sp-link { text-align:center; min-width:0; font-size:11px; }
+  #speed-lab .sp-pipe { position:relative; border-radius:5px; background:var(--muted); margin:10px 0; overflow:hidden; min-height:12px; }
+  #speed-lab .sp-water { position:absolute; inset:auto 0 0; height:var(--sp-flow); min-height:3px; background:var(--primary); opacity:.65; }
+  #speed-lab .sp-pipe::after { content:&quot;»   »   »   »   »   »   »   »   »   »&quot;; position:absolute; inset:0; color:var(--foreground); font-size:11px; white-space:nowrap; line-height:1.1; display:flex; align-items:center; animation:sp-packets 1.6s linear infinite; animation-play-state:paused; }
+  #speed-lab.sp-moving .sp-pipe::after { animation-play-state:running; }
+  #speed-lab .sp-link.sp-limited .sp-pipe { outline:2px solid var(--sp-hot); outline-offset:2px; }
+  #speed-lab .sp-link.sp-limited strong, #speed-lab .sp-hot { color:var(--sp-hot); }
+  #speed-lab .sp-explanation { border-left:3px solid var(--primary); background:var(--accent); padding:12px 14px; font-size:13px; margin:15px 0; }
+  #speed-lab .sp-note { border-top:1px solid var(--border); margin-top:15px; padding-top:12px; font-size:12px; color:var(--muted-foreground); }
+  #speed-lab .sp-progress { background:var(--background); border:1px solid var(--border); border-radius:8px; height:18px; overflow:hidden; margin:12px 0; }
+  #speed-lab .sp-progress &gt; span { display:block; height:100%; background:var(--primary); width:0; }
+  #speed-lab .sp-clients { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; margin:18px 0; }
+  #speed-lab .sp-client { border:1px solid var(--border); background:var(--background); border-radius:9px; padding:10px; font-size:11px; }
+  #speed-lab .sp-client strong { display:block; color:var(--accent-foreground); font-size:15px; }
+  #speed-lab .sp-client small { display:block; font-size:10px; color:var(--muted-foreground); }
+  #speed-lab .sp-uplink { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; border:1px solid var(--sp-hot); border-radius:10px; padding:12px; margin-bottom:15px; font-size:13px; }
+  #speed-lab .sp-slots { display:grid; grid-template-columns:repeat(20,minmax(0,1fr)); gap:3px; margin:12px 0; }
+  #speed-lab .sp-slot { height:30px; border:1px solid var(--border); border-radius:4px; background:var(--background); }
+  #speed-lab .sp-slot.sp-filled { background:var(--accent); border-color:var(--primary); }
+  #speed-lab .sp-slot.sp-full { background:color-mix(in srgb,var(--sp-hot) 30%,var(--background)); border-color:var(--sp-hot); }
+  #speed-lab .sp-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:15px 0; }
+  #speed-lab .sp-stats strong { display:block; font-size:22px; letter-spacing:-.03em; }
+  #speed-lab .sp-stats span { display:block; font-size:10px; color:var(--muted-foreground); }
+  #speed-lab .sp-duplex-view { display:grid; grid-template-columns:80px minmax(0,1fr) 80px; gap:12px; align-items:center; margin:25px 0; }
+  #speed-lab .sp-lane { position:relative; overflow:hidden; border-radius:8px; border:1px solid var(--border); padding:10px; font-size:12px; margin:7px 0; text-align:center; background:var(--background); }
+  #speed-lab .sp-lane::after { content:&quot;›   ›   ›   ›   ›   ›   ›   ›   ›   ›   ›   ›   ›   ›   ›   ›   ›   ›&quot;; display:none; position:absolute; bottom:0; left:0; white-space:nowrap; font-size:11px; line-height:10px; opacity:.65; animation:sp-packets .7s linear infinite; }
+  #speed-lab #sp-lane-in::after { content:&quot;‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹   ‹&quot;; animation-direction:reverse; }
+  #speed-lab.sp-duplex-moving .sp-lane.sp-live::after { display:block; }
+  #speed-lab .sp-lane.sp-live { color:var(--accent-foreground); background:var(--accent); border-color:var(--primary); }
+  #speed-lab .sp-lane.sp-collision { color:var(--sp-hot); border-color:var(--sp-hot); }
+  #speed-lab .sp-stages { display:flex; height:30px; margin:16px 0 8px; gap:3px; }
+  #speed-lab .sp-stages span { min-width:3px; border-radius:5px; background:var(--primary); }
+  #speed-lab .sp-stages span:nth-child(2) { background:var(--viz-series-5); }
+  #speed-lab .sp-stages span:nth-child(3) { background:var(--viz-series-3); }
+  #speed-lab .sp-stages span:nth-child(4) { background:var(--sp-hot); }
+  #speed-lab table { border-collapse:collapse; width:100%; font-size:12px; margin:12px 0; }
+  #speed-lab th, #speed-lab td { text-align:left; border-bottom:1px solid var(--border); padding:9px 5px; }
+  #speed-lab th { color:var(--muted-foreground); font-size:10px; font-weight:500; }
+  #speed-lab code { font:11px var(--font-mono); overflow-wrap:anywhere; }
+  #speed-lab pre { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--background); border:1px solid var(--border); border-radius:8px; padding:12px; font-size:11px; }
+  #speed-lab details { margin-top:12px; font-size:13px; }
+  #speed-lab summary { cursor:pointer; font-weight:600; }
+  #speed-lab details p { color:var(--muted-foreground); margin-top:8px; }
+  #speed-lab .sp-answers { display:grid; gap:8px; margin:18px 0; }
+  #speed-lab .sp-answers button { text-align:left; padding:12px; }
+  #speed-lab .sp-feedback { min-height:65px; font-size:13px; margin:12px 0; }
+  #speed-lab .sp-footer { color:var(--muted-foreground); font-size:11px; margin-top:22px; }
+  #speed-lab a { color:var(--accent-foreground); }
+  @keyframes sp-packets { from { transform:translateX(-20px); } to { transform:translateX(0); } }
+  @media (max-width:1000px) { #speed-lab .sp-grid { grid-template-columns:1fr; } }
+  @media (max-width:600px) { #speed-lab .sp-metrics { grid-template-columns:1fr 1fr; } #speed-lab .sp-card { padding:15px; } #speed-lab .sp-route { grid-template-columns:1fr; margin:20px 0; gap:8px; } #speed-lab .sp-node { padding:9px; } #speed-lab .sp-link { display:grid; grid-template-columns:1fr 1fr; align-items:center; text-align:left; gap:3px 14px; } #speed-lab .sp-link .sp-pipe { grid-row:1 / 3; grid-column:2; margin:0; } #speed-lab .sp-link small { grid-column:1; } #speed-lab .sp-topics button { flex:1 1 40%; } #speed-lab .sp-clients { grid-template-columns:1fr 1fr; } #speed-lab .sp-duplex-view { grid-template-columns:55px minmax(0,1fr) 55px; gap:6px; } }
+  @media (max-width:380px) { #speed-lab .sp-fields.sp-two { grid-template-columns:1fr; } }
+  @media (prefers-reduced-motion:reduce) { #speed-lab .sp-pipe::after, #speed-lab .sp-lane::after { animation:none; } }
+&lt;/style&gt;
+&lt;div id=&quot;speed-lab&quot;&gt;
+  &lt;div class=&quot;sp-eyebrow&quot;&gt;Prepínač / rýchlosť komunikácie / druhá lekcia&lt;/div&gt;
+  &lt;h2&gt;Rýchlosť a úzke hrdlá&lt;/h2&gt;
+  &lt;p class=&quot;sp-intro&quot;&gt;Gigabitový port ešte neznamená gigabitový prenos. Preskúmaj celú cestu, spoločný uplink a oba smery komunikácie. Zmeň podmienky a sleduj, čo skutočne obmedzuje dáta.&lt;/p&gt;
+  &lt;nav class=&quot;sp-topics&quot; aria-label=&quot;Témy o rýchlosti siete&quot;&gt;
+    &lt;button type=&quot;button&quot; data-sp-topic=&quot;path&quot; aria-controls=&quot;sp-path&quot; aria-pressed=&quot;true&quot;&gt;01 · Bottleneck&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-sp-topic=&quot;sharing&quot; aria-controls=&quot;sp-sharing&quot; aria-pressed=&quot;false&quot;&gt;02 · Uplink a front&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-sp-topic=&quot;duplex&quot; aria-controls=&quot;sp-duplex&quot; aria-pressed=&quot;false&quot;&gt;03 · Porty a duplex&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-sp-topic=&quot;timing&quot; aria-controls=&quot;sp-timing&quot; aria-pressed=&quot;false&quot;&gt;04 · Jednotky a latencia&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-sp-topic=&quot;practice&quot; aria-controls=&quot;sp-practice&quot; aria-pressed=&quot;false&quot;&gt;05 · Over si to&lt;/button&gt;
+  &lt;/nav&gt;
+  &lt;section id=&quot;sp-path&quot; aria-label=&quot;Úzke hrdlo prenosovej cesty&quot;&gt;
+    &lt;div class=&quot;sp-metrics&quot;&gt;&lt;div class=&quot;sp-metric&quot;&gt;&lt;span&gt;Strop liniek na ceste&lt;/span&gt;&lt;strong id=&quot;sp-path-limit&quot;&gt;&lt;/strong&gt;&lt;small&gt;Mb/s · najpomalšia linka&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;sp-metric&quot;&gt;&lt;span&gt;Užitočná rýchlosť&lt;/span&gt;&lt;strong id=&quot;sp-path-goodput&quot;&gt;&lt;/strong&gt;&lt;small&gt;Mb/s · po ďalších obmedzeniach&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;sp-metric&quot;&gt;&lt;span&gt;Kopírovanie súboru&lt;/span&gt;&lt;strong id=&quot;sp-path-mbytes&quot;&gt;&lt;/strong&gt;&lt;small&gt;MB/s · rýchlosť ÷ 8&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;sp-metric&quot;&gt;&lt;span&gt;Čas celého súboru&lt;/span&gt;&lt;strong id=&quot;sp-path-seconds&quot;&gt;&lt;/strong&gt;&lt;small id=&quot;sp-path-size-note&quot;&gt;&lt;/small&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;sp-grid&quot;&gt;&lt;div class=&quot;sp-stack&quot;&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;div class=&quot;sp-heading&quot;&gt;&lt;h3&gt;Jeden prenos, celá cesta&lt;/h3&gt;&lt;span class=&quot;sp-badge&quot;&gt;PC → SW1 → SW2 → server&lt;/span&gt;&lt;/div&gt;&lt;div id=&quot;sp-route&quot; class=&quot;sp-route&quot;&gt;&lt;/div&gt;&lt;p class=&quot;sp-muted&quot;&gt;Šírka pásu znázorňuje kapacitu linky v relatívnej mierke. Modrý tok má na celej ceste rovnakú rýchlosť. Oranžová označuje úzke hrdlo.&lt;/p&gt;&lt;p id=&quot;sp-path-explanation&quot; class=&quot;sp-explanation&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;div class=&quot;sp-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sp-transfer-play&quot; class=&quot;sp-primary&quot; aria-pressed=&quot;false&quot;&gt;▶ Spustiť prenos&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sp-transfer-reset&quot;&gt;Od začiatku&lt;/button&gt;&lt;/div&gt;&lt;div class=&quot;sp-progress&quot; role=&quot;progressbar&quot; aria-label=&quot;Prenos súboru&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; aria-valuenow=&quot;0&quot; id=&quot;sp-transfer-progress&quot;&gt;&lt;span id=&quot;sp-transfer-bar&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;p id=&quot;sp-transfer-status&quot; class=&quot;sp-muted&quot; aria-live=&quot;polite&quot;&gt;Prenos ešte nezačal.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Vyskúšaj zmenu jedného prvku&lt;/h3&gt;&lt;div class=&quot;sp-actions&quot; style=&quot;margin-top:12px&quot;&gt;&lt;button type=&quot;button&quot; data-sp-preset=&quot;bottleneck&quot;&gt;1 Gb/s → 100 Mb/s → 1 Gb/s&lt;/button&gt;&lt;button type=&quot;button&quot; data-sp-preset=&quot;upgrade&quot;&gt;Zrýchliť iba uplink&lt;/button&gt;&lt;button type=&quot;button&quot; data-sp-preset=&quot;adapter&quot;&gt;Starý 100 Mb/s adaptér&lt;/button&gt;&lt;button type=&quot;button&quot; data-sp-preset=&quot;disk&quot;&gt;Všetko gigabit, pomalší disk&lt;/button&gt;&lt;/div&gt;&lt;p class=&quot;sp-note&quot;&gt;Rýchlejší uplink pomôže, kým prenos nezačne obmedzovať iná časť cesty. Výkon disku, servera alebo aplikácie môže byť nižší než rýchlosť portu.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;aside class=&quot;sp-card&quot;&gt;&lt;h3&gt;Nastavenia prenosu&lt;/h3&gt;&lt;div class=&quot;sp-fields&quot;&gt;&lt;label&gt;PC → SW1&lt;select id=&quot;sp-link-0&quot; data-sp-path-input&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;SW1 → SW2 · uplink&lt;select id=&quot;sp-link-1&quot; data-sp-path-input&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;SW2 → server&lt;select id=&quot;sp-link-2&quot; data-sp-path-input&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Disk / aplikácia na serveri&lt;select id=&quot;sp-disk&quot; data-sp-path-input&gt;&lt;option value=&quot;0&quot;&gt;Bez ďalšieho obmedzenia&lt;/option&gt;&lt;option value=&quot;12.5&quot;&gt;12,5 MB/s · 100 Mb/s&lt;/option&gt;&lt;option value=&quot;40&quot;&gt;40 MB/s · 320 Mb/s&lt;/option&gt;&lt;option value=&quot;125&quot;&gt;125 MB/s · 1 Gb/s&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Veľkosť súboru v MB&lt;input id=&quot;sp-file&quot; data-sp-path-input type=&quot;number&quot; min=&quot;1&quot; max=&quot;1000000&quot; step=&quot;1&quot; value=&quot;1000&quot;&gt;&lt;small&gt;Desiatkové jednotky: 1 GB = 1 000 MB.&lt;/small&gt;&lt;/label&gt;&lt;label&gt;Užitočná časť modelovej rýchlosti: &lt;strong id=&quot;sp-efficiency-value&quot;&gt;100 %&lt;/strong&gt;&lt;input id=&quot;sp-efficiency&quot; data-sp-path-input type=&quot;range&quot; min=&quot;50&quot; max=&quot;100&quot; value=&quot;100&quot;&gt;&lt;small&gt;100 % = ideál bez réžie. Nižšia hodnota je zadaný model, nie meranie siete.&lt;/small&gt;&lt;/label&gt;&lt;/div&gt;&lt;p id=&quot;sp-path-error&quot; role=&quot;alert&quot; hidden&gt;&lt;/p&gt;&lt;p class=&quot;sp-note&quot;&gt;Jeden prenos bez ďalšej prevádzky. Zjednodušený model: minimum kapacít vrátane disku × užitočná časť. RTT a TCP riadenie toku tu nepočítame.&lt;/p&gt;&lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;sp-sharing&quot; aria-label=&quot;Zdieľanie uplinku a preťaženie&quot; hidden&gt;
+    &lt;div class=&quot;sp-grid&quot;&gt;&lt;div class=&quot;sp-stack&quot;&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;div class=&quot;sp-heading&quot;&gt;&lt;h3&gt;Viac PC, jedna spoločná cesta&lt;/h3&gt;&lt;span class=&quot;sp-badge&quot;&gt;Každý PC má 1 Gb/s port&lt;/span&gt;&lt;/div&gt;&lt;div id=&quot;sp-clients&quot; class=&quot;sp-clients&quot;&gt;&lt;/div&gt;&lt;div class=&quot;sp-uplink&quot;&gt;&lt;span id=&quot;sp-offered&quot;&gt;&lt;/span&gt;&lt;strong id=&quot;sp-output&quot;&gt;&lt;/strong&gt;&lt;/div&gt;&lt;p id=&quot;sp-sharing-explanation&quot; class=&quot;sp-explanation&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;div class=&quot;sp-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sp-preset-four&quot;&gt;4 PC na 1 Gb/s uplinku&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sp-preset-two&quot;&gt;2 × 800 Mb/s do 1 Gb/s&lt;/button&gt;&lt;/div&gt;&lt;p class=&quot;sp-note&quot;&gt;Ideálne rovnomerné delenie pre rovnaké dlhé prenosy. Reálne delenie závisí od prevádzky a protokolov. Ak rýchlejší uplink ústi do pomalšieho serverového portu, limit sa presunie tam.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;div class=&quot;sp-heading&quot;&gt;&lt;h3&gt;Buffer len odloží preplnenie&lt;/h3&gt;&lt;span id=&quot;sp-queue-clock&quot; class=&quot;sp-badge&quot;&gt;t = 0 s&lt;/span&gt;&lt;/div&gt;&lt;div id=&quot;sp-queue-slots&quot; class=&quot;sp-slots&quot; aria-label=&quot;Zaplnenie bufferu&quot;&gt;&lt;/div&gt;&lt;div class=&quot;sp-stats&quot;&gt;&lt;div&gt;&lt;strong id=&quot;sp-queue-size&quot;&gt;&lt;/strong&gt;&lt;span&gt;MB vo fronte&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;strong id=&quot;sp-queue-dropped&quot;&gt;&lt;/strong&gt;&lt;span&gt;MB zahodených&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;strong id=&quot;sp-queue-wait&quot;&gt;&lt;/strong&gt;&lt;span&gt;ms čakania za frontom&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sp-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sp-queue-play&quot; aria-pressed=&quot;false&quot;&gt;▶ Spustiť&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sp-queue-step&quot;&gt;+ 1 sekunda&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sp-queue-drain&quot;&gt;Zastaviť prísun&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sp-queue-reset&quot;&gt;Vynulovať&lt;/button&gt;&lt;/div&gt;&lt;p id=&quot;sp-queue-explanation&quot; class=&quot;sp-explanation&quot;&gt;&lt;/p&gt;&lt;p class=&quot;sp-muted&quot;&gt;Model konštantného ponúkaného toku bez spomaľovania odosielateľov. Front meriame v MB; strata sa v skutočnosti deje po rámcoch. Zmena kapacity alebo počtu PC vynuluje front. Tlačidlo „Zastaviť prísun“ ho nechá odtiecť.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;aside class=&quot;sp-card&quot;&gt;&lt;h3&gt;Spoločný výstup&lt;/h3&gt;&lt;div class=&quot;sp-fields&quot;&gt;&lt;label&gt;Počet PC&lt;select id=&quot;sp-client-count&quot;&gt;&lt;option value=&quot;1&quot;&gt;1 PC&lt;/option&gt;&lt;option value=&quot;2&quot;&gt;2 PC&lt;/option&gt;&lt;option value=&quot;4&quot; selected&gt;4 PC&lt;/option&gt;&lt;option value=&quot;8&quot;&gt;8 PC&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Ponúkaný tok jedného PC: &lt;strong id=&quot;sp-demand-value&quot;&gt;&lt;/strong&gt;&lt;input type=&quot;range&quot; id=&quot;sp-demand&quot; min=&quot;0&quot; max=&quot;1000&quot; step=&quot;50&quot; value=&quot;1000&quot;&gt;&lt;/label&gt;&lt;label&gt;Uplink SW1 → SW2&lt;select id=&quot;sp-uplink&quot;&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;SW2 → server&lt;select id=&quot;sp-server&quot;&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Veľkosť bufferu&lt;select id=&quot;sp-buffer&quot;&gt;&lt;option value=&quot;4&quot;&gt;4 MB&lt;/option&gt;&lt;option value=&quot;16&quot; selected&gt;16 MB&lt;/option&gt;&lt;option value=&quot;64&quot;&gt;64 MB&lt;/option&gt;&lt;option value=&quot;128&quot;&gt;128 MB&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;p class=&quot;sp-note&quot;&gt;Aj dva rovnako rýchle gigabitové vstupy môžu preťažiť jediný gigabitový výstup. Väčší buffer nemení kapacitu výstupu.&lt;/p&gt;&lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;sp-duplex&quot; aria-label=&quot;Automatická dohoda a duplex&quot; hidden&gt;
+    &lt;div class=&quot;sp-grid&quot;&gt;&lt;div class=&quot;sp-stack&quot;&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Auto-negotiation: spoločné možnosti&lt;/h3&gt;&lt;div class=&quot;sp-fields sp-two&quot;&gt;&lt;label&gt;Sieťový adaptér PC&lt;select id=&quot;sp-pc-cap&quot;&gt;&lt;option value=&quot;10,100&quot;&gt;10 / 100 Mb/s&lt;/option&gt;&lt;option value=&quot;10,100,1000&quot;&gt;10 / 100 / 1 000 Mb/s&lt;/option&gt;&lt;option value=&quot;10,100,1000,2500&quot;&gt;10 / 100 / 1 000 / 2 500 Mb/s&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Port switcha&lt;select id=&quot;sp-switch-cap&quot;&gt;&lt;option value=&quot;10,100&quot;&gt;10 / 100 Mb/s&lt;/option&gt;&lt;option value=&quot;10,100,1000&quot; selected&gt;10 / 100 / 1 000 Mb/s&lt;/option&gt;&lt;option value=&quot;10,100,1000,2500&quot;&gt;10 / 100 / 1 000 / 2 500 Mb/s&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;p id=&quot;sp-negotiated&quot; class=&quot;sp-explanation&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;p class=&quot;sp-muted&quot;&gt;Auto na oboch koncoch, vyhovujúci kábel, všetky uvedené režimy podporujú full-duplex. Každá linka sa dohodne samostatne.&lt;/p&gt;&lt;pre id=&quot;sp-port-status&quot;&gt;&lt;/pre&gt;&lt;p class=&quot;sp-muted&quot;&gt;&lt;code&gt;a-full&lt;/code&gt; = automaticky full-duplex; &lt;code&gt;a-1000&lt;/code&gt; = automaticky 1 000 Mb/s.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Jeden smer alebo oba súčasne?&lt;/h3&gt;&lt;div class=&quot;sp-fields sp-two&quot;&gt;&lt;label&gt;Duplex&lt;select id=&quot;sp-duplex-mode&quot;&gt;&lt;option value=&quot;full&quot;&gt;Full-duplex&lt;/option&gt;&lt;option value=&quot;half&quot;&gt;Half-duplex · starší Ethernet&lt;/option&gt;&lt;option value=&quot;mismatch&quot;&gt;Mismatch · full proti half&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Rýchlosť linky&lt;select id=&quot;sp-duplex-rate&quot;&gt;&lt;option value=&quot;10&quot;&gt;10 Mb/s&lt;/option&gt;&lt;option value=&quot;100&quot;&gt;100 Mb/s&lt;/option&gt;&lt;option value=&quot;1000&quot; selected&gt;1 Gb/s&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;div class=&quot;sp-duplex-view&quot;&gt;&lt;div class=&quot;sp-node&quot;&gt;PC&lt;/div&gt;&lt;div&gt;&lt;div id=&quot;sp-lane-out&quot; class=&quot;sp-lane&quot;&gt;&lt;/div&gt;&lt;div id=&quot;sp-lane-in&quot; class=&quot;sp-lane&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sp-node&quot;&gt;SW1&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sp-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sp-duplex-play&quot; aria-pressed=&quot;false&quot;&gt;▶ Prehrať smery&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sp-duplex-step&quot;&gt;Ďalší okamih&lt;/button&gt;&lt;/div&gt;&lt;p id=&quot;sp-duplex-explanation&quot; class=&quot;sp-explanation&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;aside class=&quot;sp-stack&quot;&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;1 Gb/s full-duplex ≠ 2 Gb/s pre súbor&lt;/h3&gt;&lt;p class=&quot;sp-note&quot;&gt;Port zvláda až 1 Gb/s jedným smerom a súčasne 1 Gb/s späť. Súčet 2 Gb/s sa týka oboch smerov. Jeden súbor posielaný jedným smerom zostáva najviac na 1 Gb/s pred réžiou.&lt;/p&gt;&lt;p class=&quot;sp-note&quot;&gt;Pri správnom full-duplexe nevznikajú ethernetové kolízie a CSMA/CD sa nepoužíva. V half-duplexe vysiela v danom okamihu iba jedna strana; pri zdieľanom médiu môžu vzniknúť kolízie.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Nezávislé dvojice&lt;/h3&gt;&lt;p class=&quot;sp-explanation&quot;&gt;PC1 → PC2: 1 Gb/s&lt;br&gt;PC3 → PC4: 1 Gb/s&lt;br&gt;Oba prenosy môžu bežať súčasne.&lt;/p&gt;&lt;p class=&quot;sp-muted&quot;&gt;Ak sa cesty nezbiehajú na jednom výstupe a stačí výkon switcha, prenosy si nemusia deliť jeden gigabitový port.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Auto-MDIX má inú úlohu&lt;/h3&gt;&lt;p class=&quot;sp-note&quot;&gt;Prispôsobí zapojenie pre priamy alebo krížený medený kábel. Auto-negotiation dohodne rýchlosť a duplex. Auto-MDIX neurobí zo 100 Mb/s portu gigabitový.&lt;/p&gt;&lt;/div&gt;&lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;sp-timing&quot; aria-label=&quot;Jednotky, čas vysielania a latencia&quot; hidden&gt;
+    &lt;div class=&quot;sp-grid&quot;&gt;&lt;div class=&quot;sp-stack&quot;&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Koľko trvá vyslanie rámca?&lt;/h3&gt;&lt;div class=&quot;sp-fields sp-two&quot;&gt;&lt;label&gt;Veľkosť modelového rámca&lt;select id=&quot;sp-frame-bytes&quot;&gt;&lt;option value=&quot;64&quot;&gt;64 B&lt;/option&gt;&lt;option value=&quot;512&quot;&gt;512 B&lt;/option&gt;&lt;option value=&quot;1500&quot; selected&gt;1 500 B&lt;/option&gt;&lt;option value=&quot;1518&quot;&gt;1 518 B&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;label&gt;Rýchlosť linky&lt;select id=&quot;sp-timing-rate&quot;&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;p id=&quot;sp-serialization&quot; class=&quot;sp-explanation&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;p class=&quot;sp-muted&quot;&gt;t = počet bitov ÷ rýchlosť v bit/s. Iba vyslanie zadanej veľkosti; bez preambuly a IFG.&lt;/p&gt;&lt;div class=&quot;sp-fields sp-two&quot;&gt;&lt;label&gt;Šírenie signálu jedným smerom: &lt;strong id=&quot;sp-propagation-value&quot;&gt;&lt;/strong&gt;&lt;input type=&quot;range&quot; id=&quot;sp-propagation&quot; min=&quot;0&quot; max=&quot;50&quot; step=&quot;1&quot; value=&quot;10&quot;&gt;&lt;/label&gt;&lt;label&gt;Spracovanie po ceste: &lt;strong id=&quot;sp-processing-value&quot;&gt;&lt;/strong&gt;&lt;input type=&quot;range&quot; id=&quot;sp-processing&quot; min=&quot;0&quot; max=&quot;10&quot; step=&quot;0.5&quot; value=&quot;1&quot;&gt;&lt;/label&gt;&lt;label&gt;Čakanie vo fronte: &lt;strong id=&quot;sp-latency-queue-value&quot;&gt;&lt;/strong&gt;&lt;input type=&quot;range&quot; id=&quot;sp-latency-queue&quot; min=&quot;0&quot; max=&quot;100&quot; step=&quot;1&quot; value=&quot;0&quot;&gt;&lt;/label&gt;&lt;/div&gt;&lt;div id=&quot;sp-latency-stages&quot; class=&quot;sp-stages&quot; aria-label=&quot;Zložky latencie&quot;&gt;&lt;/div&gt;&lt;p class=&quot;sp-muted&quot;&gt;Modrá: vysielanie · fialová: šírenie · zelená: spracovanie · oranžová: front. Veľmi malé časti majú minimálnu viditeľnú šírku.&lt;/p&gt;&lt;div class=&quot;sp-stats&quot;&gt;&lt;div&gt;&lt;strong id=&quot;sp-one-way&quot;&gt;&lt;/strong&gt;&lt;span&gt;ms jedným smerom&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;strong id=&quot;sp-rtt&quot;&gt;&lt;/strong&gt;&lt;span&gt;ms modelové RTT&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;strong id=&quot;sp-rtt-faster&quot;&gt;&lt;/strong&gt;&lt;span&gt;ms RTT pri 10× rýchlosti&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;p class=&quot;sp-note&quot;&gt;RTT je cesta k cieľu a odpoveď späť. Tu počítame rovnaký rámec a rovnaké oneskorenia v oboch smeroch. Ide o ilustráciu, nie predpoveď reálneho pingu. Rýchlejší port skráti vysielanie, ale neodstráni šírenie ani čakanie.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;1 GB: 80 sekúnd alebo 8 sekúnd?&lt;/h3&gt;&lt;p class=&quot;sp-explanation&quot;&gt;1 GB = 1 000 MB = 8 000 Mb&lt;br&gt;100 Mb/s → 8 000 ÷ 100 = &lt;strong&gt;80 s&lt;/strong&gt;&lt;br&gt;1 000 Mb/s → 8 000 ÷ 1 000 = &lt;strong&gt;8 s&lt;/strong&gt;&lt;br&gt;Užitočných 90 Mb/s → približne &lt;strong&gt;89 s&lt;/strong&gt;&lt;/p&gt;&lt;p class=&quot;sp-muted&quot;&gt;Bez rozbehu a ďalších obmedzení. V prvej téme si zadaj vlastný súbor, linky a užitočnú časť rýchlosti.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;aside class=&quot;sp-stack&quot;&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Malé b, veľké B&lt;/h3&gt;&lt;p class=&quot;sp-explanation&quot;&gt;1 bajt = 8 bitov&lt;br&gt;&lt;strong&gt;Mb/s ÷ 8 = MB/s&lt;/strong&gt;&lt;/p&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Linka&lt;/th&gt;&lt;th&gt;Ideálne MB/s&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;10 Mb/s&lt;/td&gt;&lt;td&gt;1,25&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;100 Mb/s&lt;/td&gt;&lt;td&gt;12,5&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;1 Gb/s&lt;/td&gt;&lt;td&gt;125&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;2,5 Gb/s&lt;/td&gt;&lt;td&gt;312,5&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;5 Gb/s&lt;/td&gt;&lt;td&gt;625&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;10 Gb/s&lt;/td&gt;&lt;td&gt;1 250&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p class=&quot;sp-muted&quot;&gt;Ethernet, Fast Ethernet, Gigabit, Multigigabit a 10 Gigabit. Hodnoty pred réžiou.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Kapacita ≠ latencia&lt;/h3&gt;&lt;p class=&quot;sp-note&quot;&gt;Mb/s a Gb/s hovoria, koľko bitov linka prenesie za sekundu. ms a μs hovoria, ako dlho trvá doručenie. Rýchly prenos veľkého súboru a nízky ping sú dve rôzne vlastnosti.&lt;/p&gt;&lt;details&gt;&lt;summary&gt;Prečo súbor ide pomalšie?&lt;/summary&gt;&lt;p&gt;Ethernet, IP a TCP majú réžiu. Pridávajú sa potvrdenia, opakované prenosy, disk, adaptér, server aj samotná aplikácia.&lt;/p&gt;&lt;/details&gt;&lt;/div&gt;&lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;sp-practice&quot; aria-label=&quot;Praktické otázky a diagnostika&quot; hidden&gt;
+    &lt;div class=&quot;sp-grid&quot;&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;div class=&quot;sp-heading&quot;&gt;&lt;h3&gt;Nájdi obmedzenie&lt;/h3&gt;&lt;span id=&quot;sp-quiz-count&quot; class=&quot;sp-badge&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;h3 id=&quot;sp-quiz-question&quot; style=&quot;margin-top:20px&quot;&gt;&lt;/h3&gt;&lt;div id=&quot;sp-quiz-answers&quot; class=&quot;sp-answers&quot;&gt;&lt;/div&gt;&lt;p id=&quot;sp-quiz-feedback&quot; class=&quot;sp-feedback&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;div class=&quot;sp-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;sp-quiz-next&quot; disabled&gt;Ďalšia otázka →&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;sp-quiz-reset&quot;&gt;Začať znova&lt;/button&gt;&lt;/div&gt;&lt;p id=&quot;sp-quiz-score&quot; class=&quot;sp-note&quot;&gt;&lt;/p&gt;&lt;/div&gt;&lt;aside class=&quot;sp-stack&quot;&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Gigabitové zariadenia, ale iba 100 Mb/s?&lt;/h3&gt;&lt;details&gt;&lt;summary&gt;1. Možnosti oboch koncov&lt;/summary&gt;&lt;p&gt;Over podporované režimy adaptéra aj portu. Starý 100 Mb/s adaptér zostane limitom aj na gigabitovom switchi.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;2. Dohodnutý stav linky&lt;/summary&gt;&lt;p&gt;Pozri rýchlosť a duplex. Auto na oboch koncoch je bežný východiskový stav. Rovnaká rýchlosť s rôznym duplexom môže spôsobiť slabý výkon a chyby.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;3. Kábel, adaptér a port&lt;/summary&gt;&lt;p&gt;Vyskúšaj známy funkčný kábel, iný port a over aj prípadný USB adaptér.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;4. LAN alebo internet?&lt;/summary&gt;&lt;p&gt;Porovnaj kopírovanie v LAN a z internetu. Pri internete 50 Mb/s je strop sťahovania 6,25 MB/s pred réžiou, aj keď LAN zvláda 1 Gb/s.&lt;/p&gt;&lt;/details&gt;&lt;/div&gt;&lt;div class=&quot;sp-card&quot;&gt;&lt;h3&gt;Pripomeň si súvislosti&lt;/h3&gt;&lt;details&gt;&lt;summary&gt;Rýchlejší port nevyrieši L2 slučku&lt;/summary&gt;&lt;p&gt;Broadcast sa šíri v celej VLAN aj pri plnej MAC tabuľke. Slučky rieši STP, VLAN delia domény a storm control obmedzuje príslušnú prevádzku.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;Väčší buffer nezrýchli výstup&lt;/summary&gt;&lt;p&gt;Pomôže s krátkym návalom, ale pri trvalom preťažení iba oddiali straty a môže predĺžiť čakanie.&lt;/p&gt;&lt;/details&gt;&lt;button type=&quot;button&quot; id=&quot;sp-go-switch&quot; style=&quot;margin-top:14px&quot;&gt;Otvoriť rámce, FCS a buffery →&lt;/button&gt;&lt;/div&gt;&lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;p class=&quot;sp-footer&quot;&gt;Podľa prezentácie &lt;a href=&quot;https://www.canva.com/design/DAHYb8at07s/14vKJbDR1QCkgbsDhWcjDw/edit&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;„Prepínač – rýchlosť komunikácie“&lt;/a&gt;. Hodnoty sú didaktické modely; MB a GB používajú desiatkové jednotky.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+(() =&gt; {
+  &#x27;use strict&#x27;;
+  const M = window.SpeedModel, $ = id =&gt; document.getElementById(&#x27;sp-&#x27; + id), root = document.getElementById(&#x27;speed-lab&#x27;);
+  const fmt = (n,digits=2) =&gt; new Intl.NumberFormat(&#x27;sk-SK&#x27;,{maximumFractionDigits:digits}).format(n);
+  const rate = n =&gt; n &gt;= 1000 ? fmt(n/1000)+&#x27; Gb/s&#x27; : fmt(n)+&#x27; Mb/s&#x27;;
+  const speeds = [10,50,100,1000,2500,5000,10000];
+  function speedOptions(id, selected, choices=speeds) {
+    $(id).replaceChildren(...choices.map(n =&gt; { const option=document.createElement(&#x27;option&#x27;); option.value=String(n); option.textContent=rate(n); option.selected=n===selected; return option; }));
+  }
+  for(let i=0;i&lt;3;i++) speedOptions(&#x27;link-&#x27;+i,i===1 ? 100 : 1000);
+  speedOptions(&#x27;uplink&#x27;,1000); speedOptions(&#x27;server&#x27;,1000); speedOptions(&#x27;timing-rate&#x27;,100);
+  let topic=&#x27;path&#x27;, transferTimer=null, queueTimer=null, duplexTimer=null, transferred=0, transferElapsed=0, halfPhase=0;
+  let pathConfig=null, pathResult=null;
+  function pause() {
+    clearInterval(transferTimer); clearInterval(queueTimer); clearInterval(duplexTimer);
+    transferTimer=queueTimer=duplexTimer=null; root.classList.remove(&#x27;sp-moving&#x27;,&#x27;sp-duplex-moving&#x27;);
+    for(const [id,label] of [[&#x27;transfer-play&#x27;,&#x27;▶ Spustiť prenos&#x27;],[&#x27;queue-play&#x27;,&#x27;▶ Spustiť&#x27;],[&#x27;duplex-play&#x27;,&#x27;▶ Prehrať smery&#x27;]]) {
+      $(id).textContent=label; $(id).setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;);
+    }
+  }
+  function showTopic(next) {
+    pause(); topic=next;
+    root.querySelectorAll(&#x27;[data-sp-topic]&#x27;).forEach(button =&gt; { const active=button.dataset.spTopic===next; button.setAttribute(&#x27;aria-pressed&#x27;,String(active)); $(button.dataset.spTopic).hidden=!active; });
+  }
+  root.querySelectorAll(&#x27;[data-sp-topic]&#x27;).forEach(button =&gt; button.addEventListener(&#x27;click&#x27;,()=&gt;showTopic(button.dataset.spTopic)));
+  function renderTransfer() {
+    const percent=pathConfig ? transferred/pathConfig.fileMB*100 : 0;
+    $(&#x27;transfer-bar&#x27;).style.width=percent+&#x27;%&#x27;; $(&#x27;transfer-progress&#x27;).setAttribute(&#x27;aria-valuenow&#x27;,String(Math.round(percent)));
+    $(&#x27;transfer-status&#x27;).textContent=!pathConfig ? &#x27;Zadaj platné nastavenia súboru.&#x27; : `${transferred&gt;=pathConfig.fileMB ? &#x27;Hotovo. &#x27; : &#x27;&#x27;}${fmt(transferred,1)} / ${fmt(pathConfig.fileMB)} MB · ${fmt(transferElapsed,1)} s modelového času · animácia 10× zrýchlená.`;
+  }
+  function renderPath() {
+    pause(); transferred=transferElapsed=0;
+    const file=Number($(&#x27;file&#x27;).value);
+    if (!$(&#x27;file&#x27;).checkValidity() || !Number.isFinite(file) || file&lt;1) {
+      pathConfig=null; $(&#x27;path-error&#x27;).hidden=false; $(&#x27;path-error&#x27;).textContent=&#x27;Zadaj celú veľkosť súboru od 1 do 1 000 000 MB. Výpočty ostávajú z posledného platného nastavenia.&#x27;;
+      $(&#x27;transfer-play&#x27;).disabled=true; renderTransfer(); return;
+    }
+    $(&#x27;path-error&#x27;).hidden=true; $(&#x27;transfer-play&#x27;).disabled=false;
+    pathConfig={ links:[0,1,2].map(i=&gt;Number($(&#x27;link-&#x27;+i).value)), diskMBps:Number($(&#x27;disk&#x27;).value), efficiency:Number($(&#x27;efficiency&#x27;).value), fileMB:file };
+    pathResult=M.path(pathConfig);
+    const r=pathResult;
+    $(&#x27;efficiency-value&#x27;).textContent=pathConfig.efficiency+&#x27; %&#x27;;
+    $(&#x27;path-limit&#x27;).textContent=fmt(r.linkLimit); $(&#x27;path-goodput&#x27;).textContent=fmt(r.goodput);
+    $(&#x27;path-mbytes&#x27;).textContent=fmt(r.megabytes); $(&#x27;path-seconds&#x27;).textContent=fmt(r.seconds)+&#x27; s&#x27;;
+    $(&#x27;path-size-note&#x27;).textContent=fmt(file)+&#x27; MB · bez rozbehu&#x27;;
+    const labels=[&#x27;PC&#x27;,&#x27;SW1&#x27;,&#x27;SW2&#x27;,&#x27;Server&#x27;], links=[&#x27;PC → SW1&#x27;,&#x27;SW1 → SW2&#x27;,&#x27;SW2 → server&#x27;];
+    const flowHeight=10+6*Math.log10(Math.max(r.goodput,1)/10);
+    $(&#x27;route&#x27;).innerHTML=labels.map((name,i)=&gt;{
+      const node=`&lt;div class=&quot;sp-node${i===3 &amp;&amp; r.diskLimited ? &#x27; sp-hot&#x27; : &#x27;&#x27;}&quot;&gt;${name}${i===3 &amp;&amp; pathConfig.diskMBps ? &#x27;&lt;div class=&quot;sp-muted&quot;&gt;&#x27;+fmt(pathConfig.diskMBps)+&#x27; MB/s&lt;/div&gt;&#x27; : &#x27;&#x27;}&lt;/div&gt;`;
+      if(i===3) return node;
+      const height=12+6*Math.log10(pathConfig.links[i]/10);
+      return node+`&lt;div class=&quot;sp-link${r.bottlenecks.includes(i) ? &#x27; sp-limited&#x27; : &#x27;&#x27;}&quot;&gt;&lt;strong&gt;${rate(pathConfig.links[i])}&lt;/strong&gt;&lt;div class=&quot;sp-pipe&quot; style=&quot;height:${height}px;--sp-flow:${Math.min(100,Math.max(8,flowHeight/height*100))}%&quot;&gt;&lt;span class=&quot;sp-water&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;small&gt;${links[i]}&lt;/small&gt;&lt;/div&gt;`;
+    }).join(&#x27;&#x27;);
+    const limits=r.bottlenecks.map(i=&gt;links[i]); if(r.diskLimited) limits.push(&#x27;disk / aplikácia servera&#x27;);
+    $(&#x27;path-explanation&#x27;).textContent=`Obmedzenie: ${limits.join(&#x27; a &#x27;)}. Strop pred modelovou réžiou je ${rate(r.limit)}. ${pathConfig.efficiency&lt;100 ? &#x27;Po použití &#x27;+pathConfig.efficiency+&#x27; % užitočnej časti zostáva &#x27;+rate(r.goodput)+&#x27;. &#x27; : &#x27;&#x27;}Jeden prenos neprekročí kapacitu najslabšieho článku; rýchlosti po ceste sa nesčítavajú.`;
+    renderTransfer();
+  }
+  root.querySelectorAll(&#x27;[data-sp-path-input]&#x27;).forEach(input=&gt;input.addEventListener(input.tagName===&#x27;SELECT&#x27; ? &#x27;change&#x27; : &#x27;input&#x27;,renderPath));
+  const presets={bottleneck:{links:[1000,100,1000],disk:0},upgrade:{links:[1000,1000,1000],disk:0},adapter:{links:[100,1000,1000],disk:0},disk:{links:[1000,1000,1000],disk:40}};
+  root.querySelectorAll(&#x27;[data-sp-preset]&#x27;).forEach(button=&gt;button.addEventListener(&#x27;click&#x27;,()=&gt;{
+    const preset=presets[button.dataset.spPreset]; preset.links.forEach((n,i)=&gt;$(&#x27;link-&#x27;+i).value=String(n)); $(&#x27;disk&#x27;).value=String(preset.disk); renderPath();
+  }));
+  $(&#x27;transfer-reset&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();transferred=transferElapsed=0;renderTransfer();});
+  $(&#x27;transfer-play&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
+    if(transferTimer!==null) {pause();return;}
+    if(!pathConfig) return;
+    if(transferred&gt;=pathConfig.fileMB) transferred=transferElapsed=0;
+    $(&#x27;transfer-play&#x27;).textContent=&#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;transfer-play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;); root.classList.add(&#x27;sp-moving&#x27;);
+    let last=performance.now();
+    transferTimer=setInterval(()=&gt;{
+      const now=performance.now(), dt=Math.min((now-last)/1000*10, pathResult.seconds-transferElapsed); last=now;
+      transferElapsed=Math.min(pathResult.seconds,transferElapsed+dt); transferred=Math.min(pathConfig.fileMB,transferElapsed*pathResult.goodput/8);
+      if(pathResult.seconds-transferElapsed&lt;1e-8) {transferred=pathConfig.fileMB;pause();}
+      renderTransfer();
+    },100);
+  });
+
+  const emptyQueue=()=&gt;({queued:0,sent:0,dropped:0,elapsed:0});
+  let queue=emptyQueue();
+  function sharingConfig() {return {clients:Number($(&#x27;client-count&#x27;).value),demand:Number($(&#x27;demand&#x27;).value),uplink:Number($(&#x27;uplink&#x27;).value),server:Number($(&#x27;server&#x27;).value),bufferMB:Number($(&#x27;buffer&#x27;).value)};}
+  function renderQueue() {
+    const c=sharingConfig(), r=M.sharing(c), fraction=queue.queued/c.bufferMB;
+    $(&#x27;queue-clock&#x27;).textContent=&#x27;t = &#x27;+fmt(queue.elapsed,1)+&#x27; s&#x27;;
+    $(&#x27;queue-slots&#x27;).innerHTML=Array.from({length:20},(_,i)=&gt;`&lt;span class=&quot;sp-slot${i&lt;Math.ceil(fraction*20) ? &#x27; sp-filled&#x27; : &#x27;&#x27;}${fraction&gt;=1-1e-9 ? &#x27; sp-full&#x27; : &#x27;&#x27;}&quot;&gt;&lt;/span&gt;`).join(&#x27;&#x27;);
+    $(&#x27;queue-slots&#x27;).setAttribute(&#x27;aria-label&#x27;,`Zaplnenie bufferu: ${fmt(queue.queued)} z ${c.bufferMB} MB`);
+    $(&#x27;queue-size&#x27;).textContent=fmt(queue.queued); $(&#x27;queue-dropped&#x27;).textContent=fmt(queue.dropped);
+    $(&#x27;queue-wait&#x27;).textContent=fmt(queue.queued*8/r.capacity*1000);
+    $(&#x27;queue-explanation&#x27;).textContent=`Obsadené ${fmt(queue.queued)} / ${c.bufferMB} MB. `+(fraction&gt;=1-1e-9 &amp;&amp; r.excess&gt;0 ? &#x27;Buffer je plný; ďalší nadbytočný tok sa zahadzuje. &#x27; : &#x27;&#x27;)+(r.excess&gt;0 ? `Front rastie o ${fmt(r.growthMB)} MB/s, kým sa nezaplní. Z prázdneho stavu sa zaplní za ${fmt(r.fillSeconds,3)} s.` : c.demand===0 ? &#x27;Prísun je zastavený. Čakajúce dáta môžu odtiecť cez výstup.&#x27; : &#x27;Ponúkaný tok neprekračuje výstup. Nové preťaženie nevzniká.&#x27;);
+  }
+  function renderSharing(reset=true) {
+    if(reset) {pause();queue=emptyQueue();}
+    const c=sharingConfig(), r=M.sharing(c);
+    $(&#x27;demand-value&#x27;).textContent=rate(c.demand);
+    $(&#x27;clients&#x27;).innerHTML=Array.from({length:c.clients},(_,i)=&gt;`&lt;div class=&quot;sp-client&quot;&gt;PC${i+1}&lt;strong&gt;${fmt(r.perClient)} Mb/s&lt;/strong&gt;&lt;small&gt;modelový podiel&lt;/small&gt;&lt;small&gt;ponúka ${rate(c.demand)}&lt;/small&gt;&lt;/div&gt;`).join(&#x27;&#x27;);
+    $(&#x27;offered&#x27;).textContent=`Ponúkané spolu: ${rate(r.offered)}`;
+    $(&#x27;output&#x27;).textContent=`Spoločná cesta: ${rate(r.capacity)}`;
+    $(&#x27;sharing-explanation&#x27;).textContent=`${fmt(r.capacity)} Mb/s ÷ ${c.clients} PC = najviac ${fmt(r.capacity/c.clients)} Mb/s na PC pri rovnomernom delení. `+(r.perClient&lt;c.demand ? `Ponuka prevyšuje kapacitu o ${rate(r.excess)}. ` : `Každý PC ponúka iba ${rate(c.demand)}. `)+`Modelový užitočný podiel je ${fmt(r.perClient/8)} MB/s na PC pred réžiou.`;
+    renderQueue();
+  }
+  for(const id of [&#x27;client-count&#x27;,&#x27;uplink&#x27;,&#x27;server&#x27;,&#x27;buffer&#x27;]) $(id).addEventListener(&#x27;change&#x27;,()=&gt;renderSharing());
+  $(&#x27;demand&#x27;).addEventListener(&#x27;input&#x27;,()=&gt;renderSharing());
+  function sharingPreset(clients,demand) { $(&#x27;client-count&#x27;).value=String(clients); $(&#x27;demand&#x27;).value=String(demand); $(&#x27;uplink&#x27;).value=$(&#x27;server&#x27;).value=&#x27;1000&#x27;; renderSharing(); }
+  $(&#x27;preset-four&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;sharingPreset(4,1000)); $(&#x27;preset-two&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;sharingPreset(2,800));
+  function queueTick(dt) {queue=M.queueStep(queue,sharingConfig(),dt);renderQueue();}
+  $(&#x27;queue-step&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();queueTick(1);});
+  $(&#x27;queue-reset&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();queue=emptyQueue();renderQueue();});
+  $(&#x27;queue-drain&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{$(&#x27;demand&#x27;).value=&#x27;0&#x27;;renderSharing(false);});
+  $(&#x27;queue-play&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
+    if(queueTimer!==null) {pause();return;}
+    $(&#x27;queue-play&#x27;).textContent=&#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;queue-play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;);
+    queueTimer=setInterval(()=&gt;queueTick(.1),100);
+  });
+
+  function renderNegotiation() {
+    const a=$(&#x27;pc-cap&#x27;).value.split(&#x27;,&#x27;).map(Number), b=$(&#x27;switch-cap&#x27;).value.split(&#x27;,&#x27;).map(Number), agreed=M.negotiate(a,b);
+    $(&#x27;negotiated&#x27;).textContent=`Dohodnú ${rate(agreed)}, full-duplex. Vyberá sa najvyšší spoločný podporovaný režim. Rýchlejší port nezvýši možnosti pomalšieho adaptéra.`;
+    $(&#x27;port-status&#x27;).textContent=`Switch# show interfaces status\nPort     Status      Vlan   Duplex   Speed\nGi0/1    connected   1      a-full   a-${agreed}`;
+  }
+  $(&#x27;pc-cap&#x27;).addEventListener(&#x27;change&#x27;,renderNegotiation); $(&#x27;switch-cap&#x27;).addEventListener(&#x27;change&#x27;,renderNegotiation);
+  function renderDuplex() {
+    const mode=$(&#x27;duplex-mode&#x27;).value;
+    $(&#x27;duplex-rate&#x27;).querySelector(&#x27;[value=&quot;1000&quot;]&#x27;).disabled=mode!==&#x27;full&#x27;;
+    if(mode!==&#x27;full&#x27; &amp;&amp; $(&#x27;duplex-rate&#x27;).value===&#x27;1000&#x27;) $(&#x27;duplex-rate&#x27;).value=&#x27;100&#x27;;
+    const r=Number($(&#x27;duplex-rate&#x27;).value), out=mode!==&#x27;half&#x27; || halfPhase%2===0, incoming=mode!==&#x27;half&#x27; || halfPhase%2===1;
+    $(&#x27;lane-out&#x27;).textContent=`PC → SW1 · ${out ? rate(r) : &#x27;čaká&#x27;}`;
+    $(&#x27;lane-in&#x27;).textContent=`PC ← SW1 · ${incoming ? rate(r) : &#x27;čaká&#x27;}`;
+    $(&#x27;lane-out&#x27;).className=&#x27;sp-lane&#x27;+(out ? &#x27; sp-live&#x27; : &#x27;&#x27;)+(mode===&#x27;mismatch&#x27; ? &#x27; sp-collision&#x27; : &#x27;&#x27;);
+    $(&#x27;lane-in&#x27;).className=&#x27;sp-lane&#x27;+(incoming ? &#x27; sp-live&#x27; : &#x27;&#x27;)+(mode===&#x27;mismatch&#x27; ? &#x27; sp-collision&#x27; : &#x27;&#x27;);
+    $(&#x27;duplex-explanation&#x27;).textContent=mode===&#x27;full&#x27; ? `${rate(r)} v každom smere súčasne. Súčet oboch smerov ${rate(r*2)} neznamená ${rate(r*2)} pre jeden jednosmerný súbor.` : mode===&#x27;half&#x27; ? &#x27;Strany sa striedajú. V tomto okamihu vysiela &#x27;+(out ? &#x27;PC&#x27; : &#x27;switch&#x27;)+&#x27;. Časový podiel medzi smermi závisí od prevádzky; nejde automaticky o polovicu rýchlosti.&#x27; : &#x27;Duplex mismatch: jeden koniec je full, druhý half. Pri prekrývaní prenosov sa môžu objaviť chyby a kolízie na half-duplex strane. Linka môže svietiť ako pripojená, no výkon je zlý.&#x27;;
+  }
+  for(const id of [&#x27;duplex-mode&#x27;,&#x27;duplex-rate&#x27;]) $(id).addEventListener(&#x27;change&#x27;,()=&gt;{pause();halfPhase=0;renderDuplex();});
+  $(&#x27;duplex-step&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();halfPhase++;renderDuplex();});
+  $(&#x27;duplex-play&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
+    if(duplexTimer!==null) {pause();return;}
+    $(&#x27;duplex-play&#x27;).textContent=&#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;duplex-play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;);
+    root.classList.add(&#x27;sp-duplex-moving&#x27;);
+    duplexTimer=setInterval(()=&gt;{halfPhase++;renderDuplex();},1000);
+  });
+
+  function renderTiming() {
+    const c={bytes:Number($(&#x27;frame-bytes&#x27;).value),rate:Number($(&#x27;timing-rate&#x27;).value),propagation:Number($(&#x27;propagation&#x27;).value),processing:Number($(&#x27;processing&#x27;).value),queue:Number($(&#x27;latency-queue&#x27;).value)};
+    const r=M.timing(c), faster=M.timing({...c,rate:c.rate*10});
+    $(&#x27;serialization&#x27;).textContent=`${fmt(c.bytes)} B × 8 = ${fmt(c.bytes*8)} bitov. Pri ${rate(c.rate)} trvá vyslanie ${fmt(r.serializationUs,3)} μs.`;
+    $(&#x27;propagation-value&#x27;).textContent=fmt(c.propagation)+&#x27; ms&#x27;; $(&#x27;processing-value&#x27;).textContent=fmt(c.processing)+&#x27; ms&#x27;; $(&#x27;latency-queue-value&#x27;).textContent=fmt(c.queue)+&#x27; ms&#x27;;
+    $(&#x27;one-way&#x27;).textContent=fmt(r.oneWay,3); $(&#x27;rtt&#x27;).textContent=fmt(r.rtt,3); $(&#x27;rtt-faster&#x27;).textContent=fmt(faster.rtt,3);
+    const parts=[r.serializationUs/1000,c.propagation,c.processing,c.queue], labels=[&#x27;Vysielanie&#x27;,&#x27;Šírenie&#x27;,&#x27;Spracovanie&#x27;,&#x27;Front&#x27;];
+    $(&#x27;latency-stages&#x27;).innerHTML=parts.map((n,i)=&gt;`&lt;span style=&quot;flex:${Math.max(n,.001)}&quot; title=&quot;${labels[i]}: ${fmt(n,4)} ms&quot; aria-label=&quot;${labels[i]}: ${fmt(n,4)} ms&quot;&gt;&lt;/span&gt;`).join(&#x27;&#x27;);
+  }
+  for(const id of [&#x27;frame-bytes&#x27;,&#x27;timing-rate&#x27;]) $(id).addEventListener(&#x27;change&#x27;,renderTiming);
+  for(const id of [&#x27;propagation&#x27;,&#x27;processing&#x27;,&#x27;latency-queue&#x27;]) $(id).addEventListener(&#x27;input&#x27;,renderTiming);
+
+  const questions=[
+    [&#x27;PC → SW1: 1 Gb/s, SW1 → SW2: 100 Mb/s, SW2 → server: 1 Gb/s. Aký je ideálny strop jedného prenosu?&#x27;, [&#x27;100 Mb/s&#x27;,&#x27;1 Gb/s&#x27;,&#x27;2,1 Gb/s&#x27;],0,&#x27;Úzke hrdlo je 100 Mb/s linka medzi switchmi. Kapacity za sebou sa nesčítavajú.&#x27;],
+    [&#x27;Štyri PC zdieľajú 1 Gb/s uplink. Koľko ideálne vychádza na jeden PC pri rovnomernom delení?&#x27;, [&#x27;1 000 Mb/s · 125 MB/s&#x27;,&#x27;250 Mb/s · 31,25 MB/s&#x27;,&#x27;250 MB/s&#x27;],1,&#x27;1 000 ÷ 4 = 250 Mb/s. Potom 250 ÷ 8 = 31,25 MB/s pred réžiou.&#x27;],
+    [&#x27;Dva vstupy ponúkajú po 800 Mb/s, spoločný výstup má 1 Gb/s. Čo spôsobí dlhé preťaženie?&#x27;, [&#x27;Vyššiu rýchlosť výstupného portu&#x27;,&#x27;Žiadny front, všetky porty sú gigabitové&#x27;,&#x27;Rast frontu a po zaplnení zahadzovanie&#x27;],2,&#x27;Ponúkaných 1 600 Mb/s prevyšuje výstup o 600 Mb/s. Väčší buffer iba oddiali zaplnenie.&#x27;],
+    [&#x27;Linka má 1 Gb/s full-duplex. Zvládne jeden súbor jedným smerom 2 Gb/s?&#x27;, [&#x27;Nie, jeden smer má najviac 1 Gb/s&#x27;,&#x27;Áno, full-duplex zdvojnásobí jeden smer&#x27;,&#x27;Iba pri prázdnom bufferi&#x27;],0,&#x27;1 Gb/s tam a 1 Gb/s späť môžu prebiehať súčasne. Súčet patrí obom smerom.&#x27;],
+    [&#x27;PC podporuje 10/100, switch 10/100/1 000. Auto je na oboch stranách a kábel vyhovuje. Čo dohodnú?&#x27;, [&#x27;1 000 Mb/s full-duplex&#x27;,&#x27;100 Mb/s full-duplex&#x27;,&#x27;10 Mb/s, lebo je spoločných viac režimov&#x27;],1,&#x27;Najvyšší spoločný režim je 100 Mb/s full-duplex. Limitom je adaptér PC.&#x27;],
+    [&#x27;Internet má 50 Mb/s, LAN 1 Gb/s. Aký je ideálny strop sťahovania z internetu?&#x27;, [&#x27;125 MB/s&#x27;,&#x27;50 MB/s&#x27;,&#x27;6,25 MB/s&#x27;],2,&#x27;Obmedzením tejto cesty je internetová prípojka: 50 ÷ 8 = 6,25 MB/s pred réžiou.&#x27;],
+    [&#x27;Koľko ideálne trvá prenos 1 GB = 1 000 MB pri 100 Mb/s?&#x27;, [&#x27;80 s&#x27;,&#x27;8 s&#x27;,&#x27;10 s&#x27;],0,&#x27;1 000 MB × 8 = 8 000 Mb; 8 000 ÷ 100 = 80 s bez réžie.&#x27;],
+    [&#x27;PC aj switch podporujú gigabit, ale linka ukazuje 100 Mb/s. Čo overíš?&#x27;, [&#x27;Iba veľkosť bufferu&#x27;,&#x27;Stav a nastavenia oboch koncov, kábel a iný port&#x27;,&#x27;Zapnem Auto-MDIX, ktoré zvýši rýchlosť portu&#x27;],1,&#x27;Skontroluj dohodnutú rýchlosť a duplex, možnosti adaptéra a funkčný kábel. Auto-MDIX rieši zapojenie, nie zvýšenie kapacity.&#x27;],
+    [&#x27;Zrýchlim port zo 100 Mb/s na 1 Gb/s. Bude ping vždy desaťkrát nižší?&#x27;, [&#x27;Áno, ide o ten istý údaj&#x27;,&#x27;Áno, ak zapnem full-duplex&#x27;,&#x27;Nie, zostáva šírenie, spracovanie aj čakanie&#x27;],2,&#x27;Rýchlejšia linka skráti čas vysielania. Ostatné zložky latencie sa tým nemusia zmeniť.&#x27;]
+  ];
+  let question=0, answered=false, tried=false, score=0;
+  function renderQuiz() {
+    const q=questions[question]; $(&#x27;quiz-count&#x27;).textContent=`Otázka ${question+1} / ${questions.length}`; $(&#x27;quiz-question&#x27;).textContent=q[0];
+    $(&#x27;quiz-next&#x27;).disabled=!answered || question===questions.length-1;
+    $(&#x27;quiz-next&#x27;).textContent=question===questions.length-1 &amp;&amp; answered ? &#x27;Všetko vyriešené&#x27; : &#x27;Ďalšia otázka →&#x27;;
+    $(&#x27;quiz-score&#x27;).textContent=`Správne na prvý pokus: ${score} / ${question+(answered ? 1 : 0)}`;
+    $(&#x27;quiz-answers&#x27;).replaceChildren(...q[1].map((label,i)=&gt;{
+      const button=document.createElement(&#x27;button&#x27;);button.type=&#x27;button&#x27;;button.textContent=label;button.disabled=answered;
+      button.addEventListener(&#x27;click&#x27;,()=&gt;{
+        if(i!==q[2]) {tried=true;$(&#x27;quiz-feedback&#x27;).textContent=&#x27;Skús ešte raz. &#x27;+q[3];return;}
+        if(!tried) score++;answered=true;renderQuiz();$(&#x27;quiz-feedback&#x27;).textContent=&#x27;Správne. &#x27;+q[3]+(question===questions.length-1 ? ` Hotovo: ${score} z ${questions.length} na prvý pokus.` : &#x27;&#x27;);
+      }); return button;
+    }));
+  }
+  $(&#x27;quiz-next&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{if(!answered || question===questions.length-1)return;question++;answered=tried=false;$(&#x27;quiz-feedback&#x27;).textContent=&#x27;&#x27;;renderQuiz();});
+  $(&#x27;quiz-reset&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{question=score=0;answered=tried=false;$(&#x27;quiz-feedback&#x27;).textContent=&#x27;&#x27;;renderQuiz();});
+  $(&#x27;go-switch&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;document.getElementById(&#x27;switching-tab&#x27;).click());
+  document.addEventListener(&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden)pause();});
+  window.SpeedLab={pause,getState:()=&gt;({topic,playing:transferTimer!==null || queueTimer!==null || duplexTimer!==null,path:pathResult ? {...pathResult} : null,transferred,queue:{...queue}})};
+  renderPath();renderSharing();renderNegotiation();renderDuplex();renderTiming();renderQuiz();
+})();
+
+&lt;/script&gt;
+&lt;/section&gt;
 &lt;script&gt;
 (() =&gt; {
   const tabs = [...document.querySelectorAll(&#x27;.network-lab-tabs [role=&quot;tab&quot;]&#x27;)];
@@ -3131,6 +3480,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     else requestAnimationFrame(() =&gt; window.NetworkFlow?.redraw());
     if (tab.id !== &#x27;encapsulation-tab&#x27;) window.EncapsulationLab?.pause();
     if (tab.id !== &#x27;switching-tab&#x27;) window.SwitchingLab?.pause();
+    if (tab.id !== &#x27;speed-tab&#x27;) window.SpeedLab?.pause();
     if (focus) tab.focus();
   }
   tabs.forEach((tab, index) =&gt; {

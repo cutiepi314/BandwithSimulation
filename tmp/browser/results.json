@@ -1,0 +1,176 @@
+{
+  "combinations": [
+    [
+      "ethernet",
+      "tcp",
+      "ipv4",
+      "utf8",
+      "64 B"
+    ],
+    [
+      "ethernet",
+      "tcp",
+      "ipv4",
+      "utf16le",
+      "66 B"
+    ],
+    [
+      "ethernet",
+      "tcp",
+      "ipv4",
+      "ascii",
+      "64 B"
+    ],
+    [
+      "ethernet",
+      "tcp",
+      "ipv6",
+      "utf8",
+      "82 B"
+    ],
+    [
+      "ethernet",
+      "tcp",
+      "ipv6",
+      "utf16le",
+      "86 B"
+    ],
+    [
+      "ethernet",
+      "tcp",
+      "ipv6",
+      "ascii",
+      "82 B"
+    ],
+    [
+      "ethernet",
+      "udp",
+      "ipv4",
+      "utf8",
+      "64 B"
+    ],
+    [
+      "ethernet",
+      "udp",
+      "ipv4",
+      "utf16le",
+      "64 B"
+    ],
+    [
+      "ethernet",
+      "udp",
+      "ipv4",
+      "ascii",
+      "64 B"
+    ],
+    [
+      "ethernet",
+      "udp",
+      "ipv6",
+      "utf8",
+      "70 B"
+    ],
+    [
+      "ethernet",
+      "udp",
+      "ipv6",
+      "utf16le",
+      "74 B"
+    ],
+    [
+      "ethernet",
+      "udp",
+      "ipv6",
+      "ascii",
+      "70 B"
+    ],
+    [
+      "wifi",
+      "tcp",
+      "ipv4",
+      "utf8",
+      "80 B"
+    ],
+    [
+      "wifi",
+      "tcp",
+      "ipv4",
+      "utf16le",
+      "84 B"
+    ],
+    [
+      "wifi",
+      "tcp",
+      "ipv4",
+      "ascii",
+      "80 B"
+    ],
+    [
+      "wifi",
+      "tcp",
+      "ipv6",
+      "utf8",
+      "100 B"
+    ],
+    [
+      "wifi",
+      "tcp",
+      "ipv6",
+      "utf16le",
+      "104 B"
+    ],
+    [
+      "wifi",
+      "tcp",
+      "ipv6",
+      "ascii",
+      "100 B"
+    ],
+    [
+      "wifi",
+      "udp",
+      "ipv4",
+      "utf8",
+      "68 B"
+    ],
+    [
+      "wifi",
+      "udp",
+      "ipv4",
+      "utf16le",
+      "72 B"
+    ],
+    [
+      "wifi",
+      "udp",
+      "ipv4",
+      "ascii",
+      "68 B"
+    ],
+    [
+      "wifi",
+      "udp",
+      "ipv6",
+      "utf8",
+      "88 B"
+    ],
+    [
+      "wifi",
+      "udp",
+      "ipv6",
+      "utf16le",
+      "92 B"
+    ],
+    [
+      "wifi",
+      "udp",
+      "ipv6",
+      "ascii",
+      "88 B"
+    ]
+  ],
+  "runtimeErrors": [],
+  "stages": 14,
+  "signalSchemes": 5,
+  "mobileOverflow": false
+}

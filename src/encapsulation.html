@@ -1,0 +1,335 @@
+<style>
+  #encapsulation-lab { --enc-app: var(--viz-series-3, #9b72f6); --enc-transport: var(--viz-series-2, #e0a33b); --enc-ip: var(--viz-series-4, #49b6a1); --enc-link: var(--viz-series-1, #547dff); --enc-signal: var(--viz-series-5, #e2749d); color: var(--foreground); padding: 22px 0 32px; }
+  #encapsulation-lab *, #encapsulation-lab *::before, #encapsulation-lab *::after { box-sizing: border-box; }
+  #encapsulation-lab button, #encapsulation-lab input, #encapsulation-lab select, #encapsulation-lab textarea { font: inherit; }
+  #encapsulation-lab button { cursor: pointer; }
+  #encapsulation-lab button:disabled { opacity: .42; cursor: default; }
+  #encapsulation-lab :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+  #encapsulation-lab h2, #encapsulation-lab h3, #encapsulation-lab p { margin: 0; }
+  #encapsulation-lab .enc-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; margin-bottom: 20px; }
+  #encapsulation-lab h2 { font-size: clamp(23px, 3vw, 32px); letter-spacing: -.035em; line-height: 1.15; }
+  #encapsulation-lab .enc-subtitle { max-width: 760px; margin-top: 9px; color: var(--muted-foreground); font-size: 14px; line-height: 1.55; }
+  #encapsulation-lab .enc-eyebrow { font-size: 10px; line-height: 1.5; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; color: var(--muted-foreground); }
+  #encapsulation-lab .enc-reference { font-size: 11px; color: var(--muted-foreground); padding: 8px 11px; border: 1px solid var(--border); border-radius: 99px; white-space: nowrap; }
+  #encapsulation-lab .enc-layout { display: grid; grid-template-columns: 278px minmax(0, 1fr); gap: 18px; align-items: start; }
+  #encapsulation-lab .enc-panel { border: 1px solid var(--border); background: var(--card); border-radius: 16px; padding: 18px; min-width: 0; }
+  #encapsulation-lab .enc-settings { display: grid; gap: 15px; }
+  #encapsulation-lab .enc-settings h3, #encapsulation-lab .enc-section-title { font-size: 15px; line-height: 1.3; font-weight: 700; }
+  #encapsulation-lab .enc-field { display: grid; gap: 6px; font-size: 12px; font-weight: 650; }
+  #encapsulation-lab .enc-field > input, #encapsulation-lab .enc-field > select, #encapsulation-lab .enc-field > textarea, #encapsulation-lab .enc-inline-select { width: 100%; min-width: 0; border: 1px solid var(--border); background: var(--background); color: var(--foreground); border-radius: 8px; padding: 9px 10px; font-size: 13px; font-weight: 450; }
+  #encapsulation-lab .enc-field > textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
+  #encapsulation-lab .enc-field select, #encapsulation-lab .enc-inline-select { min-height: 38px; }
+  #encapsulation-lab .enc-field small, #encapsulation-lab .enc-help { font-size: 11px; color: var(--muted-foreground); line-height: 1.5; font-weight: 400; }
+  #encapsulation-lab .enc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #encapsulation-lab .enc-presets { display: flex; gap: 5px; flex-wrap: wrap; }
+  #encapsulation-lab .enc-small-button { border: 1px solid var(--border); background: transparent; color: var(--foreground); border-radius: 7px; padding: 5px 8px; font-size: 11px; }
+  #encapsulation-lab .enc-small-button:hover { background: var(--muted); }
+  #encapsulation-lab .enc-settings details { border-top: 1px solid var(--border); padding-top: 12px; }
+  #encapsulation-lab .enc-settings summary { cursor: pointer; font-size: 12px; font-weight: 650; }
+  #encapsulation-lab .enc-addresses { display: grid; gap: 11px; margin-top: 13px; }
+  #encapsulation-lab .enc-error { padding: 12px; border: 1px solid #c35353; border-radius: 10px; color: var(--foreground); background: color-mix(in srgb, #c35353 13%, var(--background)); font-size: 12px; line-height: 1.5; }
+  #encapsulation-lab .enc-error[hidden] { display: none; }
+  #encapsulation-lab .enc-main { display: grid; gap: 14px; min-width: 0; }
+  #encapsulation-lab .enc-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
+  #encapsulation-lab .enc-metric { border: 1px solid var(--border); border-radius: 12px; padding: 12px 13px; background: var(--card); }
+  #encapsulation-lab .enc-metric span { display: block; color: var(--muted-foreground); font-size: 11px; line-height: 1.4; }
+  #encapsulation-lab .enc-metric strong { display: block; font-size: clamp(19px, 2.4vw, 25px); font-weight: 750; line-height: 1.4; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  #encapsulation-lab .enc-metric:first-child strong { color: var(--enc-app); }
+  #encapsulation-lab .enc-metric:last-child strong { color: var(--enc-link); }
+  #encapsulation-lab .enc-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+  #encapsulation-lab .enc-direction { font-size: 11px; color: var(--muted-foreground); }
+  #encapsulation-lab .enc-network { display: grid; grid-template-columns: minmax(0, 1fr) 94px minmax(0, 1fr); gap: 13px; align-items: center; }
+  #encapsulation-lab .enc-host-title { display: flex; justify-content: space-between; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  #encapsulation-lab .enc-host-title small { color: var(--muted-foreground); font-size: 10px; font-weight: 450; }
+  #encapsulation-lab .enc-stack { display: grid; gap: 5px; }
+  #encapsulation-lab .enc-layer { --layer-color: var(--enc-app); width: 100%; border: 1px solid var(--border); border-left: 3px solid var(--layer-color); border-radius: 7px; background: var(--background); color: var(--foreground); padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; gap: 6px; min-height: 37px; text-align: left; transition: background .18s, border-color .18s, transform .18s; }
+  #encapsulation-lab .enc-layer-name { font-size: 11px; font-weight: 650; }
+  #encapsulation-lab .enc-layer-protocol { color: var(--muted-foreground); font-size: 10px; font-variant-numeric: tabular-nums; }
+  #encapsulation-lab .enc-layer[aria-current="step"] { background: color-mix(in srgb, var(--layer-color) 17%, var(--background)); border-color: var(--layer-color); box-shadow: 0 0 0 1px color-mix(in srgb, var(--layer-color) 20%, transparent); transform: translateX(2px); }
+  #encapsulation-lab .enc-layer.enc-completed { background: color-mix(in srgb, var(--layer-color) 5%, var(--background)); }
+  #encapsulation-lab .enc-route { text-align: center; color: var(--muted-foreground); font-size: 10px; line-height: 1.6; }
+  #encapsulation-lab .enc-wire { position: relative; height: 32px; display: grid; align-items: center; margin: 10px 0; }
+  #encapsulation-lab .enc-wire::before { content: ""; border-top: 2px dashed var(--border); width: 100%; }
+  #encapsulation-lab .enc-wire::after { content: ""; position: absolute; width: 9px; height: 9px; border-radius: 50%; left: 0; background: var(--enc-signal); opacity: .6; }
+  #encapsulation-lab .enc-wire.enc-sending::after { animation: enc-travel 1.25s linear infinite; opacity: 1; }
+  #encapsulation-lab .enc-route-symbol { font-size: 24px; color: var(--enc-signal); line-height: 1; }
+  #encapsulation-lab .enc-transport-controls { margin-top: 17px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  #encapsulation-lab .enc-buttons { display: flex; gap: 6px; }
+  #encapsulation-lab .enc-button { min-height: 35px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 8px; color: var(--foreground); background: var(--background); font-size: 12px; font-weight: 600; }
+  #encapsulation-lab .enc-button.enc-primary { background: var(--primary); color: var(--primary-foreground, #fff); border-color: var(--primary); }
+  #encapsulation-lab .enc-step-count { color: var(--muted-foreground); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  #encapsulation-lab .enc-progress { display: flex; gap: 4px; margin-top: 12px; }
+  #encapsulation-lab .enc-progress button { height: 5px; min-width: 0; flex: 1; border: 0; border-radius: 8px; background: var(--border); padding: 0; }
+  #encapsulation-lab .enc-progress button.enc-done { background: var(--primary); opacity: .5; }
+  #encapsulation-lab .enc-progress button[aria-current="step"] { background: var(--primary); opacity: 1; }
+  #encapsulation-lab .enc-step-caption { min-height: 76px; margin-top: 17px; }
+  #encapsulation-lab .enc-step-caption h3 { font-size: 17px; line-height: 1.4; letter-spacing: -.015em; }
+  #encapsulation-lab .enc-step-caption p { font-size: 12px; line-height: 1.65; color: var(--muted-foreground); margin-top: 5px; }
+  #encapsulation-lab .enc-packet { display: flex; align-items: stretch; gap: 4px; min-height: 63px; margin-top: 15px; flex-wrap: wrap; }
+  #encapsulation-lab .enc-part { --part-color: var(--enc-app); flex: 1 1 75px; min-width: 0; border: 1px solid color-mix(in srgb, var(--part-color) 45%, var(--border)); border-top: 3px solid var(--part-color); color: var(--foreground); border-radius: 7px; background: color-mix(in srgb, var(--part-color) 9%, var(--background)); padding: 10px 8px; text-align: left; }
+  #encapsulation-lab .enc-part[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--part-color); background: color-mix(in srgb, var(--part-color) 20%, var(--background)); }
+  #encapsulation-lab .enc-part strong, #encapsulation-lab .enc-part span { display: block; overflow-wrap: anywhere; }
+  #encapsulation-lab .enc-part strong { font-size: 11px; }
+  #encapsulation-lab .enc-part span { font-size: 10px; margin-top: 5px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+  #encapsulation-lab .enc-message-preview { flex: 1; border: 1px dashed var(--enc-app); border-radius: 9px; padding: 15px; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-wrap; background: color-mix(in srgb, var(--enc-app) 7%, var(--background)); }
+  #encapsulation-lab .enc-packet-note { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; font-size: 10px; color: var(--muted-foreground); }
+  #encapsulation-lab .enc-inspector-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+  #encapsulation-lab .enc-inspector-head .enc-inline-select { width: auto; font-size: 11px; padding: 5px 8px; min-height: 30px; }
+  #encapsulation-lab .enc-part-description { font-size: 12px; line-height: 1.6; color: var(--muted-foreground); }
+  #encapsulation-lab .enc-fields { display: flex; flex-wrap: wrap; gap: 5px; margin: 12px 0; }
+  #encapsulation-lab .enc-header-field { min-width: 58px; max-width: 100%; padding: 6px 9px; background: var(--background); border: 1px solid var(--border); border-radius: 7px; color: var(--foreground); text-align: left; }
+  #encapsulation-lab .enc-header-field[aria-pressed="true"] { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, var(--background)); }
+  #encapsulation-lab .enc-header-field strong, #encapsulation-lab .enc-header-field span { display: block; font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
+  #encapsulation-lab .enc-header-field span { color: var(--muted-foreground); font-weight: 400; }
+  #encapsulation-lab .enc-byte-title { font-size: 10px; color: var(--muted-foreground); margin: 10px 0 7px; }
+  #encapsulation-lab .enc-bytes { margin: 0; padding: 12px; background: var(--background); border: 1px solid var(--border); border-radius: 9px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; line-height: 1.9; letter-spacing: .035em; white-space: pre-wrap; word-break: break-word; max-height: 180px; overflow: auto; }
+  #encapsulation-lab .enc-field-description { min-height: 35px; font-size: 11px; color: var(--muted-foreground); line-height: 1.6; margin-top: 9px; }
+  #encapsulation-lab .enc-signal-top { display: flex; gap: 12px; align-items: start; justify-content: space-between; }
+  #encapsulation-lab .enc-signal-controls { display: flex; gap: 7px; max-width: 58%; }
+  #encapsulation-lab .enc-signal-controls .enc-inline-select { font-size: 11px; padding: 6px 8px; min-height: 32px; }
+  #encapsulation-lab .enc-signal-meta { font-size: 11px; line-height: 1.5; color: var(--muted-foreground); margin: 10px 0 3px; font-family: var(--font-mono, ui-monospace, monospace); }
+  #encapsulation-lab .enc-signal-view { overflow-x: auto; margin: 4px -4px 7px; }
+  #encapsulation-lab .enc-signal-view svg { display: block; width: 100%; min-width: 460px; height: 150px; }
+  #encapsulation-lab .enc-signal-explanation { font-size: 12px; line-height: 1.6; }
+  #encapsulation-lab .enc-signal-caveat { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 10px; font-size: 11px; color: var(--muted-foreground); line-height: 1.65; }
+  #encapsulation-lab .enc-notes { margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 11px; line-height: 1.65; }
+  #encapsulation-lab .enc-notes summary { cursor: pointer; font-weight: 650; color: var(--foreground); }
+  #encapsulation-lab .enc-notes ul { margin: 8px 0 0; padding-left: 17px; }
+  #encapsulation-lab .enc-invalid .enc-main { opacity: .45; }
+  @keyframes enc-travel { from { left: 0; } to { left: calc(100% - 9px); } }
+  @media (min-width: 1080px) { #encapsulation-lab .enc-settings { position: sticky; top: 14px; } }
+  @media (max-width: 950px) { #encapsulation-lab .enc-layout { grid-template-columns: 230px minmax(0, 1fr); gap: 12px; } #encapsulation-lab .enc-panel { padding: 14px; } #encapsulation-lab .enc-network { grid-template-columns: minmax(0, 1fr) 45px minmax(0, 1fr); gap: 7px; } #encapsulation-lab .enc-layer { padding: 8px 6px; } #encapsulation-lab .enc-layer-protocol { font-size: 9px; } #encapsulation-lab .enc-host-title small { display: none; } #encapsulation-lab .enc-reference { display: none; } #encapsulation-lab .enc-signal-top { flex-direction: column; } #encapsulation-lab .enc-signal-controls { max-width: 100%; width: 100%; } }
+  @media (max-width: 700px) { #encapsulation-lab .enc-layout { grid-template-columns: 1fr; } #encapsulation-lab .enc-settings { grid-template-columns: 1fr 1fr; gap: 13px; } #encapsulation-lab .enc-settings > h3, #encapsulation-lab .enc-settings > .enc-message-field, #encapsulation-lab .enc-settings > .enc-error, #encapsulation-lab .enc-settings > details, #encapsulation-lab .enc-settings > .enc-help { grid-column: 1 / -1; } #encapsulation-lab .enc-settings > .enc-row { display: contents; } #encapsulation-lab .enc-network { grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr); } #encapsulation-lab .enc-layer-protocol { font-size: 10px; } #encapsulation-lab .enc-metrics { gap: 6px; } #encapsulation-lab .enc-metric { padding: 10px 8px; } #encapsulation-lab .enc-metric span { font-size: 10px; } #encapsulation-lab .enc-step-caption { min-height: 80px; } }
+  @media (max-width: 420px) { #encapsulation-lab .enc-layer { flex-direction: column; align-items: start; gap: 1px; min-height: 46px; } #encapsulation-lab .enc-network { grid-template-columns: minmax(0, 1fr) 35px minmax(0, 1fr); gap: 5px; } #encapsulation-lab .enc-button { padding: 7px 8px; font-size: 11px; } #encapsulation-lab .enc-transport-controls { flex-wrap: wrap; } #encapsulation-lab .enc-step-count { margin-left: auto; } }
+  @media (prefers-reduced-motion: reduce) { #encapsulation-lab *, #encapsulation-lab *::before, #encapsulation-lab *::after { animation: none !important; transition: none !important; } }
+</style>
+<section id="encapsulation-lab" aria-labelledby="enc-title">
+  <div class="enc-heading">
+    <div><div class="enc-eyebrow">Interaktívne laboratórium · OSI</div><h2 id="enc-title">Od správy k signálu. A späť.</h2><p class="enc-subtitle">Zmeň správu, protokol alebo kódovanie. Sleduj, ako odosielateľ pridáva obaly a prijímateľ ich postupne odoberá.</p></div>
+    <span class="enc-reference">Podľa postupu zo strán 8–16</span>
+  </div>
+  <div class="enc-layout">
+    <form class="enc-panel enc-settings" id="enc-form" novalidate>
+      <h3>Nastav prenos</h3>
+      <label class="enc-field enc-message-field">Správa aplikácie<textarea id="enc-message" maxlength="512" spellcheck="false">Ahoj</textarea><span class="enc-presets"><button class="enc-small-button" type="button" data-message="Ahoj">Ahoj</button><button class="enc-small-button" type="button" data-message="Ahoj, sieť!">Diakritika</button><button class="enc-small-button" type="button" data-message="Ahoj 🌍">Emoji</button></span></label>
+      <label class="enc-field">Kódovanie textu<select id="enc-text-encoding"><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="ascii">ASCII (7-bitové znaky)</option></select><small>Mení bajty správy, nie hlavičky protokolov.</small></label>
+      <label class="enc-field">Spojová vrstva<select id="enc-link"><option value="ethernet">Ethernet II · kábel</option><option value="wifi">Wi-Fi · 802.11</option></select></label>
+      <div class="enc-row"><label class="enc-field">Transport<select id="enc-transport"><option value="tcp">TCP</option><option value="udp">UDP</option></select></label><label class="enc-field">Sieť<select id="enc-ip-version"><option value="ipv4">IPv4</option><option value="ipv6">IPv6</option></select></label></div>
+      <div class="enc-row"><label class="enc-field">Zdrojový port<input id="enc-source-port" type="number" min="0" max="65535" step="1" value="51514"></label><label class="enc-field">Cieľový port<input id="enc-dest-port" type="number" min="0" max="65535" step="1" value="443"></label></div>
+      <details><summary>IP a MAC adresy</summary><div class="enc-addresses"><label class="enc-field">Zdrojová IP<input id="enc-source-ip" value="192.0.2.10" spellcheck="false"></label><label class="enc-field">Cieľová IP<input id="enc-dest-ip" value="198.51.100.20" spellcheck="false"></label><label class="enc-field">Zdrojová MAC<input id="enc-source-mac" value="02:00:00:00:00:0a" spellcheck="false"></label><label class="enc-field">Cieľová MAC<input id="enc-dest-mac" value="02:00:00:00:00:14" spellcheck="false"></label><p class="enc-help">MAC adresy patria tomuto lokálnemu spoju; cez smerovač sa spojový obal mení.</p></div></details>
+      <div id="enc-error" class="enc-error" role="alert" hidden></div>
+      <p class="enc-help">Ukážka jedného dátového prenosu. Hlavičky, dĺžky a kontrolné súčty sa pri zmenách prepočítajú.</p>
+    </form>
+    <div class="enc-main">
+      <div class="enc-metrics" aria-label="Veľkosť prenosu"><div class="enc-metric"><span>Dáta aplikácie</span><strong id="enc-metric-payload">4 B</strong></div><div class="enc-metric"><span>Réžia + výplň</span><strong id="enc-metric-overhead">60 B</strong></div><div class="enc-metric"><span>Celý rámec</span><strong id="enc-metric-frame">64 B</strong></div><div class="enc-metric"><span>Podiel dát</span><strong id="enc-metric-efficiency">6,3 %</strong></div></div>
+      <section class="enc-panel" aria-labelledby="enc-path-title" id="enc-journey" tabindex="0" aria-label="Cesta správy. Šípka doprava posunie krok, šípka doľava vráti krok.">
+        <div class="enc-topline"><h3 class="enc-section-title" id="enc-path-title">Jedna správa, sedem vrstiev</h3><span id="enc-direction" class="enc-direction">Enkapsulácia ↓</span></div>
+        <div class="enc-network"><div><div class="enc-host-title">Odosielateľ <small>pridáva obaly ↓</small></div><div id="enc-sender-stack" class="enc-stack"></div></div><div class="enc-route"><div class="enc-route-symbol" id="enc-medium-icon" aria-hidden="true">↝</div><div id="enc-wire" class="enc-wire" aria-hidden="true"></div><span id="enc-medium">Ethernet</span><br><span>jeden spoj →</span></div><div><div class="enc-host-title">Prijímateľ <small>odoberá obaly ↑</small></div><div id="enc-receiver-stack" class="enc-stack"></div></div></div>
+        <div class="enc-transport-controls"><div class="enc-buttons"><button type="button" id="enc-prev" class="enc-button" aria-label="Predchádzajúci krok">← Späť</button><button type="button" id="enc-play" class="enc-button enc-primary">▶ Prehrať</button><button type="button" id="enc-next" class="enc-button" aria-label="Nasledujúci krok">Ďalej →</button><button type="button" id="enc-reset" class="enc-button" aria-label="Vrátiť animáciu na začiatok">↺</button></div><span id="enc-step-count" class="enc-step-count">Krok 1 / 14</span></div>
+        <nav id="enc-progress" class="enc-progress" aria-label="Kroky prenosu"></nav>
+        <div class="enc-step-caption" aria-live="polite" aria-atomic="true"><h3 id="enc-step-title"></h3><p id="enc-step-description"></p></div>
+        <div id="enc-packet" class="enc-packet" aria-label="Aktuálna podoba správy"></div><div class="enc-packet-note"><span id="enc-packet-label"></span><span id="enc-packet-length"></span></div>
+      </section>
+      <section class="enc-panel" aria-labelledby="enc-inspector-title"><div class="enc-inspector-head"><h3 id="enc-inspector-title" class="enc-section-title">Pozri sa do obalu</h3><label class="enc-help">Bajty <select id="enc-byte-format" class="enc-inline-select" aria-label="Zobrazenie bajtov"><option value="hex">HEX</option><option value="binary">Binárne</option><option value="decimal">Desiatkovo</option></select></label></div><p id="enc-part-description" class="enc-part-description"></p><div id="enc-fields" class="enc-fields"></div><div id="enc-byte-title" class="enc-byte-title"></div><pre id="enc-bytes" class="enc-bytes" tabindex="0"></pre><p id="enc-field-description" class="enc-field-description"></p><details class="enc-notes"><summary>Čo tento model zahŕňa</summary><ul id="enc-notes-list"></ul></details></section>
+      <section class="enc-panel" aria-labelledby="enc-signal-title"><div class="enc-signal-top"><div><div class="enc-eyebrow">Fyzická vrstva · L1</div><h3 id="enc-signal-title" class="enc-section-title">Tie isté bity, iný signál</h3></div><div class="enc-signal-controls"><select id="enc-signal-source" class="enc-inline-select" aria-label="Ktoré bajty zobraziť ako signál"><option value="frame">Začiatok rámca</option><option value="payload">Úsek s dátami</option></select><select id="enc-signal-code" class="enc-inline-select" aria-label="Kódovanie alebo modulácia signálu"><option value="nrz">NRZ-L</option><option value="manchester">Manchester</option><option value="4b5b">4B/5B + NRZI</option><option value="bpsk">BPSK</option><option value="qpsk">QPSK</option></select></div></div><p id="enc-signal-meta" class="enc-signal-meta"></p><div id="enc-signal-view" class="enc-signal-view"></div><p id="enc-signal-explanation" class="enc-signal-explanation"></p><p class="enc-signal-caveat">Didaktická ukážka vybraných bajtov: bity kreslíme od najvyššieho po najnižší (MSB → LSB). Schému vyberáš nezávisle od spojovej vrstvy. Nejde o úplný PHY Ethernetu ani Wi-Fi; nezobrazuje preambulu, OFDM, scrambling ani opravu chýb.</p></section>
+    </div>
+  </div>
+</section>
+<script>
+(function () {
+  'use strict';
+  const root = document.getElementById('encapsulation-lab');
+  if (!root || !window.EncapsulationModel) return;
+  const $ = (name) => document.getElementById('enc-' + name);
+  const modelAPI = window.EncapsulationModel;
+  const colors = { payload: 'var(--enc-app)', transport: 'var(--enc-transport)', ip: 'var(--enc-ip)', link: 'var(--enc-link)', padding: 'var(--muted-foreground)', fcs: 'var(--enc-link)' };
+  let model = null, step = 0, timer = null, selectedPart = 'payload', selectedField = null;
+  let visibleParts = [];
+  const el = (tag, className, text) => { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; };
+  const bytesText = (bytes, format) => bytes.map((b) => format === 'binary' ? b.toString(2).padStart(8, '0') : format === 'decimal' ? String(b).padStart(3, '0') : b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+  const layerDefs = [
+    { name: '7 · Aplikácia', color: colors.payload, protocol: () => 'správa' },
+    { name: '6 · Prezentácia', color: colors.payload, protocol: () => ({ utf8: 'UTF-8', utf16le: 'UTF-16 LE', ascii: 'ASCII' }[model.config.textEncoding]) },
+    { name: '5 · Relácia', color: colors.payload, protocol: () => 'kontext' },
+    { name: '4 · Transport', color: colors.transport, protocol: () => model.config.transport.toUpperCase() },
+    { name: '3 · Sieť', color: colors.ip, protocol: () => model.config.ipVersion === 'ipv4' ? 'IPv4' : 'IPv6' },
+    { name: '2 · Spojová', color: colors.link, protocol: () => model.config.link === 'ethernet' ? 'Ethernet II' : '802.11' },
+    { name: '1 · Fyzická', color: 'var(--enc-signal)', protocol: () => 'signál' }
+  ];
+  const stages = [
+    { title: '7 · Aplikácia vytvorí správu', description: () => 'Začíname textom, ktorý chce aplikácia poslať. V ďalšom kroku z neho zvolené kódovanie vytvorí bajty.', parts: [], unit: 'Text aplikácie' },
+    { title: '6 · Kódovanie: text sa zmení na bajty', description: () => 'V kódovaní ' + layerDefs[1].protocol() + ' má správa ' + model.summary.payloadBytes + ' B. Jeden znak nemusí znamenať jeden bajt. Skús diakritiku alebo emoji a porovnaj UTF-8 s UTF-16 LE.', parts: ['payload'], unit: 'Zakódované dáta' },
+    { title: '5 · Relácia: kontext komunikácie', description: () => 'Aplikácia si drží kontext rozhovoru. Vrstva relácie je tu názorný krok modelu OSI: nepridáva sa žiadna univerzálna „relačná hlavička“ a počet bajtov sa nemení.', parts: ['payload'], unit: 'Dáta v kontexte relácie' },
+    { title: '4 · Transport pridá porty', description: () => model.config.transport === 'tcp' ? 'TCP pridá 20 B základnej hlavičky: porty, poradové čísla, príznaky a kontrolný súčet. Ukážka nesimuluje nadviazanie spojenia ani potvrdenia.' : 'UDP pridá 8 B hlavičky: zdrojový a cieľový port, dĺžku a kontrolný súčet. Samotné UDP nezabezpečuje potvrdenie ani opakovanie doručenia.', parts: ['transport', 'payload'], unit: () => model.config.transport === 'tcp' ? 'TCP segment' : 'UDP datagram' },
+    { title: '3 · Sieťová vrstva pridá IP adresy', description: () => layerDefs[4].protocol() + ' obalí transportné dáta hlavičkou s IP adresami. Označí tiež transportný protokol: TCP = 6, UDP = 17. IP adresy slúžia na smerovanie medzi sieťami.', parts: ['ip', 'transport', 'payload'], unit: 'IP paket' },
+    { title: '2 · Spojová vrstva vytvorí rámec', description: () => model.config.link === 'ethernet' ? 'Ethernet II pridá MAC adresy a EtherType; za dáta patrí FCS. Pri krátkom IP pakete doplní výplň do minimálnej dĺžky rámca. MAC adresy sú pre tento lokálny spoj.' : 'Model Wi-Fi pridá 24 B hlavičky 802.11, 8 B LLC/SNAP a 4 B FCS. Reálne Wi-Fi rámce môžu mať ďalšie polia podľa režimu a zabezpečenia.', parts: ['link', 'ip', 'transport', 'payload', 'padding', 'fcs'], unit: 'Rámec na lokálnom spoji' },
+    { title: '1 · Fyzická vrstva vyšle signál', description: () => 'Celý rámec sa prenáša ako signál v médiu. Dole porovnaj, ako vyzerajú vybrané bity pri rôznych spôsoboch linkového kódovania alebo modulácie.', parts: ['link', 'ip', 'transport', 'payload', 'padding', 'fcs'], unit: 'Bity celého rámca → signál' },
+    { title: '1 · Prijímateľ obnoví bity zo signálu', description: () => 'Prijímač zo signálu obnoví bity a zostaví rámec. Táto ukážka predpokladá prenos bez chyby; nedáva falošný dojem, že signál prenáša iba text správy.', parts: ['link', 'ip', 'transport', 'payload', 'padding', 'fcs'], unit: 'Signál → bity celého rámca' },
+    { title: '2 · Prijímateľ spracuje spojový obal', description: () => 'Na spojovej vrstve sa kontroluje rámec vrátane FCS a adresovania. Linková hlavička, FCS a prípadná ethernetová výplň sa odoberú; zostane IP paket.', parts: ['ip', 'transport', 'payload'], unit: 'IP paket po odobratí rámca' },
+    { title: '3 · Prijímateľ spracuje IP hlavičku', description: () => 'IP vrstva vyhodnotí adresu a protokol nasledujúcej vrstvy. IP hlavičku odoberie a dáta odovzdá TCP alebo UDP.', parts: ['transport', 'payload'], unit: () => model.config.transport === 'tcp' ? 'TCP segment po odobratí IP' : 'UDP datagram po odobratí IP' },
+    { title: '4 · Port určí prijímajúcu aplikáciu', description: () => 'Transport spracuje hlavičku a odovzdá dáta aplikácii podľa cieľového portu ' + model.config.destPort + '. Port označuje komunikačný koncový bod; jeho číslo samo osebe neurčuje obsah ani šifrovanie.', parts: ['payload'], unit: 'Dáta po odobratí transportu' },
+    { title: '5 · Dáta sa zaradia do relácie', description: () => 'Prijaté dáta sa priradia ku kontextu komunikácie. Ani tu neodoberáme vymyslenú univerzálnu hlavičku relácie. Bajty správy zostávajú rovnaké.', parts: ['payload'], unit: 'Dáta v kontexte relácie' },
+    { title: '6 · Dekódovanie obnoví text', description: () => 'Prijímateľ interpretuje bajty pomocou rovnakého kódovania ' + layerDefs[1].protocol() + '. Nesprávne kódovanie by mohlo vytvoriť iné alebo nečitateľné znaky.', parts: ['payload'], unit: 'Bajty → text' },
+    { title: '7 · Aplikácia dostane pôvodnú správu', description: () => 'Hotovo. Všetky prenosové obaly boli spracované a aplikácia dostáva pôvodný obsah. Zmeň nastavenia a prejdi cestu znova — bajty aj veľkosti sa okamžite prepočítajú.', parts: [], unit: 'Prijatý text aplikácie' }
+  ];
+  function getConfig() {
+    return { message: $('message').value, textEncoding: $('text-encoding').value, link: $('link').value, transport: $('transport').value, ipVersion: $('ip-version').value, sourcePort: $('source-port').value, destPort: $('dest-port').value, sourceIp: $('source-ip').value, destIp: $('dest-ip').value, sourceMac: $('source-mac').value, destMac: $('dest-mac').value, ttl: 64 };
+  }
+  function pause() { if (timer !== null) window.clearInterval(timer); timer = null; $('play').textContent = '▶ Prehrať'; $('play').setAttribute('aria-pressed', 'false'); $('wire').classList.remove('enc-sending'); }
+  function changeStep(value) { if (!model || !$('error').hidden) return; step = Math.max(0, Math.min(stages.length - 1, value)); selectedField = null; renderStage(); if (step === stages.length - 1) pause(); }
+  function buildNavigation() {
+    ['sender-stack', 'receiver-stack'].forEach((hostId, side) => {
+      const host = $(hostId); host.replaceChildren();
+      layerDefs.forEach((layer, i) => {
+        const index = side === 0 ? i : 13 - i;
+        const button = el('button', 'enc-layer'); button.type = 'button'; button.dataset.step = String(index); button.style.setProperty('--layer-color', layer.color);
+        button.append(el('span', 'enc-layer-name', layer.name), el('span', 'enc-layer-protocol', layer.protocol()));
+        button.setAttribute('aria-label', (side === 0 ? 'Odosielateľ: ' : 'Prijímateľ: ') + layer.name + ', ' + layer.protocol());
+        button.addEventListener('click', () => { pause(); changeStep(index); }); host.append(button);
+      });
+    });
+    $('progress').replaceChildren();
+    stages.forEach((stage, i) => { const button = el('button'); button.type = 'button'; button.dataset.step = String(i); button.title = stage.title; button.setAttribute('aria-label', 'Krok ' + (i + 1) + ': ' + stage.title); button.addEventListener('click', () => { pause(); changeStep(i); }); $('progress').append(button); });
+  }
+  function renderMetrics() {
+    const s = model.summary;
+    $('metric-payload').textContent = s.payloadBytes + ' B'; $('metric-overhead').textContent = s.overheadBytes + ' B'; $('metric-frame').textContent = s.frameBytes + ' B';
+    const efficiency = s.frameBytes ? s.payloadBytes / s.frameBytes * 100 : 0;
+    $('metric-efficiency').textContent = efficiency.toLocaleString('sk-SK', { maximumFractionDigits: 1 }) + ' %';
+    $('metric-overhead').parentElement.title = 'Transport ' + s.transportHeaderBytes + ' B + IP ' + s.ipHeaderBytes + ' B + spojová hlavička ' + s.linkHeaderBytes + ' B + výplň ' + s.paddingBytes + ' B + FCS ' + s.fcsBytes + ' B';
+    $('metric-frame').parentElement.title = 'Veľkosť rámca vrátane FCS; bez fyzickej preambuly, časových medzier a ďalšej réžie média.';
+    $('medium').textContent = model.config.link === 'ethernet' ? 'Ethernet' : 'Wi-Fi';
+    $('notes-list').replaceChildren();
+    const notes = ['Sedem vrstiev zodpovedá vysvetľovaniu OSI. Internetový zásobník často spája aplikačnú, prezentačnú a relačnú funkciu.', 'Výpočet zahŕňa základné hlavičky a FCS. Podiel dát sa počíta zo samotného rámca, bez preambuly, medzier a ďalšej réžie média.'].concat(model.notes || []);
+    notes.forEach((note) => $('notes-list').append(el('li', '', String(note))));
+  }
+  function renderStage() {
+    const current = stages[step];
+    root.querySelectorAll('[data-step]').forEach((button) => { const i = Number(button.dataset.step); button.classList.toggle('enc-completed', i < step); button.classList.toggle('enc-done', i < step); if (i === step) button.setAttribute('aria-current', 'step'); else button.removeAttribute('aria-current'); });
+    $('direction').textContent = step < 7 ? 'Enkapsulácia ↓' : 'Deenkapsulácia ↑';
+    $('step-count').textContent = 'Krok ' + (step + 1) + ' / ' + stages.length;
+    $('step-title').textContent = current.title; $('step-description').textContent = current.description();
+    $('prev').disabled = step === 0; $('next').disabled = step === stages.length - 1;
+    $('wire').classList.toggle('enc-sending', timer !== null && (step === 6 || step === 7));
+    visibleParts = model.parts.filter((part) => current.parts.includes(part.key));
+    $('packet').replaceChildren();
+    if (!current.parts.length) { $('packet').append(el('div', 'enc-message-preview', model.config.message || '(prázdna správa)')); selectedPart = 'payload'; }
+    else {
+      if (!visibleParts.some((part) => part.key === selectedPart)) selectedPart = visibleParts.length ? visibleParts[0].key : 'payload';
+      visibleParts.forEach((part) => {
+        const button = el('button', 'enc-part'); button.type = 'button'; button.style.setProperty('--part-color', colors[part.key] || colors.payload); button.dataset.part = part.key;
+        button.setAttribute('aria-pressed', String(part.key === selectedPart)); button.append(el('strong', '', part.label), el('span', '', part.length + ' B'));
+        button.addEventListener('click', () => { selectedPart = part.key; selectedField = null; root.querySelectorAll('[data-part]').forEach((node) => node.setAttribute('aria-pressed', String(node.dataset.part === selectedPart))); renderInspector(); });
+        $('packet').append(button);
+      });
+    }
+    $('packet-label').textContent = typeof current.unit === 'function' ? current.unit() : current.unit;
+    $('packet-length').textContent = current.parts.length ? visibleParts.reduce((sum, part) => sum + part.length, 0) + ' B · klikni na časť' : 'text aplikácie';
+    renderInspector();
+  }
+  function renderInspector() {
+    const part = model.parts.find((item) => item.key === selectedPart) || model.parts.find((item) => item.key === 'payload');
+    if (!part) return;
+    const rawText = step === 0 || step === 13;
+    $('inspector-title').textContent = rawText ? 'Text a jeho bajtová reprezentácia' : 'Detail: ' + part.label;
+    $('part-description').textContent = rawText ? 'Pre porovnanie už vidíš bajty správy v zvolenom kódovaní. V samotnom postupe sa kódovanie vykoná na prezentačnej vrstve.' : part.description;
+    const header = model.headers && model.headers[selectedPart === 'ip' ? 'ip' : selectedPart];
+    const fields = part.fields || (header && header.fields) || [];
+    $('fields').replaceChildren();
+    fields.forEach((field, i) => {
+      const button = el('button', 'enc-header-field'); button.type = 'button'; button.setAttribute('aria-pressed', String(selectedField === i));
+      button.append(el('strong', '', field.label), el('span', '', String(field.value) + ' · ' + field.length + ' B'));
+      button.addEventListener('click', () => { selectedField = selectedField === i ? null : i; renderInspector(); }); $('fields').append(button);
+    });
+    const field = selectedField !== null ? fields[selectedField] : null;
+    const bytes = field ? field.bytes : part.bytes;
+    const maximum = $('byte-format').value === 'binary' ? 80 : 160;
+    $('byte-title').textContent = (field ? field.label + ' · ' : '') + bytes.length + ' B' + (field ? ' · posun ' + field.offset + ' B v hlavičke' : ' · posun ' + part.offset + ' B od začiatku hotového rámca');
+    $('bytes').textContent = bytes.length ? bytesText(bytes.slice(0, maximum), $('byte-format').value) + (bytes.length > maximum ? '\n… ďalších ' + (bytes.length - maximum) + ' B' : '') : '(žiadne bajty)';
+    $('field-description').textContent = field ? field.description : fields.length ? 'Klikni na pole hlavičky: zobrazí sa jeho význam a presné bajty. Ďalším kliknutím zobrazíš celú hlavičku.' : selectedPart === 'payload' ? 'HEX ukazuje hodnotu každého bajtu. Binárne zobrazenie ukazuje tých istých 8 bitov; zmenou zobrazenia sa prenášané dáta nemenia.' : part.description;
+  }
+  function drawSignal() {
+    const payloadPart = model.parts.find((part) => part.key === 'payload');
+    const isPayload = $('signal-source').value === 'payload';
+    const source = isPayload ? model.payloadBytes : model.frameBytes;
+    const bytes = source.slice(0, 2), bits = bytes.flatMap((byte) => Array.from({ length: 8 }, (_, i) => (byte >> (7 - i)) & 1));
+    const offset = isPayload && payloadPart ? payloadPart.offset : 0;
+    const code = $('signal-code').value;
+    $('signal-meta').textContent = (isPayload ? 'Dátový úsek rámca' : 'Začiatok celého rámca') + ' · offset ' + offset + ' B · ' + (bytes.length ? bytesText(bytes, 'hex') + ' HEX · ' + bits.length + ' vstupných bitov' : 'prázdne dáta');
+    const namespace = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(namespace, 'svg'); svg.setAttribute('viewBox', '0 0 760 150'); svg.setAttribute('role', 'img');
+    const svgTitle = document.createElementNS(namespace, 'title'); svgTitle.textContent = 'Signál ' + $('signal-code').selectedOptions[0].textContent + ' pre bajty ' + bytesText(bytes, 'hex'); svg.append(svgTitle);
+    function shape(tag, attrs, text) { const node = document.createElementNS(namespace, tag); Object.keys(attrs).forEach((key) => node.setAttribute(key, String(attrs[key]))); if (text !== undefined) node.textContent = text; svg.append(node); return node; }
+    const x0 = 24, x1 = 744, high = 43, low = 105, mid = 74;
+    shape('line', { x1: x0, y1: mid, x2: x1, y2: mid, stroke: 'var(--border)', 'stroke-dasharray': '3 5' });
+    let signalBits = bits.slice(), symbols = bits.map(String), explanation = '', path = '';
+    if (code === '4b5b') {
+      const lookup = ['11110', '01001', '10100', '10101', '01010', '01011', '01110', '01111', '10010', '10011', '10110', '10111', '11010', '11011', '11100', '11101'];
+      signalBits = [];
+      for (let i = 0; i < bits.length; i += 4) { const nibble = parseInt(bits.slice(i, i + 4).join(''), 2); signalBits.push(...lookup[nibble].split('').map(Number)); }
+      symbols = signalBits.map(String);
+      explanation = '4B/5B zmení každé 4 dátové bity na 5 kódových bitov (' + bits.length + ' → ' + signalBits.length + '). Pri tu zvolenom NRZI sa úroveň zmení na začiatku bitu 1; pri 0 zostane rovnaká. Nad grafom sú už kódové bity.';
+    } else if (code === 'nrz') explanation = 'NRZ-L: bit 1 je vyššia úroveň, bit 0 nižšia úroveň. Dlhý sled rovnakých bitov nevytvára prechody, z ktorých by prijímač ľahko obnovil časovanie.';
+    else if (code === 'manchester') explanation = 'Manchester má prechod uprostred každého bitu. V tejto konvencii: 0 = vysoká → nízka, 1 = nízka → vysoká. Jeden dátový bit zaberá dve polovice bitového intervalu.';
+    else if (code === 'bpsk') explanation = 'BPSK nesie 1 bit v jednom symbole. Tu 0 zodpovedá fáze 0° a 1 fáze 180°. Mení sa fáza nosnej vlny; jej amplitúda zostáva rovnaká.';
+    else { symbols = []; for (let i = 0; i < bits.length; i += 2) symbols.push(bits.slice(i, i + 2).join('')); explanation = 'QPSK nesie 2 bity v jednom symbole. Tu mapujeme 00 → 45°, 01 → 135°, 11 → 225°, 10 → 315°. Dva vstupné bity tvoria jeden symbol; počet symbolov je polovičný oproti BPSK.'; }
+    if (!bits.length) { shape('text', { x: 380, y: 79, 'text-anchor': 'middle', fill: 'var(--muted-foreground)', 'font-size': 13 }, 'Prázdna správa nemá dátové bity. Zvoľ začiatok rámca alebo napíš správu.'); }
+    else {
+      const width = (x1 - x0) / symbols.length;
+      symbols.forEach((symbol, i) => { const x = x0 + i * width; shape('line', { x1: x, y1: 29, x2: x, y2: 118, stroke: 'var(--border)', opacity: .6 }); shape('text', { x: x + width / 2, y: 19, fill: 'var(--muted-foreground)', 'font-size': symbols.length > 20 ? 10 : 12, 'font-family': 'monospace', 'text-anchor': 'middle' }, symbol); });
+      if (code === 'nrz' || code === 'manchester' || code === '4b5b') {
+        let level = low;
+        signalBits.forEach((bit, i) => {
+          const x = x0 + i * width, end = x + width;
+          if (code === 'manchester') { const first = bit ? low : high, second = bit ? high : low; path += (i ? ' L ' : 'M ') + x + ' ' + first + ' L ' + (x + width / 2) + ' ' + first + ' L ' + (x + width / 2) + ' ' + second + ' L ' + end + ' ' + second; }
+          else { if (code === '4b5b') { if (bit) level = level === low ? high : low; } else level = bit ? high : low; path += (i ? ' L ' : 'M ') + x + ' ' + level + ' L ' + end + ' ' + level; }
+        });
+      } else {
+        const phaseMap = { '00': Math.PI / 4, '01': 3 * Math.PI / 4, '11': 5 * Math.PI / 4, '10': 7 * Math.PI / 4 };
+        symbols.forEach((symbol, i) => { const phase = code === 'bpsk' ? Number(symbol) * Math.PI : phaseMap[symbol]; for (let j = 0; j <= 40; j++) { const x = x0 + (i + j / 40) * width; const y = mid - 28 * Math.sin(2 * Math.PI * j / 40 + phase); path += (j === 0 ? ' M ' : ' L ') + x.toFixed(2) + ' ' + y.toFixed(2); } });
+      }
+      shape('path', { d: path, fill: 'none', stroke: 'var(--enc-signal)', 'stroke-width': 2.7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+      shape('text', { x: x0, y: 140, fill: 'var(--muted-foreground)', 'font-size': 10 }, code === 'qpsk' || code === 'bpsk' ? symbols.length + ' symbolov · schematická nosná vlna' : signalBits.length + ' bitových intervalov');
+      shape('text', { x: x1, y: 140, fill: 'var(--muted-foreground)', 'font-size': 10, 'text-anchor': 'end' }, 'čas →');
+    }
+    $('signal-view').replaceChildren(svg); $('signal-explanation').textContent = explanation;
+  }
+  function refresh() {
+    pause();
+    try {
+      model = modelAPI.build(getConfig()); $('error').hidden = true; $('error').textContent = ''; root.classList.remove('enc-invalid');
+      $('journey').removeAttribute('inert'); $('play').disabled = false; $('reset').disabled = false;
+      buildNavigation(); renderMetrics(); renderStage(); drawSignal();
+    } catch (error) {
+      $('error').hidden = false; $('error').textContent = (error && error.message ? error.message : 'Nastavenia prenosu nie sú platné.') + ' Zobrazený prenos zostáva z posledného platného nastavenia.';
+      root.classList.add('enc-invalid'); $('journey').setAttribute('inert', ''); $('play').disabled = true; $('reset').disabled = true;
+    }
+  }
+  $('form').addEventListener('submit', (event) => event.preventDefault());
+  $('form').addEventListener('input', (event) => { if (event.target.matches('input, textarea')) refresh(); });
+  $('form').addEventListener('change', (event) => {
+    if (event.target === $('ip-version')) { const ipv6 = $('ip-version').value === 'ipv6'; $('source-ip').value = ipv6 ? '2001:db8:1::10' : '192.0.2.10'; $('dest-ip').value = ipv6 ? '2001:db8:2::20' : '198.51.100.20'; }
+    if (event.target === $('link')) $('signal-code').value = $('link').value === 'wifi' ? 'qpsk' : 'nrz';
+    if (event.target.matches('select')) refresh();
+  });
+  root.querySelectorAll('[data-message]').forEach((button) => button.addEventListener('click', () => { $('message').value = button.dataset.message; refresh(); }));
+  $('prev').addEventListener('click', () => { pause(); changeStep(step - 1); });
+  $('next').addEventListener('click', () => { pause(); changeStep(step + 1); });
+  $('reset').addEventListener('click', () => { pause(); changeStep(0); });
+  $('play').setAttribute('aria-pressed', 'false');
+  $('play').addEventListener('click', () => {
+    if (timer !== null) { pause(); return; }
+    if (!model || !$('error').hidden) return;
+    if (step === stages.length - 1) changeStep(0);
+    $('play').textContent = 'Ⅱ Pozastaviť'; $('play').setAttribute('aria-pressed', 'true');
+    timer = window.setInterval(() => changeStep(step + 1), 2500); renderStage();
+  });
+  $('byte-format').addEventListener('change', () => { if (model) renderInspector(); });
+  $('signal-code').addEventListener('change', () => { if (model) drawSignal(); });
+  $('signal-source').addEventListener('change', () => { if (model) drawSignal(); });
+  $('journey').addEventListener('keydown', (event) => { if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); pause(); changeStep(step + (event.key === 'ArrowRight' ? 1 : -1)); } });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+  window.EncapsulationLab = { pause: pause, refresh: refresh, getState: () => ({ step: step, playing: timer !== null, config: model ? Object.assign({}, model.config) : null }) };
+  refresh();
+}());
+</script>

@@ -1,0 +1,18 @@
+<style>
+  body { max-width: 1440px; margin-inline: auto; }
+  [role="tabpanel"][hidden] { display: none !important; }
+  .network-lab-heading { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; margin: 4px 0 20px; }
+  .network-lab-heading strong { font-weight: 500; }
+  .network-lab-heading span { color: var(--muted-foreground); font-size: 13px; }
+  .network-lab-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border); margin-bottom: 28px; padding-bottom: 10px; }
+  .network-lab-tabs button { padding: 10px 16px; border: 0; border-radius: 9px; background: transparent; color: var(--muted-foreground); font: inherit; cursor: pointer; text-align: left; }
+  .network-lab-tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-foreground); }
+  .network-lab-tabs button:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+  @media (max-width: 560px) { .network-lab-tabs button { padding: 10px; font-size: 13px; } .network-lab-heading { margin-bottom: 14px; } }
+</style>
+<header class="network-lab-heading"><strong>Sieťové laboratórium</strong><span>Dáta, signál a prepínanie rámcov</span></header>
+<nav class="network-lab-tabs" role="tablist" aria-label="Simulácie siete">
+  <button type="button" id="throughput-tab" role="tab" aria-controls="throughput-panel" aria-selected="true" tabindex="0">01 · Priepustnosť siete</button>
+  <button type="button" id="encapsulation-tab" role="tab" aria-controls="encapsulation-panel" aria-selected="false" tabindex="-1">02 · Enkapsulácia a deenkapsulácia</button>
+  <button type="button" id="switching-tab" role="tab" aria-controls="switching-panel" aria-selected="false" tabindex="-1">03 · Ako switch spracúva rámce</button>
+</nav>

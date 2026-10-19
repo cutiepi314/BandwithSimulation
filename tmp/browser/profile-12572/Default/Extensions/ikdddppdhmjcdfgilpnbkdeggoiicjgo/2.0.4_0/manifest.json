@@ -1,0 +1,29 @@
+{
+   "background": {
+      "service_worker": "background.js"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "CryptoJS.js", "content_script.js" ],
+      "matches": [ "https://*.webex.com/*/cwcsf-nativemsg-iframe-47c988a4-c91d-4ba8-a458-91d6542be08b.html", "https://*.webex.com/cwcsf-nativemsg-iframe-47c988a4-c91d-4ba8-a458-91d6542be08b.html", "https://*.webex.com.cn/*/cwcsf-nativemsg-iframe-47c988a4-c91d-4ba8-a458-91d6542be08b.html", "https://*.webex.com.cn/cwcsf-nativemsg-iframe-47c988a4-c91d-4ba8-a458-91d6542be08b.html" ],
+      "run_at": "document_start"
+   } ],
+   "default_locale": "en",
+   "description": "__MSG_appDesc__",
+   "host_permissions": [ "https://*.webex.com/*", "https://*.webex.com.cn/*" ],
+   "icons": {
+      "128": "icon128.png",
+      "32": "icon32.png",
+      "64": "icon64.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxuQHkabpZHMKaZ5NjkxCDV5Jke0lsySjfiUBWZWoo7W+0exGzeWjeR4nWX2s4MgMbsR2l/rYvL80lMiWSKFsS3+uvTc+BZFwrfO5U+HddvE/DxDIYFUeBqklMDeyWSZ2v7BJfllLiNqAl3Cdn4khgv95gCeZDV9bffgzNYfa9bVKPeT12F/a4kZMqIMHMi8wkYU/08Cx29ujVsBvdrUYGo2lIDR/Ct8nxModGGDlGOpFbZ5V0GTZChGN0kH9/qXGme8Alqh+B/uT6+2n2kLOUWYsLaD9kBrAGK2grMQk7aEJACl2FK7FErv/XN6umDFSFGDs5P6E+DwEd+swyM7RMQIDAQAB",
+   "manifest_version": 3,
+   "name": "__MSG_appName__",
+   "permissions": [ "nativeMessaging" ],
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "2.0.4",
+   "web_accessible_resources": [ {
+      "matches": [ "\u003Call_urls>" ],
+      "resources": [ "cwcsf-nativemsg-iframe-47c988a4-c91d-4ba8-a458-91d6542be08b.html" ]
+   } ]
+}

@@ -1,0 +1,123 @@
+<style>
+  #switching-lab { --sw-blue: var(--primary); --sw-green: var(--green); --sw-orange: var(--orange); color: var(--foreground); padding: 10px 0 30px; font-size: 14px; line-height: 1.55; }
+  #switching-lab *, #switching-lab *::before, #switching-lab *::after { box-sizing: border-box; }
+  #switching-lab [hidden] { display: none !important; }
+  #switching-lab h2, #switching-lab h3, #switching-lab p { margin: 0; }
+  #switching-lab h2 { font-size: clamp(24px, 3.2vw, 36px); letter-spacing: -.04em; line-height: 1.2; }
+  #switching-lab h3 { font-size: 16px; letter-spacing: -.015em; }
+  #switching-lab .sw-eyebrow { text-transform: uppercase; letter-spacing: .13em; font-size: 10px; color: var(--muted-foreground); font-weight: 700; margin-bottom: 7px; }
+  #switching-lab .sw-muted { color: var(--muted-foreground); font-size: 12px; }
+  #switching-lab .sw-intro { margin-top: 10px; max-width: 780px; color: var(--muted-foreground); }
+  #switching-lab .sw-topics, #switching-lab .sw-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+  #switching-lab .sw-topics { margin: 22px 0; }
+  #switching-lab button, #switching-lab select, #switching-lab input { font: inherit; }
+  #switching-lab button, #switching-lab select { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--foreground); background: var(--background); min-height: 36px; max-width: 100%; }
+  #switching-lab button { cursor: pointer; font-size: 12px; }
+  #switching-lab button:disabled { opacity: .4; cursor: default; }
+  #switching-lab :focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+  #switching-lab button[aria-pressed="true"], #switching-lab .sw-primary { color: var(--accent-foreground); background: var(--accent); border-color: var(--primary); }
+  #switching-lab .sw-grid { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(270px,1fr); gap: 16px; align-items: start; }
+  #switching-lab .sw-card { min-width: 0; border: 1px solid var(--border); border-radius: 15px; padding: 20px; background: var(--card); }
+  #switching-lab .sw-stack { display: grid; gap: 16px; }
+  #switching-lab .sw-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  #switching-lab .sw-badge { display: inline-block; border-radius: 20px; background: var(--accent); color: var(--accent-foreground); padding: 5px 10px; font-size: 11px; }
+  #switching-lab .sw-diagram { width: 100%; display: block; height: auto; }
+  #switching-lab .sw-diagram text { font-family: var(--font-sans); fill: var(--foreground); }
+  #switching-lab .sw-diagram .sw-wire { stroke: var(--border); stroke-width: 3; }
+  #switching-lab .sw-diagram .sw-input { stroke: var(--sw-blue); stroke-width: 4; }
+  #switching-lab .sw-diagram .sw-output { stroke: var(--sw-green); stroke-width: 4; }
+  #switching-lab .sw-diagram .sw-reject { stroke: var(--sw-orange); stroke-width: 4; }
+  #switching-lab .sw-diagram .sw-node { fill: var(--background); stroke: var(--border); stroke-width: 1.5; }
+  #switching-lab .sw-diagram .sw-dot { fill: var(--sw-blue); }
+  #switching-lab .sw-diagram .sw-dot-out { fill: var(--sw-green); }
+  #switching-lab .sw-frame { display: grid; grid-template-columns: 1.4fr 1.4fr 1fr .65fr; gap: 4px; margin: 14px 0; }
+  #switching-lab .sw-frame > div { min-width: 0; padding: 9px; border-radius: 7px; background: var(--background); border-top: 3px solid var(--border); }
+  #switching-lab .sw-frame > div:nth-child(1) { border-color: var(--sw-green); }
+  #switching-lab .sw-frame > div:nth-child(2) { border-color: var(--sw-blue); }
+  #switching-lab .sw-frame small, #switching-lab .sw-frame strong { display: block; font-size: 10px; overflow-wrap: anywhere; }
+  #switching-lab .sw-frame small { color: var(--muted-foreground); }
+  #switching-lab .sw-caption { margin: 15px 0; min-height: 88px; }
+  #switching-lab .sw-caption p { color: var(--muted-foreground); font-size: 13px; margin-top: 7px; }
+  #switching-lab .sw-stages { display: flex; gap: 5px; margin: 12px 0; }
+  #switching-lab .sw-stages span { flex: 1; font-size: 10px; padding-top: 6px; border-top: 3px solid var(--border); }
+  #switching-lab .sw-stages .sw-active { border-color: var(--primary); color: var(--accent-foreground); }
+  #switching-lab table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 12px 0; }
+  #switching-lab th, #switching-lab td { text-align: left; padding: 9px 5px; border-bottom: 1px solid var(--border); }
+  #switching-lab th { font-size: 10px; color: var(--muted-foreground); font-weight: 500; }
+  #switching-lab .sw-learned { background: var(--accent); }
+  #switching-lab code { font-family: var(--font-mono); font-size: 11px; overflow-wrap: anywhere; }
+  #switching-lab label { display: grid; gap: 5px; font-size: 12px; min-width: 0; }
+  #switching-lab .sw-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  #switching-lab label.sw-check { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+  #switching-lab .sw-note { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); }
+  #switching-lab .sw-callout { border-left: 3px solid var(--primary); padding: 10px 13px; background: var(--accent); font-size: 13px; margin: 14px 0; }
+  #switching-lab .sw-timeline { margin: 20px 0; }
+  #switching-lab .sw-track { position: relative; height: 38px; border-radius: 7px; background: var(--background); margin: 7px 0 16px; overflow: hidden; }
+  #switching-lab .sw-track > span { display: block; height: 100%; width: 0; background: var(--primary); }
+  #switching-lab .sw-track.sw-send > span { background: var(--sw-green); }
+  #switching-lab .sw-track > small { position: absolute; inset: 9px; color: var(--foreground); font-size: 11px; }
+  #switching-lab .sw-slider { width: 100%; accent-color: var(--primary); }
+  #switching-lab .sw-slots { display: flex; gap: 4px; margin: 8px 0 14px; flex-wrap: wrap; }
+  #switching-lab .sw-slot { flex: 0 0 27px; height: 27px; border-radius: 5px; border: 1px solid var(--border); background: var(--background); font-size: 10px; display: grid; place-items: center; }
+  #switching-lab .sw-slot.sw-filled { background: var(--accent); border-color: var(--primary); color: var(--accent-foreground); }
+  #switching-lab .sw-stats { display: flex; flex-wrap: wrap; gap: 20px; margin: 14px 0; }
+  #switching-lab .sw-stats strong { display: block; font-size: 25px; letter-spacing: -.04em; }
+  #switching-lab .sw-stats span { font-size: 11px; color: var(--muted-foreground); }
+  #switching-lab details { margin-top: 12px; }
+  #switching-lab summary { cursor: pointer; font-weight: 600; }
+  #switching-lab details p { margin-top: 9px; color: var(--muted-foreground); font-size: 13px; }
+  #switching-lab .sw-octets { display: grid; grid-template-columns: repeat(6,1fr); gap: 5px; margin: 18px 0; }
+  #switching-lab .sw-octets span { display: grid; text-align: center; padding: 10px 2px; background: var(--accent); border-radius: 7px; font-family: var(--font-mono); }
+  #switching-lab .sw-octets small { font-size: 9px; color: var(--muted-foreground); }
+  #switching-lab .sw-answers { display: grid; gap: 7px; margin-top: 14px; }
+  #switching-lab .sw-answers button { text-align: left; }
+  #switching-lab .sw-feedback { margin-top: 12px; font-size: 13px; min-height: 42px; }
+  #switching-lab .sw-footer { margin-top: 22px; color: var(--muted-foreground); font-size: 11px; }
+  #switching-lab a { color: var(--accent-foreground); }
+  @media (max-width: 900px) { #switching-lab .sw-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { #switching-lab .sw-card { padding: 13px; } #switching-lab .sw-frame { grid-template-columns: 1fr 1fr; } #switching-lab .sw-fields { grid-template-columns: 1fr; } #switching-lab .sw-topics button { flex: 1 1 42%; } #switching-lab .sw-diagram text { font-size: 20px; } #switching-lab .sw-diagram rect + text { font-size: 30px; } #switching-lab .sw-diagram rect + text + text, #switching-lab .sw-diagram text[font-size="10"] { display: none; } }
+</style>
+<div id="switching-lab">
+  <div class="sw-eyebrow">Ethernet / L2 / interaktívna lekcia</div>
+  <h2>Ako switch spracúva rámce</h2>
+  <p class="sw-intro">SOURCE učí. DESTINATION rozhoduje. Sleduj rámec cez switch, buduj MAC tabuľku a vyskúšaj, čo sa stane pri neznámom cieli, chybe alebo plnom bufferi.</p>
+  <nav class="sw-topics" aria-label="Témy o switchi">
+    <button type="button" data-sw-topic="learning" aria-controls="sw-learning" aria-pressed="true">01 · Rámce a MAC tabuľka</button>
+    <button type="button" data-sw-topic="forwarding" aria-controls="sw-forwarding" aria-pressed="false">02 · FCS a prepínanie</button>
+    <button type="button" data-sw-topic="buffers" aria-controls="sw-buffers" aria-pressed="false">03 · Buffery</button>
+    <button type="button" data-sw-topic="basics" aria-controls="sw-basics" aria-pressed="false">04 · MAC a broadcast</button>
+    <button type="button" data-sw-topic="exercise" aria-controls="sw-exercise" aria-pressed="false">05 · Ty si switch</button>
+  </nav>
+  <section id="sw-learning" aria-label="Učenie MAC tabuľky">
+    <div class="sw-grid">
+      <div class="sw-card">
+        <div class="sw-toolbar"><h3>Jedna sieť. Štyri počítače.</h3><span id="sw-frame-count" class="sw-badge">Rámec 1 / 5</span></div>
+        <div id="sw-network"></div>
+        <p class="sw-muted">Modrá: vstup · zelená: výstup · oranžová: rámec dorazil, ale PC ho neprijme ako svoj.</p>
+        <div class="sw-frame" aria-label="Ethernetový rámec">
+          <div><small>Destination MAC</small><strong id="sw-destination"></strong></div><div><small>Source MAC</small><strong id="sw-source"></strong></div><div><small>Dáta</small><strong>IP paket</strong></div><div><small>FCS</small><strong>4 B · CRC</strong></div>
+        </div>
+        <div id="sw-stages" class="sw-stages"><span>1 · Príjem</span><span>2 · Učenie</span><span>3 · Cieľ</span><span>4 · Odoslanie</span></div>
+        <div class="sw-caption" aria-live="polite"><h3 id="sw-step-title"></h3><p id="sw-step-text"></p></div>
+        <div class="sw-actions"><button type="button" id="sw-prev">← Späť</button><button type="button" id="sw-play" aria-pressed="false">▶ Prehrať</button><button type="button" id="sw-next" class="sw-primary">Ďalší krok →</button><button type="button" id="sw-reset">Od začiatku</button></div>
+      </div>
+      <div class="sw-stack">
+        <div class="sw-card"><div class="sw-toolbar"><h3>MAC tabuľka SW1</h3><span id="sw-clock" class="sw-muted">t = 0 s</span></div><table><thead><tr><th>VLAN</th><th>MAC adresa</th><th>Port</th></tr></thead><tbody id="sw-mac-table"></tbody></table><p id="sw-table-note" class="sw-muted"></p><div class="sw-actions" style="margin-top:12px"><button type="button" id="sw-age">Posunúť čas o 300 s</button><button type="button" id="sw-clear">Vymazať tabuľku</button></div><p class="sw-note">Dynamické záznamy sa učia zo source MAC. V tomto modeli vypršia po 300 s bez obnovenia. Čas posúvaš ručne.</p></div>
+        <div class="sw-card"><h3>Vyskúšaj vlastný rámec</h3><div class="sw-fields"><label>Odosielateľ<select id="sw-custom-source"><option value="1">PC1 · Fa0/1</option><option value="2">PC2 · Fa0/2</option><option value="3">PC3 · Fa0/3</option><option value="4">PC4 · Fa0/4</option></select></label><label>Príjemca<select id="sw-custom-destination"><option value="1">PC1 · M1</option><option value="2">PC2 · M2</option><option value="3" selected>PC3 · M3</option><option value="4">PC4 · M4</option><option value="broadcast">Broadcast · všetci</option></select></label></div><button type="button" id="sw-custom" class="sw-primary">Odoslať vlastný rámec</button><button type="button" id="sw-lesson" style="margin-top:8px">Načítať príklad z prezentácie</button><label class="sw-check"><input type="checkbox" id="sw-vlans"> Rozdeliť: PC1/PC2 → VLAN 1, PC3/PC4 → VLAN 2</label><p class="sw-muted">Zmena VLAN začne s prázdnou tabuľkou. Flooding ostáva v rovnakej VLAN. Cieľ na vstupnom porte sa neprepošle.</p></div>
+      </div>
+    </div>
+  </section>
+  <section id="sw-forwarding" aria-label="Metódy prepínania" hidden>
+    <div class="sw-grid"><div class="sw-card"><div class="sw-toolbar"><h3>Kedy sa začne odosielanie?</h3><span class="sw-badge">Schematický čas</span></div><div class="sw-fields"><label>Metóda<select id="sw-method"><option value="store">Store-and-forward</option><option value="cut">Cut-through</option></select></label><label>Rámec<select id="sw-corrupt"><option value="valid">Platný FCS</option><option value="bad">Poškodený rámec · FCS nesedí</option></select></label></div><div class="sw-timeline"><span class="sw-muted">Príjem: Destination → Source → dáta → FCS</span><div class="sw-track"><span id="sw-rx-bar"></span><small id="sw-rx-label"></small></div><span class="sw-muted">Výstup do cieľového portu</span><div class="sw-track sw-send"><span id="sw-tx-bar"></span><small id="sw-tx-label"></small></div></div><label>Čas <input class="sw-slider" id="sw-forward-time" type="range" min="0" max="210" value="0"></label><div class="sw-actions" style="margin-top:14px"><button type="button" id="sw-forward-play" aria-pressed="false">▶ Prehrať</button><button type="button" id="sw-forward-reset">Vynulovať čas</button></div><p id="sw-forward-status" class="sw-callout" aria-live="polite"></p><p class="sw-muted">Rovnaké rýchlosti vstupu a výstupu, voľný cieľový port, známa destination MAC. Bez preambuly a medzirámcovej medzery; oneskorenia sú ilustračné.</p></div><div class="sw-card"><h3>FCS odhalí chybu, neopraví ju</h3><p class="sw-note">FCS má 4 bajty na konci rámca. Príjemca porovná prijatú hodnotu s CRC vypočítaným z prijatého rámca. Pri nezhode je rámec chybný.</p><div class="sw-callout">Store-and-forward čaká na celý rámec a kontrolu FCS. Cut-through môže začať už po prečítaní cieľovej MAC.</div><p class="sw-muted">Cut-through skracuje čakanie, ale môže poslať aj poškodený rámec. Cieľová sieťová karta ho po kontrole FCS zahodí.</p></div></div>
+  </section>
+  <section id="sw-buffers" aria-label="Pamäť switcha" hidden>
+    <div class="sw-grid"><div class="sw-card"><div class="sw-toolbar"><h3>100 Mb/s dovnútra → 10 Mb/s von</h3><span class="sw-badge">Cieľ: Fa0/4</span></div><div class="sw-fields"><label>Pamäť<select id="sw-buffer-mode"><option value="port">Port-based · 4 miesta na port</option><option value="shared">Shared memory · 16 spoločných miest</option></select></label><label>Prísun rámcov<select id="sw-buffer-load"><option value="10">100 Mb/s · preťaženie</option><option value="1">10 Mb/s · vyrovnaný prenos</option><option value="0">0 Mb/s · vyprázdniť front</option></select></label></div><div id="sw-buffer-view"></div><div class="sw-stats"><div><strong id="sw-buffer-waiting">0</strong><span>čaká</span></div><div><strong id="sw-buffer-sent">0</strong><span>odoslaných</span></div><div><strong id="sw-buffer-dropped">0</strong><span>zahodených</span></div></div><div class="sw-actions"><button type="button" id="sw-buffer-tick" class="sw-primary">Jeden časový krok</button><button type="button" id="sw-buffer-play" aria-pressed="false">▶ Spustiť</button><button type="button" id="sw-buffer-reset">Vyprázdniť a vynulovať</button></div><p id="sw-buffer-status" class="sw-callout" aria-live="polite"></p><p class="sw-muted">Model rovnako veľkých rámcov: za krok odíde najviac 1 čakajúci rámec na port a potom príde dávka. Jeden krok zodpovedá času odoslania rámca pri 10 Mb/s. Zmena typu pamäte vynuluje simuláciu.</p></div><div class="sw-card"><h3>Rovnaká kapacita, iné využitie</h3><p class="sw-note">Port-based: každý výstup má v tejto ukážke 4 vyhradené miesta. Fa0/4 sa zaplní, hoci pri ostatných portoch zostáva voľná pamäť.</p><p class="sw-note">Shared memory: všetkých 16 miest môže využiť práve preťažený port. Pridelenie sa mení podľa potreby.</p><div class="sw-callout">Buffer vyrovná krátku špičku. Pri trvalom preťažení sa zaplní aj spoločná pamäť a ďalšie rámce sa zahodia.</div></div></div>
+  </section>
+  <section id="sw-basics" aria-label="MAC adresy a broadcast" hidden>
+    <div class="sw-grid"><div class="sw-stack"><div class="sw-card"><h3>MAC adresa = 48 bitov = 6 bajtov</h3><div class="sw-octets"><span>02<small>8 bitov</small></span><span>00<small>8 bitov</small></span><span>00<small>8 bitov</small></span><span>00<small>8 bitov</small></span><span>00<small>8 bitov</small></span><span>01<small>8 bitov</small></span></div><p>12 hexadecimálnych číslic · každá predstavuje 4 bity · číslice 0–9 a A–F.</p><p class="sw-note">MAC označuje sieťové rozhranie. Pri univerzálne pridelenej adrese tvorí prvých 24 bitov OUI výrobcu a ďalších 24 bitov časť pridelenú výrobcom. Naše adresy 02:00:00:00:00:01 až :04 sú lokálne pridelené príklady; prefix 02 tu neurčuje výrobcu.</p></div><div class="sw-card"><h3>Tri situácie doručovania</h3><table><thead><tr><th>Cieľ</th><th>Čo switch urobí</th></tr></thead><tbody><tr><td>Known unicast</td><td>Jeden port z MAC tabuľky</td></tr><tr><td>Unknown unicast</td><td>Flooding v rovnakej VLAN</td></tr><tr><td>Broadcast</td><td>Flooding v rovnakej VLAN</td></tr></tbody></table><p class="sw-muted">Flooding nemení destination MAC a vynecháva vstupný port. Ak je známy cieľ na vstupnom porte, switch rámec ďalej neprepošle.</p></div></div><div class="sw-stack"><div class="sw-card"><h3>FF:FF:FF:FF:FF:FF</h3><p class="sw-note">Broadcast MAC obsahuje 48 jednotiek. Napríklad ARP request sa odošle všetkým ostatným zariadeniam v danej broadcastovej doméne, aj keď je MAC tabuľka plná.</p><div class="sw-callout">Jedna VLAN = jedna L2 broadcastová doména. Samotné porty switcha ju nerozdelia.</div><button type="button" id="sw-demo-vlan">Vyskúšať broadcast vo VLAN</button><details><summary>Čo spôsobuje priveľa broadcastov?</summary><p>Obsadzujú linky a zaťažujú zariadenia. L2 slučka môže spôsobiť broadcastovú búrku. STP bráni slučkám, VLAN zmenšujú domény a storm control obmedzuje príslušnú prevádzku.</p></details></div><div class="sw-card"><h3>Rýchle opakovanie</h3><details><summary>Čo prenáša Ethernet?</summary><p>Rámce v spojovej vrstve OSI, L2. Source MAC označuje odosielateľa, destination MAC príjemcu na lokálnej linke.</p></details><details><summary>MAC alebo IP?</summary><p>L2 switch vyberá výstup podľa destination MAC. Router smeruje IP paket podľa cieľovej IP adresy.</p></details><details><summary>Full-duplex a CSMA/CD?</summary><p>Obe strany môžu súčasne vysielať aj prijímať. Pri full-duplex sa CSMA/CD nepoužíva.</p></details><details><summary>Ako zobrazím tabuľku?</summary><p>Na switchi: <code>show mac address-table</code>. Na PC: <code>arp -a</code> zobrazuje ARP cache, nie MAC tabuľku switcha.</p></details></div></div></div>
+  </section>
+  <section id="sw-exercise" aria-label="Praktická úloha Ty si switch" hidden>
+    <div class="sw-grid"><div class="sw-card"><div class="sw-toolbar"><h3>Ty si switch</h3><span id="sw-exercise-count" class="sw-badge"></span></div><p class="sw-muted">A → Fa0/1 · B → Fa0/2 · C → Fa0/3 · D → Fa0/4. Jedna VLAN, na začiatku prázdna tabuľka, bez starnutia. A = 02:00:00:00:00:0A, ostatní končia :0B, :0C, :0D.</p><h3 id="sw-question" style="margin-top:20px"></h3><p class="sw-muted" style="margin-top:8px">Ktorými portmi switch rámec odošle? Tabuľka sa medzi rámcami zachováva.</p><div id="sw-answers" class="sw-answers"></div><div id="sw-exercise-feedback" class="sw-feedback" aria-live="polite"></div><div class="sw-actions"><button type="button" id="sw-exercise-next" disabled class="sw-primary">Ďalší rámec →</button><button type="button" id="sw-exercise-reset">Začať znova</button></div></div><div class="sw-card"><h3>Tabuľka po vyriešených krokoch</h3><table><thead><tr><th>VLAN</th><th>MAC</th><th>Port</th></tr></thead><tbody id="sw-exercise-table"></tbody></table><p id="sw-exercise-score" class="sw-muted"></p><div class="sw-note">Pri každom rámci si najprv všimni SOURCE: tú sa switch naučí alebo obnoví. Až potom hľadaj DESTINATION.</div><details><summary>Celé zadanie z prezentácie</summary><p>1. A → C<br>2. C → A<br>3. B → C<br>4. A → D<br>5. D → broadcast<br>6. C → D</p></details></div></div>
+  </section>
+  <p class="sw-footer">Podľa <a href="https://www.canva.com/design/DAHXIU0CIbg/bNhIl6QAwFyafuUssmY5aQ/edit" target="_blank" rel="noopener noreferrer">prezentácie „Ako switch spracováva ethernetové rámce – pokračovanie“</a> · <a href="https://www.ciscopress.com/articles/article.asp?p=3089352&amp;seqNum=7" target="_blank" rel="noopener noreferrer">Cisco Press: prepínanie a buffery</a>. Topológia bez slučiek, aktívne porty; VLAN sú v ukážke priradené access portom.</p>
+</div>

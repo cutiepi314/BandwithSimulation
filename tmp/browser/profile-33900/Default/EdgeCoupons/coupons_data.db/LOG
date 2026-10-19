@@ -1,0 +1,5 @@
+2026/10/19-10:17:24.354 9550 Creating DB C:\Users\bator\Downloads\BandwidthSimulation\tmp\browser\profile-33900\Default\EdgeCoupons/coupons_data.db since it was missing.
+2026/10/19-10:17:24.370 9550 Reusing MANIFEST C:\Users\bator\Downloads\BandwidthSimulation\tmp\browser\profile-33900\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/10/19-10:17:24.591 64d0 Level-0 table #5: started
+2026/10/19-10:17:24.597 64d0 Level-0 table #5: 683273 bytes OK
+2026/10/19-10:17:24.602 64d0 Delete type=0 #3

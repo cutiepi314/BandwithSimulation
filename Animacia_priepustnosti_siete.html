@@ -1521,6 +1521,9 @@ html&gt;body{padding:0}&lt;/style&gt;
   if ([&quot;light&quot;, &quot;dark&quot;].includes(initialGlobals.themePreference)) {
     root.dataset.themePreference = initialGlobals.themePreference;
   }
+  if (typeof initialGlobals.tab === &quot;string&quot; &amp;&amp; initialGlobals.tab !== &quot;&quot;) {
+    root.dataset.initialTab = initialGlobals.tab;
+  }
   let nextStateRequestId = 0;
   /** @type {Map&lt;number, { resolve: () =&gt; void; reject: (error: Error) =&gt; void; timeout: ReturnType&lt;typeof globalThis.setTimeout&gt;; serializedState: string }&gt;} */
   const pendingStateWrites = new Map();
@@ -1717,6 +1720,8 @@ html&gt;body{padding:0}&lt;/style&gt;
             const data = apply(getMessageData, event, []);
             if (typeof data === &quot;object&quot; &amp;&amp; data?.type === &quot;measure&quot;) {
               sendHeight();
+            } else if (typeof data === &quot;object&quot; &amp;&amp; data?.type === &quot;open-tab&quot;) {
+              globalThis.openNetworkLabTab?.(data.tab);
             } else if (
               typeof data === &quot;object&quot; &amp;&amp;
               data?.type === &quot;widget-state-result&quot;
@@ -1764,6 +1769,11 @@ html&gt;body{padding:0}&lt;/style&gt;
     }
     syncTheme();
     postToHost(&quot;theme&quot;, { preference });
+  };
+  globalThis.setNetworkLabTab = (tab) =&gt; {
+    if (typeof tab === &quot;string&quot;) {
+      postToHost(&quot;tab&quot;, { tab });
+    }
   };
   globalThis.addEventListener(&quot;click&quot;, (event) =&gt; {
     if (event.defaultPrevented) {
@@ -1831,11 +1841,11 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;/div&gt;
 &lt;/header&gt;
 &lt;nav class=&quot;network-lab-tabs&quot; role=&quot;tablist&quot; aria-label=&quot;Simulácie siete&quot;&gt;
-  &lt;button type=&quot;button&quot; id=&quot;throughput-tab&quot; role=&quot;tab&quot; aria-controls=&quot;throughput-panel&quot; aria-selected=&quot;true&quot; tabindex=&quot;0&quot;&gt;01 · Priepustnosť siete&lt;/button&gt;
-  &lt;button type=&quot;button&quot; id=&quot;encapsulation-tab&quot; role=&quot;tab&quot; aria-controls=&quot;encapsulation-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;02 · Enkapsulácia a deenkapsulácia&lt;/button&gt;
-  &lt;button type=&quot;button&quot; id=&quot;switching-tab&quot; role=&quot;tab&quot; aria-controls=&quot;switching-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;03 · Ako switch spracúva rámce&lt;/button&gt;
-  &lt;button type=&quot;button&quot; id=&quot;speed-tab&quot; role=&quot;tab&quot; aria-controls=&quot;speed-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;04 · Rýchlosť a úzke hrdlá&lt;/button&gt;
-  &lt;button type=&quot;button&quot; id=&quot;backup-tab&quot; role=&quot;tab&quot; aria-controls=&quot;backup-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;05 · Zálohovanie dát&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;throughput-tab&quot; data-slug=&quot;priepustnost&quot; role=&quot;tab&quot; aria-controls=&quot;throughput-panel&quot; aria-selected=&quot;true&quot; tabindex=&quot;0&quot;&gt;01 · Priepustnosť siete&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;encapsulation-tab&quot; data-slug=&quot;enkapsulacia&quot; role=&quot;tab&quot; aria-controls=&quot;encapsulation-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;02 · Enkapsulácia a deenkapsulácia&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;switching-tab&quot; data-slug=&quot;spracovanie-ramcov&quot; role=&quot;tab&quot; aria-controls=&quot;switching-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;03 · Ako switch spracúva rámce&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;speed-tab&quot; data-slug=&quot;rychlost&quot; role=&quot;tab&quot; aria-controls=&quot;speed-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;04 · Rýchlosť a úzke hrdlá&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;backup-tab&quot; data-slug=&quot;zalohovanie&quot; role=&quot;tab&quot; aria-controls=&quot;backup-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;05 · Zálohovanie dát&lt;/button&gt;
 &lt;/nav&gt;
 
 &lt;section id=&quot;throughput-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;throughput-tab&quot;&gt;
@@ -3930,7 +3940,12 @@ html&gt;body{padding:0}&lt;/style&gt;
 &lt;script&gt;
 (() =&gt; {
   const tabs = [...document.querySelectorAll(&#x27;.network-lab-tabs [role=&quot;tab&quot;]&#x27;)];
-  function activate(tab, focus = false) {
+  // Accepts a slug (#spracovanie-ramcov) or the tab number (#3).
+  function findTab(key) {
+    const text = String(key ?? &#x27;&#x27;).toLowerCase();
+    return tabs.find(tab =&gt; tab.dataset.slug === text) || tabs[Number(text) - 1];
+  }
+  function activate(tab, focus = false, announce = true) {
     for (const item of tabs) {
       const selected = item === tab;
       item.setAttribute(&#x27;aria-selected&#x27;, String(selected));
@@ -3944,7 +3959,12 @@ html&gt;body{padding:0}&lt;/style&gt;
     if (tab.id !== &#x27;speed-tab&#x27;) window.SpeedLab?.pause();
     if (tab.id !== &#x27;backup-tab&#x27;) window.BackupLab?.pause();
     if (focus) tab.focus();
+    if (announce) window.setNetworkLabTab?.(tab.dataset.slug);
   }
+  window.openNetworkLabTab = key =&gt; {
+    const tab = findTab(key);
+    if (tab) activate(tab, false, false);
+  };
   const themeButtons = [...document.querySelectorAll(&#x27;[data-theme-choice]&#x27;)];
   function showTheme(choice) {
     for (const button of themeButtons) button.setAttribute(&#x27;aria-pressed&#x27;, String(button.dataset.themeChoice === choice));
@@ -3954,6 +3974,8 @@ html&gt;body{padding:0}&lt;/style&gt;
     showTheme(button.dataset.themeChoice);
   }));
   showTheme(document.documentElement.dataset.themePreference || &#x27;auto&#x27;);
+  const initialTab = findTab(document.documentElement.dataset.initialTab);
+  if (initialTab) activate(initialTab, false, false);
   tabs.forEach((tab, index) =&gt; {
     tab.addEventListener(&#x27;click&#x27;, () =&gt; activate(tab));
     tab.addEventListener(&#x27;keydown&#x27;, event =&gt; {
@@ -4640,13 +4662,30 @@ html&gt;body{padding:0}&lt;/style&gt;
       themePreference === "auto" ? "" : themePreference;
   };
   applyTheme();
+  // A link such as page.html#spracovanie-ramcov opens that tab directly.
+  const tabPattern = /^[a-z0-9-]{1,40}$/;
+  const readTab = () => {
+    try {
+      const tab = decodeURIComponent(location.hash.slice(1)).toLowerCase();
+      return tabPattern.test(tab) ? tab : "";
+    } catch {
+      return "";
+    }
+  };
   const initialGlobals = {
     widgetState: state,
     statePersistence: storage == null ? "none" : "local",
     themePreference,
+    tab: readTab(),
   };
 
   const channel = new MessageChannel();
+  globalThis.addEventListener("hashchange", () => {
+    const tab = readTab();
+    if (tab !== "") {
+      channel.port1.postMessage({ type: "open-tab", tab });
+    }
+  });
   channel.port1.addEventListener("message", (event) => {
     const data = event.data;
     if (typeof data !== "object" || data == null) {
@@ -4687,6 +4726,12 @@ html&gt;body{padding:0}&lt;/style&gt;
         }
       } catch {
         // The choice still applies until the page is closed.
+      }
+      return;
+    }
+    if (data.type === "tab") {
+      if (typeof data.tab === "string" && tabPattern.test(data.tab)) {
+        history.replaceState(null, "", "#" + data.tab);
       }
       return;
     }

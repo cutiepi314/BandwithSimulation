@@ -1509,6 +1509,9 @@ html>body{padding:0}</style>
   if (["light", "dark"].includes(initialGlobals.themePreference)) {
     root.dataset.themePreference = initialGlobals.themePreference;
   }
+  if (typeof initialGlobals.tab === "string" && initialGlobals.tab !== "") {
+    root.dataset.initialTab = initialGlobals.tab;
+  }
   let nextStateRequestId = 0;
   /** @type {Map<number, { resolve: () => void; reject: (error: Error) => void; timeout: ReturnType<typeof globalThis.setTimeout>; serializedState: string }>} */
   const pendingStateWrites = new Map();
@@ -1705,6 +1708,8 @@ html>body{padding:0}</style>
             const data = apply(getMessageData, event, []);
             if (typeof data === "object" && data?.type === "measure") {
               sendHeight();
+            } else if (typeof data === "object" && data?.type === "open-tab") {
+              globalThis.openNetworkLabTab?.(data.tab);
             } else if (
               typeof data === "object" &&
               data?.type === "widget-state-result"
@@ -1752,6 +1757,11 @@ html>body{padding:0}</style>
     }
     syncTheme();
     postToHost("theme", { preference });
+  };
+  globalThis.setNetworkLabTab = (tab) => {
+    if (typeof tab === "string") {
+      postToHost("tab", { tab });
+    }
   };
   globalThis.addEventListener("click", (event) => {
     if (event.defaultPrevented) {

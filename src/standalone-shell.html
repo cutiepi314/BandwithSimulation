@@ -95,13 +95,30 @@
       themePreference === "auto" ? "" : themePreference;
   };
   applyTheme();
+  // A link such as page.html#spracovanie-ramcov opens that tab directly.
+  const tabPattern = /^[a-z0-9-]{1,40}$/;
+  const readTab = () => {
+    try {
+      const tab = decodeURIComponent(location.hash.slice(1)).toLowerCase();
+      return tabPattern.test(tab) ? tab : "";
+    } catch {
+      return "";
+    }
+  };
   const initialGlobals = {
     widgetState: state,
     statePersistence: storage == null ? "none" : "local",
     themePreference,
+    tab: readTab(),
   };
 
   const channel = new MessageChannel();
+  globalThis.addEventListener("hashchange", () => {
+    const tab = readTab();
+    if (tab !== "") {
+      channel.port1.postMessage({ type: "open-tab", tab });
+    }
+  });
   channel.port1.addEventListener("message", (event) => {
     const data = event.data;
     if (typeof data !== "object" || data == null) {
@@ -142,6 +159,12 @@
         }
       } catch {
         // The choice still applies until the page is closed.
+      }
+      return;
+    }
+    if (data.type === "tab") {
+      if (typeof data.tab === "string" && tabPattern.test(data.tab)) {
+        history.replaceState(null, "", "#" + data.tab);
       }
       return;
     }

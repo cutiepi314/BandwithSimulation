@@ -61,8 +61,10 @@ async function screenshot(name, width, height) {
   // The standalone file must work even when optional icon/tooltip CDNs are unavailable.
   await cdp('Network.setBlockedURLs', { urls: ['https://unpkg.com/*'] });
   await cdp('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1200, deviceScaleFactor: 1, mobile: false });
-  await cdp('Page.navigate', { url: pathToFileURL(path.join(root, 'Animacia_priepustnosti_siete.html')).href });
-  await until(async () => {
+  const pageUrl = pathToFileURL(path.join(root, 'Animacia_priepustnosti_siete.html')).href;
+  await cdp('Page.navigate', { url: pageUrl });
+  await findLab();
+  async function findLab() { return until(async () => {
     for (const [id, context] of contexts) {
       if (!context.auxData?.isDefault) continue;
       try {
@@ -70,7 +72,7 @@ async function screenshot(name, width, height) {
         if (value.result?.value) { contextId = id; return true; }
       } catch { contexts.delete(id); }
     }
-  }, 'embedded lab initialized');
+  }, 'embedded lab initialized'); }
   assert.equal(await evaluate("document.getElementById('encapsulation-panel').hidden"), true);
   assert.equal(await evaluate("document.querySelectorAll('#net-stations .station').length"), 5);
   await click('encapsulation-tab');
@@ -320,9 +322,23 @@ async function screenshot(name, width, height) {
   assert.equal(await evaluate('document.documentElement.dataset.theme'),'light','auto follows the system again');
   const duplicateIds=await evaluate("(()=>{const ids=[...document.querySelectorAll('[id]')].map(el=>el.id);return ids.filter((id,i)=>ids.indexOf(id)!==i)})()");
   assert.deepEqual(duplicateIds,[],'IDs remain unique across all labs');
+  const currentUrl=async()=>{const h=await cdp('Page.getNavigationHistory');return h.entries[h.currentIndex].url;};
+  const selectedTab="document.querySelector('[role=tab][aria-selected=true]').id";
+  await click('switching-tab');
+  assert.ok((await currentUrl()).endsWith('#spracovanie-ramcov'),'switching tabs updates the shareable link');
+  await cdp('Page.navigate',{url:pageUrl+'#zalohovanie'});
+  await until(async()=>await evaluate(selectedTab)==='backup-tab','hash change opens the backup tab');
+  await cdp('Page.navigate',{url:pageUrl+'#4'});
+  await until(async()=>await evaluate(selectedTab)==='speed-tab','tab number in the hash opens that tab');
+  await cdp('Page.navigate',{url:'about:blank'});
+  contextId=undefined;
+  await cdp('Page.navigate',{url:pageUrl+'#spracovanie-ramcov'});
+  await findLab();
+  assert.equal(await evaluate(selectedTab),'switching-tab','a shared link opens its tab on load');
+  assert.equal(await evaluate("document.getElementById('throughput-panel').hidden"),true);
   assert.deepEqual(errors, [], 'No browser runtime exceptions');
   fs.writeFileSync(path.join(output, 'results.json'), JSON.stringify({ combinations, runtimeErrors: errors, stages: 14, signalSchemes: 5, mobileOverflow: overflow }, null, 2));
-  console.log(`PASS: all five labs; bottleneck upgrades, disk and overhead limits, fair sharing, queue conservation, negotiation, duplex, frame timing, nine quiz answers, five-tab keyboard navigation, backup sizes, restore chains and damaged sets, ten backup quiz answers, animation pausing and mobile layouts. Screenshots: ${output}`);
+  console.log(`PASS: all five labs; bottleneck upgrades, disk and overhead limits, fair sharing, queue conservation, negotiation, duplex, frame timing, nine quiz answers, five-tab keyboard navigation, shareable tab links, backup sizes, restore chains and damaged sets, ten backup quiz answers, animation pausing and mobile layouts. Screenshots: ${output}`);
 })().catch(async error => {
   console.error(error);
   console.error('Runtime errors:', errors);

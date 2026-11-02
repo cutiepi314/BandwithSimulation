@@ -1506,6 +1506,9 @@ html>body{padding:0}</style>
   /** @type {Record<string, unknown> | null} */
   let state = initialGlobals.widgetState ?? null;
   const statePersistence = initialGlobals.statePersistence ?? "none";
+  if (["light", "dark"].includes(initialGlobals.themePreference)) {
+    root.dataset.themePreference = initialGlobals.themePreference;
+  }
   let nextStateRequestId = 0;
   /** @type {Map<number, { resolve: () => void; reject: (error: Error) => void; timeout: ReturnType<typeof globalThis.setTimeout>; serializedState: string }>} */
   const pendingStateWrites = new Map();
@@ -1640,7 +1643,13 @@ html>body{padding:0}</style>
     });
   };
   const syncTheme = () => {
-    const theme = mediaQuery.matches ? "dark" : "light";
+    const preference = root.dataset.themePreference;
+    const theme =
+      preference === "light" || preference === "dark"
+        ? preference
+        : mediaQuery.matches
+          ? "dark"
+          : "light";
     root.dataset.theme = theme;
     globalThis.openai = {
       ...globalThis.openai,
@@ -1732,6 +1741,18 @@ html>body{padding:0}</style>
   );
   document.currentScript?.remove();
   mediaQuery.addEventListener("change", syncTheme);
+  globalThis.setNetworkLabTheme = (preference) => {
+    if (!["auto", "light", "dark"].includes(preference)) {
+      return;
+    }
+    if (preference === "auto") {
+      delete root.dataset.themePreference;
+    } else {
+      root.dataset.themePreference = preference;
+    }
+    syncTheme();
+    postToHost("theme", { preference });
+  };
   globalThis.addEventListener("click", (event) => {
     if (event.defaultPrevented) {
       return;
@@ -2135,6 +2156,9 @@ html>body{padding:0}</style>
 </section>
 <section id="speed-panel" role="tabpanel" aria-labelledby="speed-tab" hidden>
 <!-- SPEED_PANEL -->
+</section>
+<section id="backup-panel" role="tabpanel" aria-labelledby="backup-tab" hidden>
+<!-- BACKUP_PANEL -->
 </section>
 <!-- NETWORK_LAB_CONTROLLER -->
 <script src="https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js"></script>

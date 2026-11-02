@@ -8,12 +8,23 @@
   .network-lab-tabs button { padding: 10px 16px; border: 0; border-radius: 9px; background: transparent; color: var(--muted-foreground); font: inherit; cursor: pointer; text-align: left; }
   .network-lab-tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-foreground); }
   .network-lab-tabs button:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
-  @media (max-width: 560px) { .network-lab-tabs button { padding: 10px; font-size: 13px; } .network-lab-heading { margin-bottom: 14px; } }
+  .network-lab-theme { display: inline-flex; gap: 2px; margin-left: auto; padding: 3px; border: 1px solid var(--border); border-radius: 10px; }
+  .network-lab-theme button { padding: 5px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--muted-foreground); font: inherit; font-size: 12px; cursor: pointer; }
+  .network-lab-theme button[aria-pressed="true"] { background: var(--accent); color: var(--accent-foreground); }
+  .network-lab-theme button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  @media (max-width: 560px) { .network-lab-tabs button { padding: 10px; font-size: 13px; } .network-lab-heading { margin-bottom: 14px; } .network-lab-theme { margin-left: 0; } }
 </style>
-<header class="network-lab-heading"><strong>Sieťové laboratórium</strong><span>Dáta, signál a prepínanie rámcov</span></header>
+<header class="network-lab-heading"><strong>Sieťové laboratórium</strong><span>Dáta, signál, prepínanie rámcov a zálohovanie</span>
+  <div class="network-lab-theme" role="group" aria-label="Farebný režim">
+    <button type="button" data-theme-choice="auto" aria-pressed="true" title="Podľa nastavenia systému">◐ Auto</button>
+    <button type="button" data-theme-choice="light" aria-pressed="false">☀ Svetlý</button>
+    <button type="button" data-theme-choice="dark" aria-pressed="false">☾ Tmavý</button>
+  </div>
+</header>
 <nav class="network-lab-tabs" role="tablist" aria-label="Simulácie siete">
   <button type="button" id="throughput-tab" role="tab" aria-controls="throughput-panel" aria-selected="true" tabindex="0">01 · Priepustnosť siete</button>
   <button type="button" id="encapsulation-tab" role="tab" aria-controls="encapsulation-panel" aria-selected="false" tabindex="-1">02 · Enkapsulácia a deenkapsulácia</button>
   <button type="button" id="switching-tab" role="tab" aria-controls="switching-panel" aria-selected="false" tabindex="-1">03 · Ako switch spracúva rámce</button>
   <button type="button" id="speed-tab" role="tab" aria-controls="speed-panel" aria-selected="false" tabindex="-1">04 · Rýchlosť a úzke hrdlá</button>
+  <button type="button" id="backup-tab" role="tab" aria-controls="backup-panel" aria-selected="false" tabindex="-1">05 · Zálohovanie dát</button>
 </nav>

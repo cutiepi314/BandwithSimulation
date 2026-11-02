@@ -66,7 +66,7 @@ async function screenshot(name, width, height) {
     for (const [id, context] of contexts) {
       if (!context.auxData?.isDefault) continue;
       try {
-        const value = await cdp('Runtime.evaluate', { expression: '!!window.EncapsulationLab && !!window.SwitchingLab && !!window.SpeedLab', contextId: id, returnByValue: true });
+        const value = await cdp('Runtime.evaluate', { expression: '!!window.EncapsulationLab && !!window.SwitchingLab && !!window.SpeedLab && !!window.BackupLab', contextId: id, returnByValue: true });
         if (value.result?.value) { contextId = id; return true; }
       } catch { contexts.delete(id); }
     }
@@ -252,13 +252,77 @@ async function screenshot(name, width, height) {
   await cdp('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'dark'},{name:'prefers-reduced-motion',value:'reduce'}]});
   await evaluate("document.querySelector('[data-sp-topic=path]').click()");
   await screenshot('speed-bottleneck-dark',1440,1250);
+  await cdp('Emulation.setEmulatedMedia',{features:[]});
   await evaluate("document.getElementById('speed-tab').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))");
+  assert.equal(await evaluate("document.getElementById('backup-tab').getAttribute('aria-selected')"),'true');
+  assert.deepEqual(await evaluate('window.BackupLab.getState().sizes'),[1766,21,265,80,251,120,400]);
+  assert.match(await evaluate("document.getElementById('bk-explanation').textContent"),/7 sád/);
+  await evaluate("document.querySelector('[data-bk-strategy=diff]').click()");
+  assert.deepEqual(await evaluate('window.BackupLab.getState().sizes'),[1766,21,286,346,346,466,866]);
+  assert.match(await evaluate("document.getElementById('bk-explanation').textContent"),/2 sady/);
+  await evaluate("document.querySelector('[data-bk-cell=\"1,7\"]').click()");
+  assert.equal(await evaluate('window.BackupLab.getState().sizes[6]'),1766);
+  await evaluate("document.querySelector('[data-bk-cell=\"1,7\"]').click()");
+  await evaluate("(()=>{const s=document.querySelector('[data-bk-type=\"3\"]');s.value='full';s.dispatchEvent(new Event('change',{bubbles:true}));})()");
+  assert.equal(await evaluate('window.BackupLab.getState().strategy'),'custom');
+  assert.equal(await evaluate('window.BackupLab.getState().sizes[4]'),251);
+  await evaluate("document.querySelector('[data-bk-strategy=inc]').click()");
+  await click('bk-play');assert.equal(await evaluate('window.BackupLab.getState().cursor'),0);
+  await click('switching-tab');assert.equal(await evaluate('window.BackupLab.getState().playing'),false);
+  await click('backup-tab');await click('bk-all');
+  await screenshot('backup-week-desktop',1440,1300);
+  await screenshot('backup-week-mobile',390,1300);
+  for(const name of ['week','restore','compare','practice']) {
+    await evaluate(`document.querySelector('[data-bk-topic="${name}"]').click()`);
+    assert.equal(await evaluate('document.documentElement.scrollWidth > innerWidth + 1'),false,`${name} backup-lab mobile overflow`);
+  }
+  await evaluate("document.querySelector('[data-bk-topic=restore]').click()");
+  assert.deepEqual(await evaluate('window.BackupLab.getState().restore.sets'),[0,1,2,3,4,5,6]);
+  await evaluate("document.querySelector('[data-bk-set=\"2\"]').click()");
+  assert.equal(await evaluate('window.BackupLab.getState().restore.latest'),1);
+  assert.match(await evaluate("document.getElementById('bk-restore-explanation').textContent"),/prerušená/);
+  assert.match(await evaluate("document.getElementById('bk-restore-compare').textContent"),/Kompletná \+ diferenciálne2/);
+  await click('bk-restore-step');assert.equal(await evaluate('window.BackupLab.getState().restoreStep'),1);
+  assert.match(await evaluate("document.getElementById('bk-restore-explanation').textContent"),/Nahraté 1 z 7/);
+  await click('bk-restore-step');
+  assert.equal(await evaluate('window.BackupLab.getState().restoreStep'),2);
+  assert.match(await evaluate("document.getElementById('bk-restore-explanation').textContent"),/prerušená/,'restore stops before the damaged set');
+  await screenshot('backup-restore-desktop',1440,1300);
+  await click('bk-restore-repair');assert.equal(await evaluate('window.BackupLab.getState().restore.ok'),true);
+  await evaluate("document.querySelector('[data-bk-topic=compare]').click()");
+  assert.match(await evaluate("document.getElementById('bk-totals').textContent"),/12\s362 MB.*2\s903 MB.*4\s097 MB/);
+  await screenshot('backup-compare-desktop',1440,1300);
+  await evaluate("document.querySelector('[data-bk-topic=practice]').click()");
+  for(const [i,answer] of [2,0,2,2,1,1,1,1,1,1].entries()) {
+    await evaluate(`document.querySelectorAll('#bk-quiz-answers button')[${answer}].click()`);
+    assert.match(await evaluate("document.getElementById('bk-quiz-feedback').textContent"),/Správne/);
+    if(i<9)await click('bk-quiz-next');
+  }
+  assert.match(await evaluate("document.getElementById('bk-quiz-feedback').textContent"),/10 z 10/);
+  await cdp('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'dark'}]});
+  await evaluate("document.querySelector('[data-bk-topic=week]').click()");
+  await screenshot('backup-week-dark',1440,1300);
+  await evaluate("document.getElementById('backup-tab').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))");
   assert.equal(await evaluate("document.getElementById('throughput-tab').getAttribute('aria-selected')"),'true');
+  const background="getComputedStyle(document.documentElement).backgroundColor";
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark','system dark is followed in auto mode');
+  await evaluate("document.querySelector('[data-theme-choice=light]').click()");
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'light','manual light overrides system dark');
+  assert.equal(await evaluate("document.querySelector('[data-theme-choice=light]').getAttribute('aria-pressed')"),'true');
+  const lightBackground=await evaluate(background);
+  await click('backup-tab');await screenshot('backup-week-light-override',1440,1300);
+  await evaluate("document.querySelector('[data-theme-choice=dark]').click()");
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
+  assert.notEqual(await evaluate(background),lightBackground,'manual theme changes the page colors');
+  await cdp('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'light'}]});
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark','manual dark survives a system theme change');
+  await evaluate("document.querySelector('[data-theme-choice=auto]').click()");
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'light','auto follows the system again');
   const duplicateIds=await evaluate("(()=>{const ids=[...document.querySelectorAll('[id]')].map(el=>el.id);return ids.filter((id,i)=>ids.indexOf(id)!==i)})()");
   assert.deepEqual(duplicateIds,[],'IDs remain unique across all labs');
   assert.deepEqual(errors, [], 'No browser runtime exceptions');
   fs.writeFileSync(path.join(output, 'results.json'), JSON.stringify({ combinations, runtimeErrors: errors, stages: 14, signalSchemes: 5, mobileOverflow: overflow }, null, 2));
-  console.log(`PASS: all four labs; bottleneck upgrades, disk and overhead limits, fair sharing, queue conservation, negotiation, duplex, frame timing, nine quiz answers, four-tab keyboard navigation, animation pausing and mobile layouts. Screenshots: ${output}`);
+  console.log(`PASS: all five labs; bottleneck upgrades, disk and overhead limits, fair sharing, queue conservation, negotiation, duplex, frame timing, nine quiz answers, five-tab keyboard navigation, backup sizes, restore chains and damaged sets, ten backup quiz answers, animation pausing and mobile layouts. Screenshots: ${output}`);
 })().catch(async error => {
   console.error(error);
   console.error('Runtime errors:', errors);

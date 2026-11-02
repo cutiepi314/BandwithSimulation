@@ -12,8 +12,18 @@
     if (tab.id !== 'encapsulation-tab') window.EncapsulationLab?.pause();
     if (tab.id !== 'switching-tab') window.SwitchingLab?.pause();
     if (tab.id !== 'speed-tab') window.SpeedLab?.pause();
+    if (tab.id !== 'backup-tab') window.BackupLab?.pause();
     if (focus) tab.focus();
   }
+  const themeButtons = [...document.querySelectorAll('[data-theme-choice]')];
+  function showTheme(choice) {
+    for (const button of themeButtons) button.setAttribute('aria-pressed', String(button.dataset.themeChoice === choice));
+  }
+  themeButtons.forEach(button => button.addEventListener('click', () => {
+    window.setNetworkLabTheme?.(button.dataset.themeChoice);
+    showTheme(button.dataset.themeChoice);
+  }));
+  showTheme(document.documentElement.dataset.themePreference || 'auto');
   tabs.forEach((tab, index) => {
     tab.addEventListener('click', () => activate(tab));
     tab.addEventListener('keydown', event => {

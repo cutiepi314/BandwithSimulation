@@ -164,13 +164,51 @@
 
     footer { margin-top: 44px; text-align: center; color: var(--muted); font-size: 13px; }
 
+    .theme-switch {
+      position: absolute; top: 16px; right: 16px;
+      display: flex; gap: 2px; padding: 3px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    }
+    .theme-switch button {
+      padding: 5px 10px; border: 0; border-radius: 7px;
+      background: transparent; color: var(--muted);
+      font: inherit; font-size: 12px; cursor: pointer;
+    }
+    .theme-switch button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+    .theme-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
     @media (prefers-reduced-motion: reduce) {
       .link, .arrow { transition: none; }
       .link:hover { transform: none; }
     }
   </style>
+  <script>
+    try {
+      const saved = localStorage.getItem('pvalo-theme');
+      if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+    } catch {}
+  </script>
 </head>
 <body>
+  <div class="theme-switch" role="group" aria-label="Farebný režim">
+    <button type="button" data-theme-choice="auto" title="Podľa nastavenia systému">◐ Auto</button>
+    <button type="button" data-theme-choice="light">☀ Svetlý</button>
+    <button type="button" data-theme-choice="dark">☾ Tmavý</button>
+  </div>
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const buttons = document.querySelectorAll('[data-theme-choice]');
+      const show = () => buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === (root.dataset.theme || 'auto'))));
+      buttons.forEach(b => b.addEventListener('click', () => {
+        const choice = b.dataset.themeChoice;
+        if (choice === 'auto') delete root.dataset.theme; else root.dataset.theme = choice;
+        try { choice === 'auto' ? localStorage.removeItem('pvalo-theme') : localStorage.setItem('pvalo-theme', choice); } catch {}
+        show();
+      }));
+      show();
+    })();
+  </script>
   <main>
     <header>
       <div class="avatar" aria-hidden="true">P</div>
@@ -187,7 +225,7 @@
           <span class="text">
             <span class="badge">Interaktívna simulácia</span>
             <span class="title">Animácia priepustnosti siete</span>
-            <span class="sub">Rýchlosť, prepínanie a enkapsulácia dát</span>
+            <span class="sub">Rýchlosť, prepínanie, enkapsulácia dát a zálohovanie</span>
           </span>
           <svg class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
         </a>

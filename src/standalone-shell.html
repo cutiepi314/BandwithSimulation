@@ -78,9 +78,27 @@
   } catch {
     storage = null;
   }
+  // Shared with index.html so the whole site keeps one light/dark choice.
+  const themeKey = "pvalo-theme";
+  const themePreferences = ["auto", "light", "dark"];
+  let themePreference = "auto";
+  try {
+    const savedTheme = globalThis.localStorage.getItem(themeKey);
+    if (themePreferences.includes(savedTheme)) {
+      themePreference = savedTheme;
+    }
+  } catch {
+    // Without storage the page follows the system theme.
+  }
+  const applyTheme = () => {
+    document.documentElement.style.colorScheme =
+      themePreference === "auto" ? "" : themePreference;
+  };
+  applyTheme();
   const initialGlobals = {
     widgetState: state,
     statePersistence: storage == null ? "none" : "local",
+    themePreference,
   };
 
   const channel = new MessageChannel();
@@ -108,6 +126,23 @@
         id: data.id,
         ok,
       });
+      return;
+    }
+    if (data.type === "theme") {
+      if (!themePreferences.includes(data.preference)) {
+        return;
+      }
+      themePreference = data.preference;
+      applyTheme();
+      try {
+        if (themePreference === "auto") {
+          globalThis.localStorage.removeItem(themeKey);
+        } else {
+          globalThis.localStorage.setItem(themeKey, themePreference);
+        }
+      } catch {
+        // The choice still applies until the page is closed.
+      }
       return;
     }
     if (data.type === "height") {

@@ -1518,6 +1518,9 @@ html&gt;body{padding:0}&lt;/style&gt;
   /** @type {Record&lt;string, unknown&gt; | null} */
   let state = initialGlobals.widgetState ?? null;
   const statePersistence = initialGlobals.statePersistence ?? &quot;none&quot;;
+  if ([&quot;light&quot;, &quot;dark&quot;].includes(initialGlobals.themePreference)) {
+    root.dataset.themePreference = initialGlobals.themePreference;
+  }
   let nextStateRequestId = 0;
   /** @type {Map&lt;number, { resolve: () =&gt; void; reject: (error: Error) =&gt; void; timeout: ReturnType&lt;typeof globalThis.setTimeout&gt;; serializedState: string }&gt;} */
   const pendingStateWrites = new Map();
@@ -1652,7 +1655,13 @@ html&gt;body{padding:0}&lt;/style&gt;
     });
   };
   const syncTheme = () =&gt; {
-    const theme = mediaQuery.matches ? &quot;dark&quot; : &quot;light&quot;;
+    const preference = root.dataset.themePreference;
+    const theme =
+      preference === &quot;light&quot; || preference === &quot;dark&quot;
+        ? preference
+        : mediaQuery.matches
+          ? &quot;dark&quot;
+          : &quot;light&quot;;
     root.dataset.theme = theme;
     globalThis.openai = {
       ...globalThis.openai,
@@ -1744,6 +1753,18 @@ html&gt;body{padding:0}&lt;/style&gt;
   );
   document.currentScript?.remove();
   mediaQuery.addEventListener(&quot;change&quot;, syncTheme);
+  globalThis.setNetworkLabTheme = (preference) =&gt; {
+    if (![&quot;auto&quot;, &quot;light&quot;, &quot;dark&quot;].includes(preference)) {
+      return;
+    }
+    if (preference === &quot;auto&quot;) {
+      delete root.dataset.themePreference;
+    } else {
+      root.dataset.themePreference = preference;
+    }
+    syncTheme();
+    postToHost(&quot;theme&quot;, { preference });
+  };
   globalThis.addEventListener(&quot;click&quot;, (event) =&gt; {
     if (event.defaultPrevented) {
       return;
@@ -1796,14 +1817,25 @@ html&gt;body{padding:0}&lt;/style&gt;
   .network-lab-tabs button { padding: 10px 16px; border: 0; border-radius: 9px; background: transparent; color: var(--muted-foreground); font: inherit; cursor: pointer; text-align: left; }
   .network-lab-tabs button[aria-selected=&quot;true&quot;] { background: var(--accent); color: var(--accent-foreground); }
   .network-lab-tabs button:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
-  @media (max-width: 560px) { .network-lab-tabs button { padding: 10px; font-size: 13px; } .network-lab-heading { margin-bottom: 14px; } }
+  .network-lab-theme { display: inline-flex; gap: 2px; margin-left: auto; padding: 3px; border: 1px solid var(--border); border-radius: 10px; }
+  .network-lab-theme button { padding: 5px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--muted-foreground); font: inherit; font-size: 12px; cursor: pointer; }
+  .network-lab-theme button[aria-pressed=&quot;true&quot;] { background: var(--accent); color: var(--accent-foreground); }
+  .network-lab-theme button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  @media (max-width: 560px) { .network-lab-tabs button { padding: 10px; font-size: 13px; } .network-lab-heading { margin-bottom: 14px; } .network-lab-theme { margin-left: 0; } }
 &lt;/style&gt;
-&lt;header class=&quot;network-lab-heading&quot;&gt;&lt;strong&gt;Sieťové laboratórium&lt;/strong&gt;&lt;span&gt;Dáta, signál a prepínanie rámcov&lt;/span&gt;&lt;/header&gt;
+&lt;header class=&quot;network-lab-heading&quot;&gt;&lt;strong&gt;Sieťové laboratórium&lt;/strong&gt;&lt;span&gt;Dáta, signál, prepínanie rámcov a zálohovanie&lt;/span&gt;
+  &lt;div class=&quot;network-lab-theme&quot; role=&quot;group&quot; aria-label=&quot;Farebný režim&quot;&gt;
+    &lt;button type=&quot;button&quot; data-theme-choice=&quot;auto&quot; aria-pressed=&quot;true&quot; title=&quot;Podľa nastavenia systému&quot;&gt;◐ Auto&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-theme-choice=&quot;light&quot; aria-pressed=&quot;false&quot;&gt;☀ Svetlý&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-theme-choice=&quot;dark&quot; aria-pressed=&quot;false&quot;&gt;☾ Tmavý&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/header&gt;
 &lt;nav class=&quot;network-lab-tabs&quot; role=&quot;tablist&quot; aria-label=&quot;Simulácie siete&quot;&gt;
   &lt;button type=&quot;button&quot; id=&quot;throughput-tab&quot; role=&quot;tab&quot; aria-controls=&quot;throughput-panel&quot; aria-selected=&quot;true&quot; tabindex=&quot;0&quot;&gt;01 · Priepustnosť siete&lt;/button&gt;
   &lt;button type=&quot;button&quot; id=&quot;encapsulation-tab&quot; role=&quot;tab&quot; aria-controls=&quot;encapsulation-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;02 · Enkapsulácia a deenkapsulácia&lt;/button&gt;
   &lt;button type=&quot;button&quot; id=&quot;switching-tab&quot; role=&quot;tab&quot; aria-controls=&quot;switching-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;03 · Ako switch spracúva rámce&lt;/button&gt;
   &lt;button type=&quot;button&quot; id=&quot;speed-tab&quot; role=&quot;tab&quot; aria-controls=&quot;speed-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;04 · Rýchlosť a úzke hrdlá&lt;/button&gt;
+  &lt;button type=&quot;button&quot; id=&quot;backup-tab&quot; role=&quot;tab&quot; aria-controls=&quot;backup-panel&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;05 · Zálohovanie dát&lt;/button&gt;
 &lt;/nav&gt;
 
 &lt;section id=&quot;throughput-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;throughput-tab&quot;&gt;
@@ -3466,6 +3498,435 @@ html&gt;body{padding:0}&lt;/style&gt;
 
 &lt;/script&gt;
 &lt;/section&gt;
+&lt;section id=&quot;backup-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;backup-tab&quot; hidden&gt;
+&lt;script&gt;
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === &#x27;object&#x27; &amp;&amp; module.exports) module.exports = api;
+  else root.BackupModel = api;
+}(globalThis, function () {
+  &#x27;use strict&#x27;;
+  // Archive-bit model: a change sets the bit, full and incremental backups clear it, differential leaves it set.
+  function simulate({ sizes, changes, schedule }) {
+    const versions = sizes.map(() =&gt; 1), bits = sizes.map(() =&gt; true), backups = [];
+    let lastClear = null;
+    schedule.forEach((requested, day) =&gt; {
+      for (const i of changes[day] || []) { versions[i]++; bits[i] = true; }
+      const type = lastClear === null ? &#x27;full&#x27; : requested;
+      const bitsBefore = bits.slice();
+      const files = sizes.flatMap((_, i) =&gt; type === &#x27;full&#x27; || bits[i] ? [i] : []);
+      const parent = type === &#x27;full&#x27; ? null : lastClear;
+      if (type !== &#x27;diff&#x27;) { bits.fill(false); lastClear = day; }
+      backups.push({ day, type, forced: type !== requested, files, versions: versions.slice(), parent,
+        size: files.reduce((sum, i) =&gt; sum + sizes[i], 0), bitsBefore, bitsAfter: bits.slice() });
+    });
+    return backups;
+  }
+  function chain(backups, day) {
+    const list = [];
+    for (let d = day; d !== null; d = backups[d].parent) list.unshift(d);
+    return list;
+  }
+  function restore(backups, day, corrupted = []) {
+    const sets = chain(backups, day), missing = sets.filter(d =&gt; corrupted.includes(d));
+    const source = backups[day].versions.map((_, i) =&gt; sets.reduce((found, d) =&gt; backups[d].files.includes(i) ? d : found, null));
+    let latest = null;
+    for (let d = day; d &gt;= 0 &amp;&amp; latest === null; d--) if (!chain(backups, d).some(x =&gt; corrupted.includes(x))) latest = d;
+    return { sets, ok: missing.length === 0, missing, source, latest,
+      readMB: sets.reduce((sum, d) =&gt; sum + backups[d].size, 0) };
+  }
+  function plan(strategy, days) {
+    return Array.from({ length: days }, (_, day) =&gt; day === 0 || strategy === &#x27;full&#x27; ? &#x27;full&#x27; : strategy);
+  }
+  function compare({ sizes, changes, days }) {
+    return Object.fromEntries([&#x27;full&#x27;, &#x27;inc&#x27;, &#x27;diff&#x27;].map(strategy =&gt; {
+      const backups = simulate({ sizes, changes, schedule: plan(strategy, days) });
+      return [strategy, { backups, totalMB: backups.reduce((sum, b) =&gt; sum + b.size, 0),
+        restoreSets: backups.map(b =&gt; chain(backups, b.day).length) }];
+    }));
+  }
+  return { simulate, chain, restore, plan, compare };
+}));
+
+&lt;/script&gt;
+&lt;style&gt;
+  #backup-lab { --bk-full: var(--viz-series-1); --bk-inc: var(--viz-series-3); --bk-diff: var(--viz-series-5); --bk-bad: var(--red); color:var(--foreground); font-size:14px; line-height:1.6; padding:10px 0 30px; }
+  #backup-lab *, #backup-lab *::before, #backup-lab *::after { box-sizing:border-box; }
+  #backup-lab [hidden] { display:none !important; }
+  #backup-lab h2, #backup-lab h3, #backup-lab p { margin:0; }
+  #backup-lab h2 { font-size:clamp(25px,3vw,36px); line-height:1.2; letter-spacing:-.04em; }
+  #backup-lab h3 { font-size:16px; line-height:1.4; }
+  #backup-lab .bk-eyebrow { font-size:10px; text-transform:uppercase; letter-spacing:.13em; font-weight:700; color:var(--muted-foreground); margin-bottom:8px; }
+  #backup-lab .bk-intro { color:var(--muted-foreground); max-width:820px; margin-top:10px; }
+  #backup-lab .bk-muted { color:var(--muted-foreground); font-size:12px; }
+  #backup-lab .bk-topics, #backup-lab .bk-actions { display:flex; flex-wrap:wrap; gap:7px; }
+  #backup-lab .bk-topics { margin:22px 0; }
+  #backup-lab button, #backup-lab select { font:inherit; }
+  #backup-lab button, #backup-lab select { border:1px solid var(--border); background:var(--background); color:var(--foreground); border-radius:8px; padding:8px 11px; min-height:37px; min-width:0; max-width:100%; }
+  #backup-lab button { cursor:pointer; font-size:12px; }
+  #backup-lab button:disabled { cursor:default; opacity:.45; }
+  #backup-lab button[aria-pressed=&quot;true&quot;], #backup-lab .bk-primary { border-color:var(--primary); background:var(--accent); color:var(--accent-foreground); }
+  #backup-lab :focus-visible { outline:3px solid var(--ring); outline-offset:3px; }
+  #backup-lab label { display:grid; gap:6px; font-size:12px; min-width:0; }
+  #backup-lab .bk-grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:16px; align-items:start; }
+  #backup-lab .bk-card { min-width:0; border:1px solid var(--border); border-radius:15px; padding:20px; background:var(--card); }
+  #backup-lab .bk-stack { display:grid; gap:16px; }
+  #backup-lab .bk-heading { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+  #backup-lab .bk-badge { border:1px solid var(--border); border-radius:30px; padding:4px 9px; font-size:10px; color:var(--muted-foreground); }
+  #backup-lab .bk-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin-bottom:16px; }
+  #backup-lab .bk-metric { border:1px solid var(--border); border-radius:12px; padding:12px; background:var(--card); min-width:0; }
+  #backup-lab .bk-metric &gt; span { display:block; color:var(--muted-foreground); font-size:11px; }
+  #backup-lab .bk-metric &gt; strong { display:block; font-size:clamp(19px,2.4vw,29px); font-weight:700; letter-spacing:-.04em; line-height:1.5; overflow-wrap:anywhere; }
+  #backup-lab .bk-metric &gt; small { font-size:10px; color:var(--muted-foreground); }
+  #backup-lab .bk-strategies { margin:4px 0 16px; }
+  #backup-lab .bk-week { display:grid; gap:5px; }
+  #backup-lab .bk-row { display:grid; grid-template-columns:78px 130px repeat(8,minmax(0,1fr)) 92px; gap:5px; align-items:center; }
+  #backup-lab .bk-row.bk-head { font-size:10px; color:var(--muted-foreground); align-items:end; }
+  #backup-lab .bk-head &gt; span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center; }
+  #backup-lab .bk-head b { display:block; font-size:12px; color:var(--foreground); }
+  #backup-lab .bk-head small { display:block; overflow:hidden; text-overflow:ellipsis; }
+  #backup-lab .bk-day { text-align:left; font-weight:600; padding:7px 8px; }
+  #backup-lab .bk-row select { padding:6px 7px; min-height:34px; font-size:12px; }
+  #backup-lab .bk-cell { position:relative; height:34px; padding:0; border-radius:6px; font-size:13px; }
+  #backup-lab .bk-cell.bk-in { background:color-mix(in srgb,var(--bk-type) 28%,var(--background)); border-color:var(--bk-type); }
+  #backup-lab .bk-cell[aria-pressed=&quot;true&quot;] { color:var(--foreground); font-weight:700; }
+  #backup-lab .bk-cell[aria-pressed=&quot;true&quot;]:not(.bk-in) { background:var(--background); border-style:dashed; border-color:var(--foreground); }
+  #backup-lab .bk-cell:disabled { opacity:1; }
+  #backup-lab .bk-full { --bk-type:var(--bk-full); }
+  #backup-lab .bk-inc { --bk-type:var(--bk-inc); }
+  #backup-lab .bk-diff { --bk-type:var(--bk-diff); }
+  #backup-lab .bk-future &gt; :not(.bk-day) { opacity:.5; }
+  #backup-lab .bk-current .bk-day { border-color:var(--primary); background:var(--accent); color:var(--accent-foreground); }
+  #backup-lab .bk-size { font-size:11px; min-width:0; }
+  #backup-lab .bk-size span { display:block; height:7px; border-radius:4px; background:var(--bk-type); min-width:2px; margin-top:3px; }
+  #backup-lab .bk-explanation { border-left:3px solid var(--primary); background:var(--accent); padding:12px 14px; font-size:13px; margin:15px 0; }
+  #backup-lab .bk-explanation.bk-error { border-left-color:var(--bk-bad); background:color-mix(in srgb,var(--bk-bad) 12%,var(--background)); }
+  #backup-lab .bk-note { border-top:1px solid var(--border); margin-top:15px; padding-top:12px; font-size:12px; color:var(--muted-foreground); }
+  #backup-lab .bk-legend { display:grid; gap:10px; margin-top:12px; font-size:12px; }
+  #backup-lab .bk-legend &gt; div { display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; align-items:start; }
+  #backup-lab .bk-swatch { width:22px; height:22px; border-radius:5px; border:1px solid var(--bk-type,var(--foreground)); background:color-mix(in srgb,var(--bk-type,var(--background)) 28%,var(--background)); display:grid; place-items:center; font-size:12px; font-weight:700; }
+  #backup-lab .bk-swatch.bk-dashed { border-style:dashed; }
+  #backup-lab table { border-collapse:collapse; width:100%; font-size:12px; margin:12px 0; }
+  #backup-lab th, #backup-lab td { text-align:left; border-bottom:1px solid var(--border); padding:7px 5px; vertical-align:top; }
+  #backup-lab th { color:var(--muted-foreground); font-size:10px; font-weight:500; }
+  #backup-lab .bk-bit { display:inline-block; min-width:22px; text-align:center; border-radius:5px; font:600 11px var(--font-mono); padding:1px 5px; border:1px solid var(--border); }
+  #backup-lab .bk-bit.bk-on { border-color:var(--orange); color:var(--orange); }
+  #backup-lab .bk-sets { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin:18px 0 8px; }
+  #backup-lab .bk-set { position:relative; display:grid; gap:2px; text-align:left; padding:10px 8px; min-height:84px; align-content:start; font-size:11px; }
+  #backup-lab .bk-set strong { font-size:14px; }
+  #backup-lab .bk-set small { color:var(--muted-foreground); font-size:10px; }
+  #backup-lab .bk-set.bk-chain { border-color:var(--bk-type); border-width:2px; background:color-mix(in srgb,var(--bk-type) 18%,var(--background)); }
+  #backup-lab .bk-set.bk-later { opacity:.4; }
+  #backup-lab .bk-set .bk-order { position:absolute; top:6px; right:7px; border-radius:20px; background:var(--bk-type); color:var(--background); font-weight:700; font-size:10px; padding:0 6px; }
+  #backup-lab .bk-set[aria-pressed=&quot;true&quot;] { border-color:var(--bk-bad); background:color-mix(in srgb,var(--bk-bad) 14%,var(--background)); color:var(--foreground); }
+  #backup-lab .bk-set[aria-pressed=&quot;true&quot;]::after { content:&quot;✕ poškodená&quot;; color:var(--bk-bad); font-weight:700; font-size:10px; }
+  #backup-lab .bk-restored { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; margin:14px 0; }
+  #backup-lab .bk-file { border:1px solid var(--border); border-radius:9px; padding:9px; background:var(--background); font-size:11px; min-width:0; }
+  #backup-lab .bk-file strong { display:block; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #backup-lab .bk-file small { display:block; color:var(--muted-foreground); font-size:10px; }
+  #backup-lab .bk-file.bk-got { border-color:var(--bk-type); background:color-mix(in srgb,var(--bk-type) 14%,var(--background)); }
+  #backup-lab .bk-file.bk-fresh { outline:2px solid var(--bk-type); outline-offset:1px; }
+  #backup-lab .bk-progress { background:var(--background); border:1px solid var(--border); border-radius:8px; height:14px; overflow:hidden; margin:10px 0; }
+  #backup-lab .bk-progress &gt; span { display:block; height:100%; background:var(--primary); width:0; transition:width .3s; }
+  #backup-lab .bk-bars { display:grid; gap:12px; margin:16px 0; }
+  #backup-lab .bk-bar-day { display:grid; grid-template-columns:34px minmax(0,1fr); gap:10px; align-items:center; }
+  #backup-lab .bk-bar-day &gt; b { font-size:12px; }
+  #backup-lab .bk-bar-group { display:grid; gap:3px; }
+  #backup-lab .bk-bar { display:grid; grid-template-columns:minmax(0,1fr) 68px; gap:8px; align-items:center; font-size:10px; color:var(--muted-foreground); }
+  #backup-lab .bk-bar &gt; span { display:block; height:9px; border-radius:0 4px 4px 0; background:var(--bk-type); min-width:2px; }
+  #backup-lab .bk-key { display:flex; flex-wrap:wrap; gap:14px; font-size:11px; color:var(--muted-foreground); }
+  #backup-lab .bk-key span::before { content:&quot;&quot;; display:inline-block; width:12px; height:8px; border-radius:2px; background:var(--bk-type); margin-right:6px; }
+  #backup-lab .bk-totals { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:15px 0; }
+  #backup-lab .bk-totals &gt; div { border-left:3px solid var(--bk-type); padding-left:10px; }
+  #backup-lab .bk-totals strong { display:block; font-size:22px; letter-spacing:-.03em; }
+  #backup-lab .bk-totals span { display:block; font-size:10px; color:var(--muted-foreground); }
+  #backup-lab details { margin-top:12px; font-size:13px; }
+  #backup-lab summary { cursor:pointer; font-weight:600; }
+  #backup-lab details p { color:var(--muted-foreground); margin-top:8px; }
+  #backup-lab .bk-answers { display:grid; gap:8px; margin:18px 0; }
+  #backup-lab .bk-answers button { text-align:left; padding:12px; }
+  #backup-lab .bk-feedback { min-height:65px; font-size:13px; margin:12px 0; }
+  #backup-lab .bk-footer { color:var(--muted-foreground); font-size:11px; margin-top:22px; }
+  @media (max-width:1000px) { #backup-lab .bk-grid { grid-template-columns:1fr; } }
+  @media (max-width:700px) {
+    #backup-lab .bk-metrics { grid-template-columns:1fr 1fr; } #backup-lab .bk-card { padding:15px; }
+    #backup-lab .bk-row { grid-template-columns:repeat(8,minmax(0,1fr)); row-gap:4px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    #backup-lab .bk-row &gt; .bk-day { grid-column:span 3; } #backup-lab .bk-row &gt; select { grid-column:span 5; } #backup-lab .bk-row &gt; .bk-size { grid-column:1 / -1; }
+    #backup-lab .bk-head &gt; span:first-child, #backup-lab .bk-head &gt; span:nth-child(2), #backup-lab .bk-head &gt; span:last-child { display:none; }
+    #backup-lab .bk-head small { display:none; }
+    #backup-lab .bk-cell { height:30px; }
+    #backup-lab .bk-sets { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    #backup-lab .bk-restored { grid-template-columns:1fr 1fr; }
+    #backup-lab .bk-totals { grid-template-columns:1fr; }
+    #backup-lab .bk-topics button { flex:1 1 40%; }
+  }
+  @media (prefers-reduced-motion:reduce) { #backup-lab .bk-progress &gt; span { transition:none; } }
+&lt;/style&gt;
+&lt;div id=&quot;backup-lab&quot;&gt;
+  &lt;div class=&quot;bk-eyebrow&quot;&gt;Ochrana dát / zálohovanie&lt;/div&gt;
+  &lt;h2&gt;Kompletná, inkrementálna a diferenciálna záloha&lt;/h2&gt;
+  &lt;p class=&quot;bk-intro&quot;&gt;Celý týždeň meníš súbory a každý večer zálohuješ. Porovnaj, koľko miesta jednotlivé typy záloh zaberú, ktoré sady potrebuješ pri obnove a čo sa stane, keď sa jedna záloha poškodí.&lt;/p&gt;
+  &lt;nav class=&quot;bk-topics&quot; aria-label=&quot;Témy o zálohovaní&quot;&gt;
+    &lt;button type=&quot;button&quot; data-bk-topic=&quot;week&quot; aria-controls=&quot;bk-week&quot; aria-pressed=&quot;true&quot;&gt;01 · Týždeň záloh&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-bk-topic=&quot;restore&quot; aria-controls=&quot;bk-restore&quot; aria-pressed=&quot;false&quot;&gt;02 · Obnova po havárii&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-bk-topic=&quot;compare&quot; aria-controls=&quot;bk-compare&quot; aria-pressed=&quot;false&quot;&gt;03 · Porovnanie&lt;/button&gt;
+    &lt;button type=&quot;button&quot; data-bk-topic=&quot;practice&quot; aria-controls=&quot;bk-practice&quot; aria-pressed=&quot;false&quot;&gt;04 · Over si to&lt;/button&gt;
+  &lt;/nav&gt;
+  &lt;section id=&quot;bk-week&quot; aria-label=&quot;Týždeň zálohovania&quot;&gt;
+    &lt;div class=&quot;bk-metrics&quot;&gt;&lt;div class=&quot;bk-metric&quot;&gt;&lt;span id=&quot;bk-m-stored-label&quot;&gt;Uložené spolu&lt;/span&gt;&lt;strong id=&quot;bk-m-stored&quot;&gt;&lt;/strong&gt;&lt;small&gt;MB na zálohovacom médiu&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;bk-metric&quot;&gt;&lt;span id=&quot;bk-m-size-label&quot;&gt;Dnešná záloha&lt;/span&gt;&lt;strong id=&quot;bk-m-size&quot;&gt;&lt;/strong&gt;&lt;small id=&quot;bk-m-size-note&quot;&gt;&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;bk-metric&quot;&gt;&lt;span&gt;Sady na obnovu&lt;/span&gt;&lt;strong id=&quot;bk-m-sets&quot;&gt;&lt;/strong&gt;&lt;small id=&quot;bk-m-sets-note&quot;&gt;&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;bk-metric&quot;&gt;&lt;span&gt;Oproti len kompletným&lt;/span&gt;&lt;strong id=&quot;bk-m-saving&quot;&gt;&lt;/strong&gt;&lt;small&gt;ušetreného miesta&lt;/small&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;bk-grid&quot;&gt;&lt;div class=&quot;bk-stack&quot;&gt;&lt;div class=&quot;bk-card&quot;&gt;&lt;div class=&quot;bk-heading&quot;&gt;&lt;h3&gt;Každý večer jedna záloha&lt;/h3&gt;&lt;span class=&quot;bk-badge&quot;&gt;8 súborov · 1 766 MB&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;bk-actions bk-strategies&quot; role=&quot;group&quot; aria-label=&quot;Plán zálohovania&quot;&gt;&lt;button type=&quot;button&quot; data-bk-strategy=&quot;full&quot; aria-pressed=&quot;false&quot;&gt;Iba kompletné&lt;/button&gt;&lt;button type=&quot;button&quot; data-bk-strategy=&quot;inc&quot; aria-pressed=&quot;true&quot;&gt;Kompletná + inkrementálne&lt;/button&gt;&lt;button type=&quot;button&quot; data-bk-strategy=&quot;diff&quot; aria-pressed=&quot;false&quot;&gt;Kompletná + diferenciálne&lt;/button&gt;&lt;button type=&quot;button&quot; data-bk-strategy=&quot;custom&quot; aria-pressed=&quot;false&quot; disabled&gt;Vlastný plán&lt;/button&gt;&lt;/div&gt;
+      &lt;div id=&quot;bk-grid&quot; class=&quot;bk-week&quot;&gt;&lt;/div&gt;
+      &lt;p class=&quot;bk-muted&quot; style=&quot;margin-top:10px&quot;&gt;Klikni na políčko a označ, že sa súbor v daný deň zmenil (✎). Farebné políčko = súbor je v zálohe toho dňa. Typ zálohy môžeš zmeniť pri každom dni.&lt;/p&gt;
+      &lt;p id=&quot;bk-explanation&quot; class=&quot;bk-explanation&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;
+      &lt;div class=&quot;bk-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;bk-prev&quot;&gt;◀ Predchádzajúci deň&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;bk-next&quot;&gt;Ďalší deň ▶&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;bk-play&quot; class=&quot;bk-primary&quot; aria-pressed=&quot;false&quot;&gt;▶ Prehrať týždeň&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;bk-all&quot;&gt;Celý týždeň&lt;/button&gt;&lt;/div&gt;
+    &lt;/div&gt;&lt;/div&gt;
+    &lt;aside class=&quot;bk-stack&quot;&gt;&lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Čo uloží ktorá záloha&lt;/h3&gt;&lt;div class=&quot;bk-legend&quot;&gt;&lt;div&gt;&lt;span class=&quot;bk-swatch bk-full&quot;&gt;K&lt;/span&gt;&lt;p&gt;&lt;strong&gt;Kompletná (úplná)&lt;/strong&gt; – všetky vybrané súbory, bez ohľadu na zmeny. Sama stačí na obnovu.&lt;/p&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;bk-swatch bk-inc&quot;&gt;I&lt;/span&gt;&lt;p&gt;&lt;strong&gt;Inkrementálna&lt;/strong&gt; – iba zmeny od &lt;em&gt;poslednej zálohy akéhokoľvek typu&lt;/em&gt;. Malá a rýchla, obnova potrebuje celú reťaz.&lt;/p&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;bk-swatch bk-diff&quot;&gt;D&lt;/span&gt;&lt;p&gt;&lt;strong&gt;Diferenciálna (rozdielová)&lt;/strong&gt; – všetky zmeny od &lt;em&gt;poslednej kompletnej zálohy&lt;/em&gt;. Každý deň rastie, obnova potrebuje 2 sady.&lt;/p&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;bk-swatch bk-dashed&quot;&gt;✎&lt;/span&gt;&lt;p&gt;Zmena v dni, ktorý ešte neprebehol – večerná záloha sa ešte nespravila.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;bk-card&quot;&gt;&lt;div class=&quot;bk-heading&quot;&gt;&lt;h3&gt;Archívny bit&lt;/h3&gt;&lt;span id=&quot;bk-bit-day&quot; class=&quot;bk-badge&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;p class=&quot;bk-muted&quot;&gt;Príznak súboru „treba zálohovať“. Zmena súboru ho nastaví na 1. Kompletná a inkrementálna ho vynulujú, diferenciálna ho nechá tak.&lt;/p&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Súbor&lt;/th&gt;&lt;th&gt;Pred zálohou&lt;/th&gt;&lt;th&gt;Po zálohe&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody id=&quot;bk-bits&quot;&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+      &lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Iné zmeny počas týždňa&lt;/h3&gt;&lt;div class=&quot;bk-actions&quot; style=&quot;margin-top:12px&quot;&gt;&lt;button type=&quot;button&quot; data-bk-changes=&quot;default&quot;&gt;Pôvodné zmeny&lt;/button&gt;&lt;button type=&quot;button&quot; data-bk-changes=&quot;random&quot;&gt;Náhodné zmeny&lt;/button&gt;&lt;button type=&quot;button&quot; data-bk-changes=&quot;busy&quot;&gt;Mení sa veľká databáza&lt;/button&gt;&lt;button type=&quot;button&quot; data-bk-changes=&quot;none&quot;&gt;Bez zmien&lt;/button&gt;&lt;/div&gt;&lt;p class=&quot;bk-note&quot;&gt;Pondelok je východiskový stav – prvá záloha musí byť kompletná, inak by nebolo na čo nadväzovať.&lt;/p&gt;&lt;/div&gt;
+    &lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;bk-restore&quot; aria-label=&quot;Obnova dát zo záloh&quot; hidden&gt;
+    &lt;div class=&quot;bk-grid&quot;&gt;&lt;div class=&quot;bk-stack&quot;&gt;&lt;div class=&quot;bk-card&quot;&gt;&lt;div class=&quot;bk-heading&quot;&gt;&lt;h3&gt;Disk zlyhal. Čo potrebuješ na obnovu?&lt;/h3&gt;&lt;span id=&quot;bk-restore-plan&quot; class=&quot;bk-badge&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+      &lt;label style=&quot;max-width:320px&quot;&gt;Obnoviť stav zo zálohy dňa&lt;select id=&quot;bk-restore-day&quot;&gt;&lt;/select&gt;&lt;/label&gt;
+      &lt;div id=&quot;bk-sets&quot; class=&quot;bk-sets&quot;&gt;&lt;/div&gt;
+      &lt;p class=&quot;bk-muted&quot;&gt;Zvýraznené sady tvoria reťaz obnovy, čísla ukazujú poradie. Kliknutím na sadu ju označíš ako poškodenú.&lt;/p&gt;
+      &lt;div class=&quot;bk-progress&quot; role=&quot;progressbar&quot; aria-label=&quot;Postup obnovy&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; aria-valuenow=&quot;0&quot; id=&quot;bk-restore-progress&quot;&gt;&lt;span id=&quot;bk-restore-bar&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+      &lt;div id=&quot;bk-restored&quot; class=&quot;bk-restored&quot;&gt;&lt;/div&gt;
+      &lt;p id=&quot;bk-restore-explanation&quot; class=&quot;bk-explanation&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;
+      &lt;div class=&quot;bk-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;bk-restore-play&quot; class=&quot;bk-primary&quot; aria-pressed=&quot;false&quot;&gt;▶ Prehrať obnovu&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;bk-restore-step&quot;&gt;Pridať ďalšiu sadu&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;bk-restore-repair&quot;&gt;Opraviť všetky zálohy&lt;/button&gt;&lt;/div&gt;
+    &lt;/div&gt;&lt;/div&gt;
+    &lt;aside class=&quot;bk-stack&quot;&gt;&lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Rovnaké zmeny, iný plán&lt;/h3&gt;&lt;p class=&quot;bk-muted&quot;&gt;Obnova stavu z vybraného dňa pri rovnakých poškodených dňoch.&lt;/p&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plán&lt;/th&gt;&lt;th&gt;Sady&lt;/th&gt;&lt;th&gt;Načítať&lt;/th&gt;&lt;th&gt;Výsledok&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody id=&quot;bk-restore-compare&quot;&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+      &lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Prečo na reťazi záleží&lt;/h3&gt;&lt;p class=&quot;bk-note&quot;&gt;Inkrementálne zálohy na seba nadväzujú. Keď jedna chýba, neskoršie už neobsahujú úplný stav. Diferenciálna závisí iba od kompletnej zálohy, takže poškodená stredajšia diferenciálna nepokazí nedeľnú obnovu.&lt;/p&gt;&lt;p class=&quot;bk-note&quot;&gt;Ak je poškodená samotná kompletná záloha, nepomôže žiadna inkrementálna ani diferenciálna. Preto sa kompletná záloha robí pravidelne a obnova sa skúša naozaj.&lt;/p&gt;&lt;/div&gt;
+    &lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;bk-compare&quot; aria-label=&quot;Porovnanie typov záloh&quot; hidden&gt;
+    &lt;div class=&quot;bk-grid&quot;&gt;&lt;div class=&quot;bk-stack&quot;&gt;&lt;div class=&quot;bk-card&quot;&gt;&lt;div class=&quot;bk-heading&quot;&gt;&lt;h3&gt;Veľkosť zálohy každý deň&lt;/h3&gt;&lt;span class=&quot;bk-badge&quot;&gt;rovnaké zmeny ako v časti 01&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;bk-key&quot;&gt;&lt;span class=&quot;bk-full&quot;&gt;Kompletná&lt;/span&gt;&lt;span class=&quot;bk-inc&quot;&gt;Inkrementálna&lt;/span&gt;&lt;span class=&quot;bk-diff&quot;&gt;Diferenciálna&lt;/span&gt;&lt;/div&gt;
+      &lt;div id=&quot;bk-bars&quot; class=&quot;bk-bars&quot; role=&quot;img&quot; aria-label=&quot;Veľkosť dennej zálohy pre tri plány&quot;&gt;&lt;/div&gt;
+      &lt;div id=&quot;bk-totals&quot; class=&quot;bk-totals&quot;&gt;&lt;/div&gt;
+      &lt;p class=&quot;bk-muted&quot;&gt;Inkrementálna je každý deň malá. Diferenciálna rastie, lebo opakovane ukladá všetko od pondelka.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Súhrn&lt;/h3&gt;&lt;div style=&quot;overflow-x:auto&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;th&gt;Kompletná&lt;/th&gt;&lt;th&gt;Inkrementálna&lt;/th&gt;&lt;th&gt;Diferenciálna&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody id=&quot;bk-summary&quot;&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;aside class=&quot;bk-stack&quot;&gt;&lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Kedy ktorú?&lt;/h3&gt;&lt;details open&gt;&lt;summary&gt;Kompletná&lt;/summary&gt;&lt;p&gt;Najjednoduchšia obnova a najvyššia spoľahlivosť. Pri veľkom objeme dát je pomalá a zaberá veľa miesta, preto sa robí napr. raz týždenne.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;Kompletná + inkrementálne&lt;/summary&gt;&lt;p&gt;Najmenej miesta a najkratšie denné zálohovanie. Obnova je pomalšia a citlivá na poškodenie ktoréhokoľvek článku reťaze.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;Kompletná + diferenciálne&lt;/summary&gt;&lt;p&gt;Kompromis: zálohy časom rastú, ale obnova potrebuje iba kompletnú a poslednú diferenciálnu zálohu.&lt;/p&gt;&lt;/details&gt;&lt;/div&gt;
+      &lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Pravidlo 3-2-1&lt;/h3&gt;&lt;p class=&quot;bk-explanation&quot;&gt;3 kópie dát&lt;br&gt;2 rôzne typy médií&lt;br&gt;1 kópia mimo pracoviska&lt;/p&gt;&lt;p class=&quot;bk-muted&quot;&gt;Napríklad originál na PC, záloha na NAS a ďalšia v cloude alebo na disku uloženom doma.&lt;/p&gt;&lt;/div&gt;
+      &lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Čo nie je záloha&lt;/h3&gt;&lt;details&gt;&lt;summary&gt;RAID 1 (zrkadlenie)&lt;/summary&gt;&lt;p&gt;Chráni pred zlyhaním disku, ale zmazaný alebo zašifrovaný súbor sa okamžite zmaže aj na druhom disku.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;Synchronizácia do cloudu&lt;/summary&gt;&lt;p&gt;Prenesie aj chybu či vymazanie. Záloha uchováva staršie verzie, ku ktorým sa dá vrátiť.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;Záloha, ktorú nikto neobnovil&lt;/summary&gt;&lt;p&gt;Kým obnovu neotestuješ, nevieš, či funguje. Over aspoň náhodný súbor.&lt;/p&gt;&lt;/details&gt;&lt;/div&gt;
+    &lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;bk-practice&quot; aria-label=&quot;Praktické otázky o zálohovaní&quot; hidden&gt;
+    &lt;div class=&quot;bk-grid&quot;&gt;&lt;div class=&quot;bk-card&quot;&gt;&lt;div class=&quot;bk-heading&quot;&gt;&lt;h3&gt;Vyber správnu odpoveď&lt;/h3&gt;&lt;span id=&quot;bk-quiz-count&quot; class=&quot;bk-badge&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;h3 id=&quot;bk-quiz-question&quot; style=&quot;margin-top:20px&quot;&gt;&lt;/h3&gt;&lt;div id=&quot;bk-quiz-answers&quot; class=&quot;bk-answers&quot;&gt;&lt;/div&gt;&lt;p id=&quot;bk-quiz-feedback&quot; class=&quot;bk-feedback&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;&lt;div class=&quot;bk-actions&quot;&gt;&lt;button type=&quot;button&quot; id=&quot;bk-quiz-next&quot; disabled&gt;Ďalšia otázka →&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;bk-quiz-reset&quot;&gt;Začať znova&lt;/button&gt;&lt;/div&gt;&lt;p id=&quot;bk-quiz-score&quot; class=&quot;bk-note&quot;&gt;&lt;/p&gt;&lt;/div&gt;
+    &lt;aside class=&quot;bk-stack&quot;&gt;&lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Ťahák&lt;/h3&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Typ&lt;/th&gt;&lt;th&gt;Ukladá zmeny od&lt;/th&gt;&lt;th&gt;Obnova&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;Kompletná&lt;/td&gt;&lt;td&gt;– (všetko)&lt;/td&gt;&lt;td&gt;1 sada&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Inkrementálna&lt;/td&gt;&lt;td&gt;poslednej zálohy&lt;/td&gt;&lt;td&gt;kompletná + všetky inkrementálne&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Diferenciálna&lt;/td&gt;&lt;td&gt;poslednej kompletnej&lt;/td&gt;&lt;td&gt;kompletná + posledná diferenciálna&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+    &lt;div class=&quot;bk-card&quot;&gt;&lt;h3&gt;Pojmy&lt;/h3&gt;&lt;details&gt;&lt;summary&gt;Archívny bit&lt;/summary&gt;&lt;p&gt;Atribút súboru vo Windows. Nastaví sa pri zmene súboru. Kompletná a inkrementálna záloha ho vynulujú, diferenciálna nie.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;RPO a RTO&lt;/summary&gt;&lt;p&gt;RPO: koľko dát najviac môžeš stratiť (napr. 1 deň → zálohuj denne). RTO: za aký čas musíš byť znova v prevádzke – ovplyvňuje ho aj počet sád na obnovu.&lt;/p&gt;&lt;/details&gt;&lt;details&gt;&lt;summary&gt;Rotácia záloh&lt;/summary&gt;&lt;p&gt;Staré sady sa po čase prepisujú, napr. schéma otec–syn (týždenná kompletná, denné inkrementálne). Sadu možno zmazať až keď od nej nezávisí žiadna novšia.&lt;/p&gt;&lt;/details&gt;&lt;/div&gt;&lt;/aside&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;p class=&quot;bk-footer&quot;&gt;Didaktický model: jeden deň = jedna zmena verzie súboru, bez kompresie a deduplikácie. Výber súborov určuje archívny bit. MB sú desiatkové jednotky.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+(() =&gt; {
+  &#x27;use strict&#x27;;
+  const M = window.BackupModel, $ = id =&gt; document.getElementById(&#x27;bk-&#x27; + id), root = document.getElementById(&#x27;backup-lab&#x27;);
+  const fmt = (n,digits=0) =&gt; new Intl.NumberFormat(&#x27;sk-SK&#x27;,{maximumFractionDigits:digits}).format(n);
+  const days=[&#x27;Pondelok&#x27;,&#x27;Utorok&#x27;,&#x27;Streda&#x27;,&#x27;Štvrtok&#x27;,&#x27;Piatok&#x27;,&#x27;Sobota&#x27;,&#x27;Nedeľa&#x27;], short=[&#x27;Po&#x27;,&#x27;Ut&#x27;,&#x27;St&#x27;,&#x27;Št&#x27;,&#x27;Pi&#x27;,&#x27;So&#x27;,&#x27;Ne&#x27;];
+  const genitive=[&#x27;pondelka&#x27;,&#x27;utorka&#x27;,&#x27;stredy&#x27;,&#x27;štvrtka&#x27;,&#x27;piatka&#x27;,&#x27;soboty&#x27;,&#x27;nedele&#x27;];
+  const fromDay=d=&gt;(/^(st|št|so)/.test(genitive[d]) ? &#x27;zo &#x27; : &#x27;z &#x27;)+genitive[d];
+  const changedWord=list=&gt;list.length===1 ? &#x27;zmenil sa &#x27; : &#x27;zmenili sa &#x27;;
+  const files=[[&#x27;projekt.docx&#x27;,20],[&#x27;rozpocet.xlsx&#x27;,15],[&#x27;fotky.zip&#x27;,400],[&#x27;databaza.db&#x27;,250],[&#x27;prezentacia.pptx&#x27;,60],[&#x27;web.zip&#x27;,120],[&#x27;poznamky.txt&#x27;,1],[&#x27;video.mp4&#x27;,900]];
+  const sizes=files.map(f=&gt;f[1]), allMB=sizes.reduce((a,b)=&gt;a+b,0), letters=&#x27;ABCDEFGH&#x27;;
+  const typeName={full:&#x27;kompletná&#x27;,inc:&#x27;inkrementálna&#x27;,diff:&#x27;diferenciálna&#x27;}, cap=s=&gt;s[0].toUpperCase()+s.slice(1);
+  const planName={full:&#x27;Iba kompletné&#x27;,inc:&#x27;Kompletná + inkrementálne&#x27;,diff:&#x27;Kompletná + diferenciálne&#x27;,custom:&#x27;Vlastný plán&#x27;};
+  const setWord=n=&gt;n===1 ? &#x27;sada&#x27; : n&gt;1 &amp;&amp; n&lt;5 ? &#x27;sady&#x27; : &#x27;sád&#x27;;
+  const fileList=list=&gt;list.length ? list.map(i=&gt;files[i][0]).join(&#x27;, &#x27;) : &#x27;nič&#x27;;
+  const changeSets={default:[[],[0,6],[1,3],[0,4],[3,6],[5],[2]],busy:[[],[3],[3,6],[3],[0,3],[3],[3]],none:[[],[],[],[],[],[],[]]};
+  let topic=&#x27;week&#x27;, strategy=&#x27;inc&#x27;, schedule=M.plan(&#x27;inc&#x27;,7), changes=changeSets.default.map(d=&gt;[...d]), cursor=6, backups=[], playTimer=null;
+  let restoreDay=6, corrupted=[], restoreStep=null, restoreTimer=null;
+  function pause() {
+    clearInterval(playTimer); clearInterval(restoreTimer); playTimer=restoreTimer=null;
+    for (const [id,label] of [[&#x27;play&#x27;,&#x27;▶ Prehrať týždeň&#x27;],[&#x27;restore-play&#x27;,&#x27;▶ Prehrať obnovu&#x27;]]) { $(id).textContent=label; $(id).setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;); }
+  }
+  function showTopic(next) {
+    pause(); topic=next;
+    root.querySelectorAll(&#x27;[data-bk-topic]&#x27;).forEach(button =&gt; { const active=button.dataset.bkTopic===next; button.setAttribute(&#x27;aria-pressed&#x27;,String(active)); $(button.dataset.bkTopic).hidden=!active; });
+  }
+  root.querySelectorAll(&#x27;[data-bk-topic]&#x27;).forEach(button =&gt; button.addEventListener(&#x27;click&#x27;,()=&gt;showTopic(button.dataset.bkTopic)));
+
+  function renderWeek() {
+    root.querySelectorAll(&#x27;[data-bk-strategy]&#x27;).forEach(button=&gt;button.setAttribute(&#x27;aria-pressed&#x27;,String(button.dataset.bkStrategy===strategy)));
+    const head=`&lt;div class=&quot;bk-row bk-head&quot; aria-hidden=&quot;true&quot;&gt;&lt;span&gt;Deň&lt;/span&gt;&lt;span&gt;Typ zálohy&lt;/span&gt;${files.map((f,i)=&gt;`&lt;span title=&quot;${f[0]} · ${f[1]} MB&quot;&gt;&lt;b&gt;${letters[i]}&lt;/b&gt;&lt;small&gt;${f[0]}&lt;/small&gt;&lt;small&gt;${fmt(f[1])} MB&lt;/small&gt;&lt;/span&gt;`).join(&#x27;&#x27;)}&lt;span&gt;Veľkosť zálohy&lt;/span&gt;&lt;/div&gt;`;
+    $(&#x27;grid&#x27;).innerHTML=head+backups.map(b=&gt;{
+      const d=b.day, future=d&gt;cursor;
+      const cells=files.map((f,i)=&gt;{
+        const changed=changes[d].includes(i), stored=!future &amp;&amp; b.files.includes(i);
+        const label=`${days[d]}, ${letters[i]} ${f[0]}: ${changed ? &#x27;zmenený&#x27; : &#x27;bez zmeny&#x27;}${future ? &#x27;&#x27; : stored ? &#x27;, v zálohe&#x27; : &#x27;, nie je v zálohe&#x27;}`;
+        return `&lt;button type=&quot;button&quot; class=&quot;bk-cell${stored ? &#x27; bk-in&#x27; : &#x27;&#x27;}&quot; data-bk-cell=&quot;${d},${i}&quot; aria-pressed=&quot;${changed}&quot; aria-label=&quot;${label}&quot; title=&quot;${label}&quot;${d===0 ? &#x27; disabled&#x27; : &#x27;&#x27;}&gt;${changed ? &#x27;✎&#x27; : &#x27;&#x27;}&lt;/button&gt;`;
+      }).join(&#x27;&#x27;);
+      const options=[&#x27;full&#x27;,&#x27;inc&#x27;,&#x27;diff&#x27;].map(t=&gt;`&lt;option value=&quot;${t}&quot;${schedule[d]===t ? &#x27; selected&#x27; : &#x27;&#x27;}&gt;${cap(typeName[t])}&lt;/option&gt;`).join(&#x27;&#x27;);
+      return `&lt;div class=&quot;bk-row bk-${b.type}${future ? &#x27; bk-future&#x27; : &#x27;&#x27;}${d===cursor ? &#x27; bk-current&#x27; : &#x27;&#x27;}&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;bk-day&quot; data-bk-pick=&quot;${d}&quot;&gt;${days[d]}&lt;/button&gt;&lt;select data-bk-type=&quot;${d}&quot; aria-label=&quot;Typ zálohy – ${days[d]}&quot;${d===0 ? &#x27; disabled&#x27; : &#x27;&#x27;}&gt;${options}&lt;/select&gt;${cells}&lt;div class=&quot;bk-size&quot;&gt;${future ? &#x27;ešte nebola&#x27; : fmt(b.size)+&#x27; MB&#x27;}&lt;span style=&quot;width:${future ? 0 : b.size/allMB*100}%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;`;
+    }).join(&#x27;&#x27;);
+    const b=backups[cursor], chain=M.chain(backups,cursor), stored=backups.slice(0,cursor+1).reduce((sum,x)=&gt;sum+x.size,0);
+    $(&#x27;m-stored-label&#x27;).textContent=cursor ? `Uložené ${short[0]} – ${short[cursor]}` : &#x27;Uložené v pondelok&#x27;;
+    $(&#x27;m-stored&#x27;).textContent=fmt(stored); $(&#x27;m-size-label&#x27;).textContent=`Záloha – ${days[cursor]}`;
+    $(&#x27;m-size&#x27;).textContent=fmt(b.size)+&#x27; MB&#x27;; $(&#x27;m-size-note&#x27;).textContent=cap(typeName[b.type])+` · ${b.files.length} z 8 súborov`;
+    $(&#x27;m-sets&#x27;).textContent=String(chain.length); $(&#x27;m-sets-note&#x27;).textContent=chain.map(d=&gt;short[d]).join(&#x27; → &#x27;);
+    $(&#x27;m-saving&#x27;).textContent=fmt((1-stored/(allMB*(cursor+1)))*100)+&#x27; %&#x27;;
+    let text;
+    if (cursor===0) text=`${days[0]}: východiskový stav. Prvá záloha musí byť kompletná – skopíruje všetkých 8 súborov (${fmt(b.size)} MB) a vynuluje archívne bity.`;
+    else {
+      const changed=changes[cursor], parent=b.parent, older=b.files.filter(i=&gt;!changed.includes(i));
+      text=`${days[cursor]}: ${changed.length ? changedWord(changed)+fileList(changed) : &#x27;žiadny súbor sa nezmenil&#x27;}. `;
+      if (b.type===&#x27;full&#x27;) text+=`Kompletná záloha aj tak skopíruje všetkých 8 súborov (${fmt(b.size)} MB) a vynuluje archívne bity.`;
+      else if (b.type===&#x27;inc&#x27;) text+=`Inkrementálna záloha uloží iba zmeny od ${parent===cursor-1 ? &#x27;včerajšej zálohy&#x27; : &#x27;zálohy &#x27;+fromDay(parent)}: ${fileList(b.files)} → ${fmt(b.size)} MB. Archívne bity sa vynulujú.${older.length ? ` (${fileList(older)} – ${changedWord(older)}skôr, ale diferenciálna záloha medzitým archívny bit nevynulovala.)` : &#x27;&#x27;}`;
+      else text+=`Diferenciálna záloha uloží všetko zmenené od ${backups[parent].type===&#x27;full&#x27; ? &#x27;kompletnej&#x27; : &#x27;inkrementálnej&#x27;} zálohy ${fromDay(parent)}: ${fileList(b.files)} → ${fmt(b.size)} MB.${older.length ? ` Znova ukladá aj staršie zmeny (${fileList(older)}), lebo ich archívny bit stále svieti.` : &#x27; Archívne bity nechá nastavené, takže tieto súbory uloží aj zajtra.&#x27;}`;
+    }
+    $(&#x27;explanation&#x27;).textContent=`${text} Obnova tohto stavu: ${chain.map(d=&gt;`${short[d]} (${typeName[backups[d].type]})`).join(&#x27; → &#x27;)} – ${chain.length} ${setWord(chain.length)}.`;
+    $(&#x27;prev&#x27;).disabled=cursor===0; $(&#x27;next&#x27;).disabled=cursor===6;
+    $(&#x27;bit-day&#x27;).textContent=days[cursor];
+    $(&#x27;bits&#x27;).innerHTML=files.map((f,i)=&gt;{
+      const bit=v=&gt;`&lt;span class=&quot;bk-bit${v ? &#x27; bk-on&#x27; : &#x27;&#x27;}&quot;&gt;${Number(v)}&lt;/span&gt;`;
+      return `&lt;tr&gt;&lt;td&gt;${letters[i]} · ${f[0]}&lt;/td&gt;&lt;td&gt;${bit(b.bitsBefore[i])}&lt;/td&gt;&lt;td&gt;${bit(b.bitsAfter[i])}&lt;/td&gt;&lt;/tr&gt;`;
+    }).join(&#x27;&#x27;);
+  }
+  function renderRestore() {
+    $(&#x27;restore-plan&#x27;).textContent=planName[strategy];
+    $(&#x27;restore-day&#x27;).value=String(restoreDay);
+    const r=M.restore(backups,restoreDay,corrupted), n=r.sets.length;
+    const firstBad=r.sets.findIndex(d=&gt;corrupted.includes(d)), limit=firstBad&lt;0 ? n : firstBad;
+    const applied=Math.min(restoreStep ?? n, limit), used=r.sets.slice(0,applied), finished=restoreStep===null || restoreStep&gt;=limit;
+    $(&#x27;sets&#x27;).innerHTML=backups.map(b=&gt;{
+      const order=r.sets.indexOf(b.day), bad=corrupted.includes(b.day);
+      return `&lt;button type=&quot;button&quot; class=&quot;bk-set bk-${b.type}${order&gt;=0 ? &#x27; bk-chain&#x27; : &#x27;&#x27;}${b.day&gt;restoreDay ? &#x27; bk-later&#x27; : &#x27;&#x27;}&quot; data-bk-set=&quot;${b.day}&quot; aria-pressed=&quot;${bad}&quot; aria-label=&quot;${days[b.day]}, ${typeName[b.type]} záloha, ${fmt(b.size)} MB${order&gt;=0 ? &#x27;, &#x27;+(order+1)+&#x27;. v reťazi obnovy&#x27; : &#x27;&#x27;}${bad ? &#x27;, poškodená&#x27; : &#x27;&#x27;}&quot;&gt;&lt;strong&gt;${short[b.day]}&lt;/strong&gt;${cap(typeName[b.type])}&lt;small&gt;${fmt(b.size)} MB&lt;/small&gt;${order&gt;=0 ? `&lt;span class=&quot;bk-order&quot;&gt;${order+1}.&lt;/span&gt;` : &#x27;&#x27;}&lt;/button&gt;`;
+    }).join(&#x27;&#x27;);
+    const target=backups[restoreDay].versions;
+    let stale=0;
+    $(&#x27;restored&#x27;).innerHTML=files.map((f,i)=&gt;{
+      const source=used.reduce((found,d)=&gt;backups[d].files.includes(i) ? d : found,null);
+      if (source===null) { stale++; return `&lt;div class=&quot;bk-file&quot;&gt;&lt;strong&gt;${f[0]}&lt;/strong&gt;&lt;small&gt;zatiaľ chýba&lt;/small&gt;&lt;/div&gt;`; }
+      const version=backups[source].versions[i], old=version!==target[i]; if (old) stale++;
+      return `&lt;div class=&quot;bk-file bk-got bk-${backups[source].type}${restoreStep!==null &amp;&amp; source===used[used.length-1] ? &#x27; bk-fresh&#x27; : &#x27;&#x27;}&quot;&gt;&lt;strong&gt;${f[0]}&lt;/strong&gt;&lt;small&gt;verzia ${version} · zo zálohy ${short[source]}&lt;/small&gt;${old ? &#x27;&lt;small&gt;⚠ nie je najnovšia&lt;/small&gt;&#x27; : &#x27;&#x27;}&lt;/div&gt;`;
+    }).join(&#x27;&#x27;);
+    const percent=n ? applied/n*100 : 0;
+    $(&#x27;restore-bar&#x27;).style.width=percent+&#x27;%&#x27;; $(&#x27;restore-progress&#x27;).setAttribute(&#x27;aria-valuenow&#x27;,String(Math.round(percent)));
+    const chainText=r.sets.map(d=&gt;`${short[d]} (${typeName[backups[d].type]})`).join(&#x27; → &#x27;);
+    const box=$(&#x27;restore-explanation&#x27;);
+    box.classList.toggle(&#x27;bk-error&#x27;,!r.ok &amp;&amp; finished);
+    if (!finished) box.textContent=`Nahraté ${applied} z ${n} ${setWord(n)}. Každá ďalšia sada prepíše súbory novšími verziami. Reťaz: ${chainText}.`;
+    else if (r.ok) box.textContent=`Na obnovu stavu ${fromDay(restoreDay)} potrebuješ ${n} ${setWord(n)}: ${chainText}. Načítaš ${fmt(r.readMB)} MB a všetkých 8 súborov má najnovšiu verziu.`;
+    else box.textContent=`Reťaz je prerušená: záloha ${r.missing.map(d=&gt;short[d]).join(&#x27;, &#x27;)} je poškodená, takže ${stale} ${stale===1 ? &#x27;súbor nemá&#x27; : stale&lt;5 ? &#x27;súbory nemajú&#x27; : &#x27;súborov nemá&#x27;} správnu verziu ${fromDay(restoreDay)}. ${r.latest===null ? &#x27;Nedá sa obnoviť žiadny úplný stav – poškodená je kompletná záloha, na ktorej všetko stojí.&#x27; : `Najnovší úplný stav, ktorý ešte vieš obnoviť, je ${fromDay(r.latest)} (${short[r.latest]}).`}`;
+    $(&#x27;restore-compare&#x27;).innerHTML=[&#x27;full&#x27;,&#x27;inc&#x27;,&#x27;diff&#x27;].map(s=&gt;{
+      const bs=M.simulate({sizes,changes,schedule:M.plan(s,7)}), x=M.restore(bs,restoreDay,corrupted);
+      return `&lt;tr&gt;&lt;td&gt;${planName[s]}&lt;/td&gt;&lt;td&gt;${x.sets.length}&lt;/td&gt;&lt;td&gt;${fmt(x.readMB)} MB&lt;/td&gt;&lt;td&gt;${x.ok ? &#x27;✓ obnovené&#x27; : &#x27;✕ najnovšie &#x27;+(x.latest===null ? &#x27;nič&#x27; : short[x.latest])}&lt;/td&gt;&lt;/tr&gt;`;
+    }).join(&#x27;&#x27;);
+  }
+  function renderCompare() {
+    const c=M.compare({sizes,changes,days:7}), kinds=[&#x27;full&#x27;,&#x27;inc&#x27;,&#x27;diff&#x27;];
+    $(&#x27;bars&#x27;).innerHTML=short.map((day,d)=&gt;`&lt;div class=&quot;bk-bar-day&quot;&gt;&lt;b&gt;${day}&lt;/b&gt;&lt;div class=&quot;bk-bar-group&quot;&gt;${kinds.map(k=&gt;`&lt;div class=&quot;bk-bar bk-${k}&quot;&gt;&lt;span style=&quot;width:${c[k].backups[d].size/allMB*100}%&quot;&gt;&lt;/span&gt;${fmt(c[k].backups[d].size)} MB&lt;/div&gt;`).join(&#x27;&#x27;)}&lt;/div&gt;&lt;/div&gt;`).join(&#x27;&#x27;);
+    $(&#x27;totals&#x27;).innerHTML=kinds.map(k=&gt;`&lt;div class=&quot;bk-${k}&quot;&gt;&lt;strong&gt;${fmt(c[k].totalMB)} MB&lt;/strong&gt;&lt;span&gt;${planName[k]} · spolu za týždeň&lt;/span&gt;&lt;/div&gt;`).join(&#x27;&#x27;);
+    const sunday=k=&gt;{const r=M.restore(c[k].backups,6); return `${r.sets.length} ${setWord(r.sets.length)} · ${fmt(r.readMB)} MB`;};
+    const peak=k=&gt;fmt(Math.max(...c[k].backups.slice(1).map(b=&gt;b.size)))+&#x27; MB&#x27;;
+    const rows=[[&#x27;Čo uloží&#x27;,&#x27;všetky súbory&#x27;,&#x27;zmeny od poslednej zálohy&#x27;,&#x27;zmeny od poslednej kompletnej&#x27;],
+      [&#x27;Miesto za týždeň&#x27;,...kinds.map(k=&gt;fmt(c[k].totalMB)+&#x27; MB&#x27;)],[&#x27;Najväčšia záloha Ut – Ne&#x27;,...kinds.map(peak)],
+      [&#x27;Obnova stavu z nedele&#x27;,...kinds.map(sunday)],[&#x27;Čas zálohovania&#x27;,&#x27;najdlhší&#x27;,&#x27;najkratší&#x27;,&#x27;rastie počas týždňa&#x27;],
+      [&#x27;Čas obnovy&#x27;,&#x27;najkratší&#x27;,&#x27;najdlhší&#x27;,&#x27;stredný&#x27;],[&#x27;Archívny bit&#x27;,&#x27;vynuluje&#x27;,&#x27;vynuluje&#x27;,&#x27;nechá nastavený&#x27;],
+      [&#x27;Jedna poškodená sada&#x27;,&#x27;stratí sa jeden deň&#x27;,&#x27;prerušia sa všetky ďalšie dni&#x27;,&#x27;stratí sa jeden deň&#x27;]];
+    $(&#x27;summary&#x27;).innerHTML=rows.map(([name,...cells])=&gt;`&lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;${name}&lt;/th&gt;${cells.map(cell=&gt;`&lt;td&gt;${cell}&lt;/td&gt;`).join(&#x27;&#x27;)}&lt;/tr&gt;`).join(&#x27;&#x27;);
+  }
+  function renderAll() {
+    backups=M.simulate({sizes,changes,schedule});
+    renderWeek(); renderRestore(); renderCompare();
+  }
+
+  root.querySelectorAll(&#x27;[data-bk-strategy]&#x27;).forEach(button=&gt;button.addEventListener(&#x27;click&#x27;,()=&gt;{
+    if (button.dataset.bkStrategy===&#x27;custom&#x27;) return;
+    pause(); strategy=button.dataset.bkStrategy; schedule=M.plan(strategy,7); restoreStep=null; renderAll();
+  }));
+  $(&#x27;grid&#x27;).addEventListener(&#x27;click&#x27;,event=&gt;{
+    const cell=event.target.closest(&#x27;[data-bk-cell]&#x27;), pick=event.target.closest(&#x27;[data-bk-pick]&#x27;);
+    if (cell) {
+      const [d,i]=cell.dataset.bkCell.split(&#x27;,&#x27;).map(Number);
+      changes[d]=changes[d].includes(i) ? changes[d].filter(x=&gt;x!==i) : [...changes[d],i].sort((a,b)=&gt;a-b);
+      restoreStep=null; renderAll(); $(&#x27;grid&#x27;).querySelector(`[data-bk-cell=&quot;${d},${i}&quot;]`).focus();
+    }
+    if (pick) { pause(); cursor=Number(pick.dataset.bkPick); renderWeek(); $(&#x27;grid&#x27;).querySelector(`[data-bk-pick=&quot;${cursor}&quot;]`).focus(); }
+  });
+  $(&#x27;grid&#x27;).addEventListener(&#x27;change&#x27;,event=&gt;{
+    const select=event.target.closest(&#x27;[data-bk-type]&#x27;); if (!select) return;
+    const d=Number(select.dataset.bkType); schedule[d]=select.value;
+    strategy=[&#x27;full&#x27;,&#x27;inc&#x27;,&#x27;diff&#x27;].find(s=&gt;M.plan(s,7).every((t,i)=&gt;t===schedule[i])) || &#x27;custom&#x27;;
+    cursor=Math.max(cursor,d); restoreStep=null; renderAll(); $(&#x27;grid&#x27;).querySelector(`[data-bk-type=&quot;${d}&quot;]`).focus();
+  });
+  $(&#x27;prev&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();cursor=Math.max(0,cursor-1);renderWeek();});
+  $(&#x27;next&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();cursor=Math.min(6,cursor+1);renderWeek();});
+  $(&#x27;all&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();cursor=6;renderWeek();});
+  $(&#x27;play&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
+    if (playTimer!==null) { pause(); return; }
+    if (cursor===6) cursor=0;
+    $(&#x27;play&#x27;).textContent=&#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;); renderWeek();
+    playTimer=setInterval(()=&gt;{ cursor++; renderWeek(); if (cursor&gt;=6) pause(); },1600);
+  });
+  root.querySelectorAll(&#x27;[data-bk-changes]&#x27;).forEach(button=&gt;button.addEventListener(&#x27;click&#x27;,()=&gt;{
+    const kind=button.dataset.bkChanges; pause();
+    changes=kind===&#x27;random&#x27; ? short.map((_,d)=&gt;d ? files.flatMap((f,i)=&gt;Math.random()&lt;(f[1]&gt;500 ? .1 : .3) ? [i] : []) : []) : changeSets[kind].map(d=&gt;[...d]);
+    cursor=6; restoreStep=null; renderAll();
+  }));
+
+  $(&#x27;restore-day&#x27;).replaceChildren(...days.map((day,d)=&gt;{ const option=document.createElement(&#x27;option&#x27;); option.value=String(d); option.textContent=`${day} večer (${short[d]})`; return option; }));
+  $(&#x27;restore-day&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{pause();restoreDay=Number($(&#x27;restore-day&#x27;).value);restoreStep=null;renderRestore();});
+  $(&#x27;sets&#x27;).addEventListener(&#x27;click&#x27;,event=&gt;{
+    const set=event.target.closest(&#x27;[data-bk-set]&#x27;); if (!set) return;
+    const d=Number(set.dataset.bkSet); pause();
+    corrupted=corrupted.includes(d) ? corrupted.filter(x=&gt;x!==d) : [...corrupted,d]; restoreStep=null;
+    renderRestore(); $(&#x27;sets&#x27;).querySelector(`[data-bk-set=&quot;${d}&quot;]`).focus();
+  });
+  const restoreLimit=()=&gt;{ const sets=M.chain(backups,restoreDay), bad=sets.findIndex(d=&gt;corrupted.includes(d)); return bad&lt;0 ? sets.length : bad; };
+  function stepRestore() {
+    const limit=restoreLimit();
+    restoreStep=restoreStep===null || restoreStep&gt;=limit ? Math.min(1,limit) : restoreStep+1;
+    renderRestore();
+    return restoreStep&gt;=limit;
+  }
+  $(&#x27;restore-step&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();stepRestore();});
+  $(&#x27;restore-play&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
+    if (restoreTimer!==null) { pause(); return; }
+    restoreStep=0; renderRestore();
+    $(&#x27;restore-play&#x27;).textContent=&#x27;Ⅱ Pozastaviť&#x27;; $(&#x27;restore-play&#x27;).setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;);
+    restoreTimer=setInterval(()=&gt;{ if (stepRestore()) pause(); },1000);
+  });
+  $(&#x27;restore-repair&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{pause();corrupted=[];restoreStep=null;renderRestore();});
+
+  const questions=[
+    [&#x27;V pondelok je kompletná záloha, potom každý večer inkrementálna. V piatok ráno zlyhá disk. Ktoré zálohy potrebuješ?&#x27;,[&#x27;Iba štvrtkovú inkrementálnu&#x27;,&#x27;Pondelkovú kompletnú a štvrtkovú inkrementálnu&#x27;,&#x27;Pondelkovú kompletnú a všetky inkrementálne Ut, St, Št&#x27;,&#x27;Všetky inkrementálne, kompletnú nie&#x27;],2,&#x27;Každá inkrementálna obsahuje iba zmeny od predchádzajúcej zálohy, preto treba celú reťaz Po → Ut → St → Št.&#x27;],
+    [&#x27;Rovnaká situácia, ale každý večer sa robí diferenciálna záloha. Čo potrebuješ?&#x27;,[&#x27;Pondelkovú kompletnú a štvrtkovú diferenciálnu&#x27;,&#x27;Iba štvrtkovú diferenciálnu&#x27;,&#x27;Všetky diferenciálne Ut, St, Št&#x27;,&#x27;Iba pondelkovú kompletnú&#x27;],0,&#x27;Diferenciálna obsahuje všetky zmeny od poslednej kompletnej zálohy, takže stačí kompletná + posledná diferenciálna.&#x27;],
+    [&#x27;Každý deň sa zmení rovnaké množstvo iných súborov. Ktorá záloha bude počas týždňa rásť?&#x27;,[&#x27;Kompletná&#x27;,&#x27;Inkrementálna&#x27;,&#x27;Diferenciálna&#x27;,&#x27;Žiadna&#x27;],2,&#x27;Diferenciálna nevynuluje archívny bit, preto zakaždým znova ukladá aj zmeny z predchádzajúcich dní.&#x27;],
+    [&#x27;Ktorý typ zálohy archívny bit NEvynuluje?&#x27;,[&#x27;Kompletná&#x27;,&#x27;Inkrementálna&#x27;,&#x27;Diferenciálna&#x27;],2,&#x27;Kompletná aj inkrementálna bit vynulujú. Diferenciálna ho nechá, a tak sa ďalšia diferenciálna dozvie o všetkých zmenách od kompletnej.&#x27;],
+    [&#x27;Ktorá kombinácia zaberie najmenej miesta a denné zálohovanie je najrýchlejšie?&#x27;,[&#x27;Iba kompletné&#x27;,&#x27;Kompletná + inkrementálne&#x27;,&#x27;Kompletná + diferenciálne&#x27;],1,&#x27;Inkrementálna ukladá iba to, čo sa zmenilo od poslednej zálohy. Platí sa za to pomalšou a citlivejšou obnovou.&#x27;],
+    [&#x27;Plán: kompletná v pondelok, potom inkrementálne. Stredajšia záloha je poškodená. Ktorý najnovší stav vieš úplne obnoviť?&#x27;,[&#x27;Nedeľný&#x27;,&#x27;Utorkový&#x27;,&#x27;Piatkový&#x27;,&#x27;Žiadny&#x27;],1,&#x27;Reťaz sa v stredu preruší. Neskoršie inkrementálne zálohy bez nej nemajú úplné dáta, posledný celý stav je Po + Ut.&#x27;],
+    [&#x27;Plán: kompletná v pondelok, potom diferenciálne. Stredajšia záloha je poškodená. Ktorý najnovší stav vieš obnoviť?&#x27;,[&#x27;Utorkový&#x27;,&#x27;Nedeľný&#x27;,&#x27;Žiadny&#x27;,&#x27;Iba pondelkový&#x27;],1,&#x27;Nedeľná diferenciálna potrebuje iba pondelkovú kompletnú. Stredajšia sada do jej obnovy nepatrí.&#x27;],
+    [&#x27;V utorok sa nezmenil žiadny súbor. Čo uloží utorková inkrementálna záloha?&#x27;,[&#x27;Všetky súbory&#x27;,&#x27;Nič – nie je čo uložiť&#x27;,&#x27;Všetky pondelkové súbory znova&#x27;],1,&#x27;Bez zmien nemá žiadny súbor nastavený archívny bit, záloha je prázdna (v praxi iba záznam o tom, že prebehla).&#x27;],
+    [&#x27;Prečo sa aj pri inkrementálnych zálohách pravidelne robí nová kompletná?&#x27;,[&#x27;Inkrementálne bez nej vôbec nefungujú&#x27;,&#x27;Skráti reťaz na obnovu a zníži riziko, že ju preruší jedna chybná sada&#x27;,&#x27;Kompletná zaberá menej miesta&#x27;],1,&#x27;Nová kompletná začne novú reťaz. Obnova potom potrebuje menej sád a staršie sady možno zrotovať.&#x27;],
+    [&#x27;Čo znamená pravidlo 3-2-1?&#x27;,[&#x27;3 zálohy denne, 2 týždenne, 1 mesačne&#x27;,&#x27;3 kópie dát, 2 rôzne typy médií, 1 kópia mimo pracoviska&#x27;,&#x27;3 disky v RAID, 2 servery, 1 cloud&#x27;],1,&#x27;Viac kópií na rôznych médiách a mimo pracoviska chráni aj pred požiarom, krádežou či ransomvérom.&#x27;]
+  ];
+  let question=0, score=0, answered=false, tried=false;
+  function renderQuiz() {
+    const q=questions[question]; $(&#x27;quiz-count&#x27;).textContent=`Otázka ${question+1} / ${questions.length}`; $(&#x27;quiz-question&#x27;).textContent=q[0];
+    $(&#x27;quiz-next&#x27;).disabled=!answered || question===questions.length-1;
+    $(&#x27;quiz-next&#x27;).textContent=question===questions.length-1 &amp;&amp; answered ? &#x27;Všetko vyriešené&#x27; : &#x27;Ďalšia otázka →&#x27;;
+    $(&#x27;quiz-score&#x27;).textContent=`Správne na prvý pokus: ${score} / ${question+(answered ? 1 : 0)}`;
+    $(&#x27;quiz-answers&#x27;).replaceChildren(...q[1].map((label,i)=&gt;{
+      const button=document.createElement(&#x27;button&#x27;);button.type=&#x27;button&#x27;;button.textContent=label;button.disabled=answered;
+      button.addEventListener(&#x27;click&#x27;,()=&gt;{
+        if(i!==q[2]) {tried=true;$(&#x27;quiz-feedback&#x27;).textContent=&#x27;Skús ešte raz. &#x27;+q[3];return;}
+        if(!tried) score++;answered=true;renderQuiz();$(&#x27;quiz-feedback&#x27;).textContent=&#x27;Správne. &#x27;+q[3]+(question===questions.length-1 ? ` Hotovo: ${score} z ${questions.length} na prvý pokus.` : &#x27;&#x27;);
+      }); return button;
+    }));
+  }
+  $(&#x27;quiz-next&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{if(!answered || question===questions.length-1)return;question++;answered=tried=false;$(&#x27;quiz-feedback&#x27;).textContent=&#x27;&#x27;;renderQuiz();});
+  $(&#x27;quiz-reset&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{question=score=0;answered=tried=false;$(&#x27;quiz-feedback&#x27;).textContent=&#x27;&#x27;;renderQuiz();});
+  document.addEventListener(&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden)pause();});
+  window.BackupLab={pause,getState:()=&gt;({topic,strategy,cursor,schedule:[...schedule],sizes:backups.map(b=&gt;b.size),playing:playTimer!==null || restoreTimer!==null,restore:M.restore(backups,restoreDay,corrupted),restoreStep})};
+  renderAll(); renderQuiz();
+})();
+
+&lt;/script&gt;
+&lt;/section&gt;
 &lt;script&gt;
 (() =&gt; {
   const tabs = [...document.querySelectorAll(&#x27;.network-lab-tabs [role=&quot;tab&quot;]&#x27;)];
@@ -3481,8 +3942,18 @@ html&gt;body{padding:0}&lt;/style&gt;
     if (tab.id !== &#x27;encapsulation-tab&#x27;) window.EncapsulationLab?.pause();
     if (tab.id !== &#x27;switching-tab&#x27;) window.SwitchingLab?.pause();
     if (tab.id !== &#x27;speed-tab&#x27;) window.SpeedLab?.pause();
+    if (tab.id !== &#x27;backup-tab&#x27;) window.BackupLab?.pause();
     if (focus) tab.focus();
   }
+  const themeButtons = [...document.querySelectorAll(&#x27;[data-theme-choice]&#x27;)];
+  function showTheme(choice) {
+    for (const button of themeButtons) button.setAttribute(&#x27;aria-pressed&#x27;, String(button.dataset.themeChoice === choice));
+  }
+  themeButtons.forEach(button =&gt; button.addEventListener(&#x27;click&#x27;, () =&gt; {
+    window.setNetworkLabTheme?.(button.dataset.themeChoice);
+    showTheme(button.dataset.themeChoice);
+  }));
+  showTheme(document.documentElement.dataset.themePreference || &#x27;auto&#x27;);
   tabs.forEach((tab, index) =&gt; {
     tab.addEventListener(&#x27;click&#x27;, () =&gt; activate(tab));
     tab.addEventListener(&#x27;keydown&#x27;, event =&gt; {
@@ -4152,9 +4623,27 @@ html&gt;body{padding:0}&lt;/style&gt;
   } catch {
     storage = null;
   }
+  // Shared with index.html so the whole site keeps one light/dark choice.
+  const themeKey = "pvalo-theme";
+  const themePreferences = ["auto", "light", "dark"];
+  let themePreference = "auto";
+  try {
+    const savedTheme = globalThis.localStorage.getItem(themeKey);
+    if (themePreferences.includes(savedTheme)) {
+      themePreference = savedTheme;
+    }
+  } catch {
+    // Without storage the page follows the system theme.
+  }
+  const applyTheme = () => {
+    document.documentElement.style.colorScheme =
+      themePreference === "auto" ? "" : themePreference;
+  };
+  applyTheme();
   const initialGlobals = {
     widgetState: state,
     statePersistence: storage == null ? "none" : "local",
+    themePreference,
   };
 
   const channel = new MessageChannel();
@@ -4182,6 +4671,23 @@ html&gt;body{padding:0}&lt;/style&gt;
         id: data.id,
         ok,
       });
+      return;
+    }
+    if (data.type === "theme") {
+      if (!themePreferences.includes(data.preference)) {
+        return;
+      }
+      themePreference = data.preference;
+      applyTheme();
+      try {
+        if (themePreference === "auto") {
+          globalThis.localStorage.removeItem(themeKey);
+        } else {
+          globalThis.localStorage.setItem(themeKey, themePreference);
+        }
+      } catch {
+        // The choice still applies until the page is closed.
+      }
       return;
     }
     if (data.type === "height") {

@@ -1,0 +1,171 @@
+<style>
+  #backup-lab { --bk-full: var(--viz-series-1); --bk-inc: var(--viz-series-3); --bk-diff: var(--viz-series-5); --bk-bad: var(--red); color:var(--foreground); font-size:14px; line-height:1.6; padding:10px 0 30px; }
+  #backup-lab *, #backup-lab *::before, #backup-lab *::after { box-sizing:border-box; }
+  #backup-lab [hidden] { display:none !important; }
+  #backup-lab h2, #backup-lab h3, #backup-lab p { margin:0; }
+  #backup-lab h2 { font-size:clamp(25px,3vw,36px); line-height:1.2; letter-spacing:-.04em; }
+  #backup-lab h3 { font-size:16px; line-height:1.4; }
+  #backup-lab .bk-eyebrow { font-size:10px; text-transform:uppercase; letter-spacing:.13em; font-weight:700; color:var(--muted-foreground); margin-bottom:8px; }
+  #backup-lab .bk-intro { color:var(--muted-foreground); max-width:820px; margin-top:10px; }
+  #backup-lab .bk-muted { color:var(--muted-foreground); font-size:12px; }
+  #backup-lab .bk-topics, #backup-lab .bk-actions { display:flex; flex-wrap:wrap; gap:7px; }
+  #backup-lab .bk-topics { margin:22px 0; }
+  #backup-lab button, #backup-lab select { font:inherit; }
+  #backup-lab button, #backup-lab select { border:1px solid var(--border); background:var(--background); color:var(--foreground); border-radius:8px; padding:8px 11px; min-height:37px; min-width:0; max-width:100%; }
+  #backup-lab button { cursor:pointer; font-size:12px; }
+  #backup-lab button:disabled { cursor:default; opacity:.45; }
+  #backup-lab button[aria-pressed="true"], #backup-lab .bk-primary { border-color:var(--primary); background:var(--accent); color:var(--accent-foreground); }
+  #backup-lab :focus-visible { outline:3px solid var(--ring); outline-offset:3px; }
+  #backup-lab label { display:grid; gap:6px; font-size:12px; min-width:0; }
+  #backup-lab .bk-grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:16px; align-items:start; }
+  #backup-lab .bk-card { min-width:0; border:1px solid var(--border); border-radius:15px; padding:20px; background:var(--card); }
+  #backup-lab .bk-stack { display:grid; gap:16px; }
+  #backup-lab .bk-heading { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+  #backup-lab .bk-badge { border:1px solid var(--border); border-radius:30px; padding:4px 9px; font-size:10px; color:var(--muted-foreground); }
+  #backup-lab .bk-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin-bottom:16px; }
+  #backup-lab .bk-metric { border:1px solid var(--border); border-radius:12px; padding:12px; background:var(--card); min-width:0; }
+  #backup-lab .bk-metric > span { display:block; color:var(--muted-foreground); font-size:11px; }
+  #backup-lab .bk-metric > strong { display:block; font-size:clamp(19px,2.4vw,29px); font-weight:700; letter-spacing:-.04em; line-height:1.5; overflow-wrap:anywhere; }
+  #backup-lab .bk-metric > small { font-size:10px; color:var(--muted-foreground); }
+  #backup-lab .bk-strategies { margin:4px 0 16px; }
+  #backup-lab .bk-week { display:grid; gap:5px; }
+  #backup-lab .bk-row { display:grid; grid-template-columns:78px 130px repeat(8,minmax(0,1fr)) 92px; gap:5px; align-items:center; }
+  #backup-lab .bk-row.bk-head { font-size:10px; color:var(--muted-foreground); align-items:end; }
+  #backup-lab .bk-head > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center; }
+  #backup-lab .bk-head b { display:block; font-size:12px; color:var(--foreground); }
+  #backup-lab .bk-head small { display:block; overflow:hidden; text-overflow:ellipsis; }
+  #backup-lab .bk-day { text-align:left; font-weight:600; padding:7px 8px; }
+  #backup-lab .bk-row select { padding:6px 7px; min-height:34px; font-size:12px; }
+  #backup-lab .bk-cell { position:relative; height:34px; padding:0; border-radius:6px; font-size:13px; }
+  #backup-lab .bk-cell.bk-in { background:color-mix(in srgb,var(--bk-type) 28%,var(--background)); border-color:var(--bk-type); }
+  #backup-lab .bk-cell[aria-pressed="true"] { color:var(--foreground); font-weight:700; }
+  #backup-lab .bk-cell[aria-pressed="true"]:not(.bk-in) { background:var(--background); border-style:dashed; border-color:var(--foreground); }
+  #backup-lab .bk-cell:disabled { opacity:1; }
+  #backup-lab .bk-full { --bk-type:var(--bk-full); }
+  #backup-lab .bk-inc { --bk-type:var(--bk-inc); }
+  #backup-lab .bk-diff { --bk-type:var(--bk-diff); }
+  #backup-lab .bk-future > :not(.bk-day) { opacity:.5; }
+  #backup-lab .bk-current .bk-day { border-color:var(--primary); background:var(--accent); color:var(--accent-foreground); }
+  #backup-lab .bk-size { font-size:11px; min-width:0; }
+  #backup-lab .bk-size span { display:block; height:7px; border-radius:4px; background:var(--bk-type); min-width:2px; margin-top:3px; }
+  #backup-lab .bk-explanation { border-left:3px solid var(--primary); background:var(--accent); padding:12px 14px; font-size:13px; margin:15px 0; }
+  #backup-lab .bk-explanation.bk-error { border-left-color:var(--bk-bad); background:color-mix(in srgb,var(--bk-bad) 12%,var(--background)); }
+  #backup-lab .bk-note { border-top:1px solid var(--border); margin-top:15px; padding-top:12px; font-size:12px; color:var(--muted-foreground); }
+  #backup-lab .bk-legend { display:grid; gap:10px; margin-top:12px; font-size:12px; }
+  #backup-lab .bk-legend > div { display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; align-items:start; }
+  #backup-lab .bk-swatch { width:22px; height:22px; border-radius:5px; border:1px solid var(--bk-type,var(--foreground)); background:color-mix(in srgb,var(--bk-type,var(--background)) 28%,var(--background)); display:grid; place-items:center; font-size:12px; font-weight:700; }
+  #backup-lab .bk-swatch.bk-dashed { border-style:dashed; }
+  #backup-lab table { border-collapse:collapse; width:100%; font-size:12px; margin:12px 0; }
+  #backup-lab th, #backup-lab td { text-align:left; border-bottom:1px solid var(--border); padding:7px 5px; vertical-align:top; }
+  #backup-lab th { color:var(--muted-foreground); font-size:10px; font-weight:500; }
+  #backup-lab .bk-bit { display:inline-block; min-width:22px; text-align:center; border-radius:5px; font:600 11px var(--font-mono); padding:1px 5px; border:1px solid var(--border); }
+  #backup-lab .bk-bit.bk-on { border-color:var(--orange); color:var(--orange); }
+  #backup-lab .bk-sets { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin:18px 0 8px; }
+  #backup-lab .bk-set { position:relative; display:grid; gap:2px; text-align:left; padding:10px 8px; min-height:84px; align-content:start; font-size:11px; }
+  #backup-lab .bk-set strong { font-size:14px; }
+  #backup-lab .bk-set small { color:var(--muted-foreground); font-size:10px; }
+  #backup-lab .bk-set.bk-chain { border-color:var(--bk-type); border-width:2px; background:color-mix(in srgb,var(--bk-type) 18%,var(--background)); }
+  #backup-lab .bk-set.bk-later { opacity:.4; }
+  #backup-lab .bk-set .bk-order { position:absolute; top:6px; right:7px; border-radius:20px; background:var(--bk-type); color:var(--background); font-weight:700; font-size:10px; padding:0 6px; }
+  #backup-lab .bk-set[aria-pressed="true"] { border-color:var(--bk-bad); background:color-mix(in srgb,var(--bk-bad) 14%,var(--background)); color:var(--foreground); }
+  #backup-lab .bk-set[aria-pressed="true"]::after { content:"✕ poškodená"; color:var(--bk-bad); font-weight:700; font-size:10px; }
+  #backup-lab .bk-restored { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; margin:14px 0; }
+  #backup-lab .bk-file { border:1px solid var(--border); border-radius:9px; padding:9px; background:var(--background); font-size:11px; min-width:0; }
+  #backup-lab .bk-file strong { display:block; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #backup-lab .bk-file small { display:block; color:var(--muted-foreground); font-size:10px; }
+  #backup-lab .bk-file.bk-got { border-color:var(--bk-type); background:color-mix(in srgb,var(--bk-type) 14%,var(--background)); }
+  #backup-lab .bk-file.bk-fresh { outline:2px solid var(--bk-type); outline-offset:1px; }
+  #backup-lab .bk-progress { background:var(--background); border:1px solid var(--border); border-radius:8px; height:14px; overflow:hidden; margin:10px 0; }
+  #backup-lab .bk-progress > span { display:block; height:100%; background:var(--primary); width:0; transition:width .3s; }
+  #backup-lab .bk-bars { display:grid; gap:12px; margin:16px 0; }
+  #backup-lab .bk-bar-day { display:grid; grid-template-columns:34px minmax(0,1fr); gap:10px; align-items:center; }
+  #backup-lab .bk-bar-day > b { font-size:12px; }
+  #backup-lab .bk-bar-group { display:grid; gap:3px; }
+  #backup-lab .bk-bar { display:grid; grid-template-columns:minmax(0,1fr) 68px; gap:8px; align-items:center; font-size:10px; color:var(--muted-foreground); }
+  #backup-lab .bk-bar > span { display:block; height:9px; border-radius:0 4px 4px 0; background:var(--bk-type); min-width:2px; }
+  #backup-lab .bk-key { display:flex; flex-wrap:wrap; gap:14px; font-size:11px; color:var(--muted-foreground); }
+  #backup-lab .bk-key span::before { content:""; display:inline-block; width:12px; height:8px; border-radius:2px; background:var(--bk-type); margin-right:6px; }
+  #backup-lab .bk-totals { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:15px 0; }
+  #backup-lab .bk-totals > div { border-left:3px solid var(--bk-type); padding-left:10px; }
+  #backup-lab .bk-totals strong { display:block; font-size:22px; letter-spacing:-.03em; }
+  #backup-lab .bk-totals span { display:block; font-size:10px; color:var(--muted-foreground); }
+  #backup-lab details { margin-top:12px; font-size:13px; }
+  #backup-lab summary { cursor:pointer; font-weight:600; }
+  #backup-lab details p { color:var(--muted-foreground); margin-top:8px; }
+  #backup-lab .bk-answers { display:grid; gap:8px; margin:18px 0; }
+  #backup-lab .bk-answers button { text-align:left; padding:12px; }
+  #backup-lab .bk-feedback { min-height:65px; font-size:13px; margin:12px 0; }
+  #backup-lab .bk-footer { color:var(--muted-foreground); font-size:11px; margin-top:22px; }
+  @media (max-width:1000px) { #backup-lab .bk-grid { grid-template-columns:1fr; } }
+  @media (max-width:700px) {
+    #backup-lab .bk-metrics { grid-template-columns:1fr 1fr; } #backup-lab .bk-card { padding:15px; }
+    #backup-lab .bk-row { grid-template-columns:repeat(8,minmax(0,1fr)); row-gap:4px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    #backup-lab .bk-row > .bk-day { grid-column:span 3; } #backup-lab .bk-row > select { grid-column:span 5; } #backup-lab .bk-row > .bk-size { grid-column:1 / -1; }
+    #backup-lab .bk-head > span:first-child, #backup-lab .bk-head > span:nth-child(2), #backup-lab .bk-head > span:last-child { display:none; }
+    #backup-lab .bk-head small { display:none; }
+    #backup-lab .bk-cell { height:30px; }
+    #backup-lab .bk-sets { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    #backup-lab .bk-restored { grid-template-columns:1fr 1fr; }
+    #backup-lab .bk-totals { grid-template-columns:1fr; }
+    #backup-lab .bk-topics button { flex:1 1 40%; }
+  }
+  @media (prefers-reduced-motion:reduce) { #backup-lab .bk-progress > span { transition:none; } }
+</style>
+<div id="backup-lab">
+  <div class="bk-eyebrow">Ochrana dát / zálohovanie</div>
+  <h2>Kompletná, inkrementálna a diferenciálna záloha</h2>
+  <p class="bk-intro">Celý týždeň meníš súbory a každý večer zálohuješ. Porovnaj, koľko miesta jednotlivé typy záloh zaberú, ktoré sady potrebuješ pri obnove a čo sa stane, keď sa jedna záloha poškodí.</p>
+  <nav class="bk-topics" aria-label="Témy o zálohovaní">
+    <button type="button" data-bk-topic="week" aria-controls="bk-week" aria-pressed="true">01 · Týždeň záloh</button>
+    <button type="button" data-bk-topic="restore" aria-controls="bk-restore" aria-pressed="false">02 · Obnova po havárii</button>
+    <button type="button" data-bk-topic="compare" aria-controls="bk-compare" aria-pressed="false">03 · Porovnanie</button>
+    <button type="button" data-bk-topic="practice" aria-controls="bk-practice" aria-pressed="false">04 · Over si to</button>
+  </nav>
+  <section id="bk-week" aria-label="Týždeň zálohovania">
+    <div class="bk-metrics"><div class="bk-metric"><span id="bk-m-stored-label">Uložené spolu</span><strong id="bk-m-stored"></strong><small>MB na zálohovacom médiu</small></div><div class="bk-metric"><span id="bk-m-size-label">Dnešná záloha</span><strong id="bk-m-size"></strong><small id="bk-m-size-note"></small></div><div class="bk-metric"><span>Sady na obnovu</span><strong id="bk-m-sets"></strong><small id="bk-m-sets-note"></small></div><div class="bk-metric"><span>Oproti len kompletným</span><strong id="bk-m-saving"></strong><small>ušetreného miesta</small></div></div>
+    <div class="bk-grid"><div class="bk-stack"><div class="bk-card"><div class="bk-heading"><h3>Každý večer jedna záloha</h3><span class="bk-badge">8 súborov · 1 766 MB</span></div>
+      <div class="bk-actions bk-strategies" role="group" aria-label="Plán zálohovania"><button type="button" data-bk-strategy="full" aria-pressed="false">Iba kompletné</button><button type="button" data-bk-strategy="inc" aria-pressed="true">Kompletná + inkrementálne</button><button type="button" data-bk-strategy="diff" aria-pressed="false">Kompletná + diferenciálne</button><button type="button" data-bk-strategy="custom" aria-pressed="false" disabled>Vlastný plán</button></div>
+      <div id="bk-grid" class="bk-week"></div>
+      <p class="bk-muted" style="margin-top:10px">Klikni na políčko a označ, že sa súbor v daný deň zmenil (✎). Farebné políčko = súbor je v zálohe toho dňa. Typ zálohy môžeš zmeniť pri každom dni.</p>
+      <p id="bk-explanation" class="bk-explanation" aria-live="polite"></p>
+      <div class="bk-actions"><button type="button" id="bk-prev">◀ Predchádzajúci deň</button><button type="button" id="bk-next">Ďalší deň ▶</button><button type="button" id="bk-play" class="bk-primary" aria-pressed="false">▶ Prehrať týždeň</button><button type="button" id="bk-all">Celý týždeň</button></div>
+    </div></div>
+    <aside class="bk-stack"><div class="bk-card"><h3>Čo uloží ktorá záloha</h3><div class="bk-legend"><div><span class="bk-swatch bk-full">K</span><p><strong>Kompletná (úplná)</strong> – všetky vybrané súbory, bez ohľadu na zmeny. Sama stačí na obnovu.</p></div><div><span class="bk-swatch bk-inc">I</span><p><strong>Inkrementálna</strong> – iba zmeny od <em>poslednej zálohy akéhokoľvek typu</em>. Malá a rýchla, obnova potrebuje celú reťaz.</p></div><div><span class="bk-swatch bk-diff">D</span><p><strong>Diferenciálna (rozdielová)</strong> – všetky zmeny od <em>poslednej kompletnej zálohy</em>. Každý deň rastie, obnova potrebuje 2 sady.</p></div><div><span class="bk-swatch bk-dashed">✎</span><p>Zmena v dni, ktorý ešte neprebehol – večerná záloha sa ešte nespravila.</p></div></div></div>
+      <div class="bk-card"><div class="bk-heading"><h3>Archívny bit</h3><span id="bk-bit-day" class="bk-badge"></span></div><p class="bk-muted">Príznak súboru „treba zálohovať“. Zmena súboru ho nastaví na 1. Kompletná a inkrementálna ho vynulujú, diferenciálna ho nechá tak.</p><table><thead><tr><th>Súbor</th><th>Pred zálohou</th><th>Po zálohe</th></tr></thead><tbody id="bk-bits"></tbody></table></div>
+      <div class="bk-card"><h3>Iné zmeny počas týždňa</h3><div class="bk-actions" style="margin-top:12px"><button type="button" data-bk-changes="default">Pôvodné zmeny</button><button type="button" data-bk-changes="random">Náhodné zmeny</button><button type="button" data-bk-changes="busy">Mení sa veľká databáza</button><button type="button" data-bk-changes="none">Bez zmien</button></div><p class="bk-note">Pondelok je východiskový stav – prvá záloha musí byť kompletná, inak by nebolo na čo nadväzovať.</p></div>
+    </aside></div>
+  </section>
+  <section id="bk-restore" aria-label="Obnova dát zo záloh" hidden>
+    <div class="bk-grid"><div class="bk-stack"><div class="bk-card"><div class="bk-heading"><h3>Disk zlyhal. Čo potrebuješ na obnovu?</h3><span id="bk-restore-plan" class="bk-badge"></span></div>
+      <label style="max-width:320px">Obnoviť stav zo zálohy dňa<select id="bk-restore-day"></select></label>
+      <div id="bk-sets" class="bk-sets"></div>
+      <p class="bk-muted">Zvýraznené sady tvoria reťaz obnovy, čísla ukazujú poradie. Kliknutím na sadu ju označíš ako poškodenú.</p>
+      <div class="bk-progress" role="progressbar" aria-label="Postup obnovy" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bk-restore-progress"><span id="bk-restore-bar"></span></div>
+      <div id="bk-restored" class="bk-restored"></div>
+      <p id="bk-restore-explanation" class="bk-explanation" aria-live="polite"></p>
+      <div class="bk-actions"><button type="button" id="bk-restore-play" class="bk-primary" aria-pressed="false">▶ Prehrať obnovu</button><button type="button" id="bk-restore-step">Pridať ďalšiu sadu</button><button type="button" id="bk-restore-repair">Opraviť všetky zálohy</button></div>
+    </div></div>
+    <aside class="bk-stack"><div class="bk-card"><h3>Rovnaké zmeny, iný plán</h3><p class="bk-muted">Obnova stavu z vybraného dňa pri rovnakých poškodených dňoch.</p><table><thead><tr><th>Plán</th><th>Sady</th><th>Načítať</th><th>Výsledok</th></tr></thead><tbody id="bk-restore-compare"></tbody></table></div>
+      <div class="bk-card"><h3>Prečo na reťazi záleží</h3><p class="bk-note">Inkrementálne zálohy na seba nadväzujú. Keď jedna chýba, neskoršie už neobsahujú úplný stav. Diferenciálna závisí iba od kompletnej zálohy, takže poškodená stredajšia diferenciálna nepokazí nedeľnú obnovu.</p><p class="bk-note">Ak je poškodená samotná kompletná záloha, nepomôže žiadna inkrementálna ani diferenciálna. Preto sa kompletná záloha robí pravidelne a obnova sa skúša naozaj.</p></div>
+    </aside></div>
+  </section>
+  <section id="bk-compare" aria-label="Porovnanie typov záloh" hidden>
+    <div class="bk-grid"><div class="bk-stack"><div class="bk-card"><div class="bk-heading"><h3>Veľkosť zálohy každý deň</h3><span class="bk-badge">rovnaké zmeny ako v časti 01</span></div>
+      <div class="bk-key"><span class="bk-full">Kompletná</span><span class="bk-inc">Inkrementálna</span><span class="bk-diff">Diferenciálna</span></div>
+      <div id="bk-bars" class="bk-bars" role="img" aria-label="Veľkosť dennej zálohy pre tri plány"></div>
+      <div id="bk-totals" class="bk-totals"></div>
+      <p class="bk-muted">Inkrementálna je každý deň malá. Diferenciálna rastie, lebo opakovane ukladá všetko od pondelka.</p>
+    </div>
+    <div class="bk-card"><h3>Súhrn</h3><div style="overflow-x:auto"><table><thead><tr><th></th><th>Kompletná</th><th>Inkrementálna</th><th>Diferenciálna</th></tr></thead><tbody id="bk-summary"></tbody></table></div></div></div>
+    <aside class="bk-stack"><div class="bk-card"><h3>Kedy ktorú?</h3><details open><summary>Kompletná</summary><p>Najjednoduchšia obnova a najvyššia spoľahlivosť. Pri veľkom objeme dát je pomalá a zaberá veľa miesta, preto sa robí napr. raz týždenne.</p></details><details><summary>Kompletná + inkrementálne</summary><p>Najmenej miesta a najkratšie denné zálohovanie. Obnova je pomalšia a citlivá na poškodenie ktoréhokoľvek článku reťaze.</p></details><details><summary>Kompletná + diferenciálne</summary><p>Kompromis: zálohy časom rastú, ale obnova potrebuje iba kompletnú a poslednú diferenciálnu zálohu.</p></details></div>
+      <div class="bk-card"><h3>Pravidlo 3-2-1</h3><p class="bk-explanation">3 kópie dát<br>2 rôzne typy médií<br>1 kópia mimo pracoviska</p><p class="bk-muted">Napríklad originál na PC, záloha na NAS a ďalšia v cloude alebo na disku uloženom doma.</p></div>
+      <div class="bk-card"><h3>Čo nie je záloha</h3><details><summary>RAID 1 (zrkadlenie)</summary><p>Chráni pred zlyhaním disku, ale zmazaný alebo zašifrovaný súbor sa okamžite zmaže aj na druhom disku.</p></details><details><summary>Synchronizácia do cloudu</summary><p>Prenesie aj chybu či vymazanie. Záloha uchováva staršie verzie, ku ktorým sa dá vrátiť.</p></details><details><summary>Záloha, ktorú nikto neobnovil</summary><p>Kým obnovu neotestuješ, nevieš, či funguje. Over aspoň náhodný súbor.</p></details></div>
+    </aside></div>
+  </section>
+  <section id="bk-practice" aria-label="Praktické otázky o zálohovaní" hidden>
+    <div class="bk-grid"><div class="bk-card"><div class="bk-heading"><h3>Vyber správnu odpoveď</h3><span id="bk-quiz-count" class="bk-badge"></span></div><h3 id="bk-quiz-question" style="margin-top:20px"></h3><div id="bk-quiz-answers" class="bk-answers"></div><p id="bk-quiz-feedback" class="bk-feedback" aria-live="polite"></p><div class="bk-actions"><button type="button" id="bk-quiz-next" disabled>Ďalšia otázka →</button><button type="button" id="bk-quiz-reset">Začať znova</button></div><p id="bk-quiz-score" class="bk-note"></p></div>
+    <aside class="bk-stack"><div class="bk-card"><h3>Ťahák</h3><table><thead><tr><th>Typ</th><th>Ukladá zmeny od</th><th>Obnova</th></tr></thead><tbody><tr><td>Kompletná</td><td>– (všetko)</td><td>1 sada</td></tr><tr><td>Inkrementálna</td><td>poslednej zálohy</td><td>kompletná + všetky inkrementálne</td></tr><tr><td>Diferenciálna</td><td>poslednej kompletnej</td><td>kompletná + posledná diferenciálna</td></tr></tbody></table></div>
+    <div class="bk-card"><h3>Pojmy</h3><details><summary>Archívny bit</summary><p>Atribút súboru vo Windows. Nastaví sa pri zmene súboru. Kompletná a inkrementálna záloha ho vynulujú, diferenciálna nie.</p></details><details><summary>RPO a RTO</summary><p>RPO: koľko dát najviac môžeš stratiť (napr. 1 deň → zálohuj denne). RTO: za aký čas musíš byť znova v prevádzke – ovplyvňuje ho aj počet sád na obnovu.</p></details><details><summary>Rotácia záloh</summary><p>Staré sady sa po čase prepisujú, napr. schéma otec–syn (týždenná kompletná, denné inkrementálne). Sadu možno zmazať až keď od nej nezávisí žiadna novšia.</p></details></div></aside></div>
+  </section>
+  <p class="bk-footer">Didaktický model: jeden deň = jedna zmena verzie súboru, bez kompresie a deduplikácie. Výber súborov určuje archívny bit. MB sú desiatkové jednotky.</p>
+</div>

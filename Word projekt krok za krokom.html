@@ -353,7 +353,7 @@ html{scroll-behavior:smooth}
     <li>Hneď ho ulož: <b>Súbor → Uložiť ako → Prehľadávať</b>. Názov: <code>Priezvisko_Projekt_Word</code> (napr. <code>Novak_Projekt_Word</code>), typ <b>Dokument programu Word (*.docx)</b>.</li>
     <li>Klikni na kartu <b>Revízia</b>.</li>
     <li>V skupine <b>Sledovanie</b> klikni na <b>Sledovať zmeny</b>. Tlačidlo ostane podfarbené, to znamená, že je zapnuté.</li>
-    <li>V rozbaľovacom zozname vedľa vyber <b>Jednoduché revízie</b>. Zmeny sa budú sledovať, ale červené značky ťa nebudú rušiť.</li>
+    <li>V rozbaľovacom zozname vedľa vyber <b>Žiadne revízie</b> (v niektorých verziách <b>Bez označení</b>). Zmeny sa budú sledovať, ale v texte neuvidíš žiadne značky.</li>
   </ol>
   <div class="scroll"><div id="rb-track"></div></div>
   <div class="call warn"><b class="t">Pozor</b><p>Sledovanie počas práce nevypínaj a nikdy nepoužívaj <b>Prijať všetky zmeny</b> ani <b>Odmietnuť všetky zmeny</b>. Priebežne ukladaj pomocou <kbd>Ctrl</kbd>+<kbd>S</kbd>.</p></div>
@@ -865,7 +865,7 @@ const R={
    ['Korektúra',[['abc✓','Pravopis a gramatika'],{col:[['Ⓣ','Tezaurus','sm'],['123','Počet slov','sm']]}]],
    ['Jazyk',[['あA','Jazyk']]],
    ['Komentáre',[['▱','Nový komentár']]],
-   ['Sledovanie',[['✎','Sledovať zmeny','big',4],{col:[['▾','Jednoduché revízie','sm',5],['▾','Zobraziť revízie','sm'],['▤','Tabla revízií','sm']]}]],
+   ['Sledovanie',[['✎','Sledovať zmeny','big',4],{col:[['▾','Žiadne revízie','sm',5],['▾','Zobraziť revízie','sm'],['▤','Tabla revízií','sm']]}]],
    ['Zmeny',[['✓','Prijať'],['✕','Odmietnuť']]]]},
  'rb-normal':{alt:'Karta Domov, galéria štýlov so zvýrazneným štýlom Normálny',active:'Domov',groups:[
    ['Písmo',[{col:[['A','Calibri (Základný text) · 11','sm'],['B I U','Tučné, kurzíva, podčiarknuté','sm']]}]],
@@ -914,7 +914,7 @@ const R={
  'rb-review':{alt:'Karta Revízia, tlačidlo Pravopis a gramatika a Jazyk',active:'Revízia',groups:[
    ['Korektúra',[['abc✓','Pravopis a gramatika','big',1],{col:[['123','Počet slov','sm']]}]],
    ['Jazyk',[['あA','Jazyk','big',1]]],
-   ['Sledovanie',[['✎','Sledovať zmeny'],{col:[['▾','Jednoduché revízie','sm']]}]],
+   ['Sledovanie',[['✎','Sledovať zmeny'],{col:[['▾','Žiadne revízie','sm']]}]],
    ['Zmeny',[['✓','Prijať'],['✕','Odmietnuť']]]]}
 };
 for(const id in R){const el=document.getElementById(id);if(el)el.innerHTML=ribbon(R[id])}

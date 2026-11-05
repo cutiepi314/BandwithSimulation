@@ -281,6 +281,23 @@ figcaption b{color:var(--ink)}
 .foot{font-size:14px;color:var(--muted);padding-block:20px 40px;border-top:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 html{scroll-behavior:smooth}
+.zadanie{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;scroll-margin-top:16px}
+.zadanie>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:14px 18px;font-weight:700;font-size:17px;color:var(--accent)}
+.zadanie>summary::-webkit-details-marker{display:none}
+.zadanie>summary::before{content:"▸";transition:transform .15s}
+.zadanie[open]>summary::before{transform:rotate(90deg)}
+.zadanie>summary .hint{margin-left:auto;font-weight:400;font-size:14px;color:var(--muted)}
+.zadanie[open]>summary .hint{display:none}
+.zadanie>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.zadanie-body{padding:0 18px 18px;max-width:80ch}
+.zadanie-body h3{font-size:17px;margin:18px 0 6px}
+.zadanie-body p{margin:0 0 8px}
+.zadanie-body ul,.zadanie-body ol{margin:4px 0 8px;padding-left:22px}
+.zadanie-body li{margin-block:2px}
+.zadanie-body ul ul{list-style:circle;margin-block:2px}
+.zadanie-body a{color:var(--accent);word-break:break-all}
+.zadanie-body .ai-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:4px 24px}
+.zadanie-body .ai-cols h4{font-size:15px;margin:6px 0 2px}
 </style>
 
 <div class="wrap">
@@ -295,6 +312,69 @@ html{scroll-behavior:smooth}
     <li>max <b>2</b> písma · <b>3</b> farby</li>
     <li>odovzdáš <b>.docx + .pdf</b></li>
   </ul>
+  <details class="zadanie" id="zadanie">
+    <summary>Celé znenie zadania<span class="hint">klikni pre zobrazenie</span></summary>
+    <div class="zadanie-body">
+      <p><b>Projekt v programe Microsoft Word</b> · Samostatná tvorba dokumentu</p>
+
+      <h3>Zadanie projektu</h3>
+      <p>Vytvor v programe Microsoft Word prehľadný informačný dokument na tému, ktorá ťa zaujíma. Tému si zvolíš sám, ale musí byť vhodná. V projekte ukážeš, že vieš správne používať štýly, automatický obsah, obrázky, tabuľky, grafické prvky, hlavičku, pätu a číslovanie strán.</p>
+
+      <h3>Povinné podmienky</h3>
+      <ul>
+        <li>Téma je ľubovoľná, ale musí byť vhodná.</li>
+        <li>Dokument musí mať 4 až 6 strán vrátane titulnej strany a obsahu.</li>
+        <li>Dokument musí mať titulnú stranu, na ktorej bude:
+          <ul><li>názov projektu,</li><li>krátky podnadpis,</li><li>tematický obrázok,</li><li>meno a priezvisko,</li><li>trieda,</li><li>školský rok.</li><li>titulná strana musí vyzerať prehľadne a esteticky.</li></ul></li>
+        <li>Dokument musí obsahovať minimálne:
+          <ul><li>3 hlavné kapitoly,</li><li>2 podkapitoly,</li><li>úvod,</li><li>záver,</li><li>zdroje</li><li>tabuľku.</li></ul></li>
+        <li>Nadpisy musia byť vytvorené pomocou štýlov, minimálne:
+          <ul><li>Názov,</li><li>Nadpis 1,</li><li>Nadpis 2,</li><li>Normálny text.</li></ul></li>
+        <li>Za titulnou stranou musí byť vložený automatický obsah.</li>
+        <li>Dokument musí obsahovať najmenej 2 obrázky.</li>
+        <li>Obrázky musia:
+          <ul><li>súvisieť s témou,</li><li>byť správne umiestnené,</li><li>mať nastavené obtekanie textu,</li><li>zachovávať pôvodný pomer strán.</li></ul></li>
+        <li>Dokument musí obsahovať minimálne jednu tabuľku:
+          <ul><li>aspoň 3 stĺpce,</li><li>aspoň 4 riadky vrátane hlavičky,</li><li>vhodné zarovnanie a čitateľnú úpravu.</li></ul></li>
+        <li>Dokument musí obsahovať aspoň jeden odrážkový alebo číslovaný zoznam.</li>
+        <li>Dokument musí mať:
+          <ul><li>hlavičku so skráteným názvom projektu,</li><li>pätu s menom autora,</li><li>automatické čísla strán.</li></ul></li>
+        <li>Titulná strana nemá mať zobrazené číslo strany.</li>
+        <li>Na konci dokumentu musia byť uvedené:
+          <ul><li>minimálne 2 informačné zdroje,</li><li>zdroje použitých obrázkov.</li></ul></li>
+        <li>Použi najviac:
+          <ul><li>2 druhy písma,</li><li>3 hlavné farby.</li></ul></li>
+        <li>Bežný text má mať:
+          <ul><li>veľkosť 11 alebo 12 bodov,</li><li>riadkovanie približne 1,15,</li><li>jednotné zarovnanie.</li></ul></li>
+        <li>Nadpisy rovnakej úrovne musia mať jednotný vzhľad.</li>
+        <li>Nové strany vytváraj pomocou zlomu strany, nie opakovaným stláčaním klávesu Enter.</li>
+        <li>Pred odovzdaním je potrebné:
+          <ul><li>skontrolovať pravopis,</li><li>odstrániť prázdne strany,</li><li>aktualizovať celý automatický obsah,</li><li>skontrolovať rozloženie obrázkov a tabuliek.</li></ul></li>
+        <li>Projekt sa odovzdáva v dvoch formátoch:
+          <ul><li><code>Priezvisko_Projekt_Word.docx</code></li><li><code>Priezvisko_Projekt_Word.pdf</code></li></ul></li>
+      </ul>
+      <p><b>Odovzdajte tu:</b> <a href="https://gdusecovcesk-my.sharepoint.com/:f:/g/personal/patricia_valova_gdusecovce_sk/IgBnYQlSCYUERKSayvqRj_UPAWWxNy-poBHAW1sfkKxcTtk" target="_blank" rel="noopener">priečinok na odovzdanie (SharePoint)</a></p>
+
+      <h3>Použitie AI</h3>
+      <div class="ai-cols">
+        <div><h4>Dovolené</h4>
+          <ul><li>pýtať sa, ako sa niečo robí vo Worde,</li><li>požiadať o vysvetlenie konkrétnej funkcie,</li><li>vytvoriť návrh osnovy alebo textu,</li><li>opraviť a zjednodušiť text.</li></ul></div>
+        <div><h4>Nedovolené</h4>
+          <ul><li>nechať AI vytvoriť hotový dokument .docx,</li><li>nechať AI vykonať formátovanie,</li><li>nechať AI vytvoriť titulnú stranu, obsah, tabuľku alebo graf,</li><li>odovzdať dokument, ktorý žiak nevytvoril samostatne vo Worde.</li></ul></div>
+      </div>
+
+      <h3>Sledovanie zmien</h3>
+      <p><b>Poznámka:</b> Sledovanie zmien zapni hneď na začiatku práce a nechaj ho zapnuté počas celej tvorby dokumentu.</p>
+      <ol>
+        <li>Otvor kartu <b>Revízia</b>.</li>
+        <li>Klikni na <b>Sledovať zmeny</b> a skontroluj, či je funkcia zapnutá.</li>
+        <li>Počas práce sledovanie nevypínaj a nepoužívaj možnosti <b>Prijať všetky zmeny</b> ani <b>Odmietnuť všetky zmeny</b>.</li>
+      </ol>
+
+      <h3>Názov odovzdaných súborov</h3>
+      <ul><li><code>Priezvisko_Projekt_Word.docx</code></li><li><code>Priezvisko_Projekt_Word.pdf</code></li></ul>
+    </div>
+  </details>
   <div class="intro-grid">
     <div class="note ai">
       <h3>AI ti môže poradiť, robiť musíš ty</h3>
@@ -320,6 +400,8 @@ html{scroll-behavior:smooth}
 <nav class="toc" aria-label="Kroky návodu">
   <h2>Kroky</h2>
   <ol id="toc">
+    <li><a href="#zadanie"><span class="n">§</span>Celé zadanie</a></li>
+    <li class="sep" aria-hidden="true"></li>
     <li><a href="#krok-1"><span class="n">01</span>Sledovanie zmien a uloženie</a></li>
     <li><a href="#krok-2"><span class="n">02</span>Písmo, farby, bežný text</a></li>
     <li><a href="#krok-3"><span class="n">03</span>Osnova a text</a></li>
@@ -943,6 +1025,11 @@ upd();
 const links=[...document.querySelectorAll('#toc a')];
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-30% 0px -60% 0px'});
 document.querySelectorAll('section.step').forEach(s=>io.observe(s));
+/* open full assignment from toc link or #zadanie in address */
+const zad=document.getElementById('zadanie');
+const openZad=()=>{if(location.hash==='#zadanie'){zad.open=true;zad.scrollIntoView()}};
+document.querySelector('#toc a[href="#zadanie"]').addEventListener('click',()=>{zad.open=true});
+addEventListener('hashchange',openZad);openZad();
 </script>
 
 </body></html>

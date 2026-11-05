@@ -1,6 +1,12 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Word projekt krok za krokom</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<script>
+  try {
+    const saved = localStorage.getItem('pvalo-theme');
+    if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+  } catch {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
@@ -281,6 +287,10 @@ figcaption b{color:var(--ink)}
 .foot{font-size:14px;color:var(--muted);padding-block:20px 40px;border-top:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 html{scroll-behavior:smooth}
+.hero{position:relative}
+.theme-switch{justify-self:end;display:flex;gap:2px;padding:3px;margin-bottom:-6px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.theme-switch button{padding:5px 10px;border:0;border-radius:7px;background:transparent;color:var(--muted);font:inherit;font-size:13px;line-height:1.4;cursor:pointer}
+.theme-switch button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
 .zadanie{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;scroll-margin-top:16px}
 .zadanie>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:14px 18px;font-weight:700;font-size:17px;color:var(--accent)}
 .zadanie>summary::-webkit-details-marker{display:none}
@@ -302,6 +312,11 @@ html{scroll-behavior:smooth}
 
 <div class="wrap">
 <header class="hero">
+  <div class="theme-switch" role="group" aria-label="Farebný režim">
+    <button type="button" data-theme-choice="auto" title="Podľa nastavenia systému">◐ Auto</button>
+    <button type="button" data-theme-choice="light">☀ Svetlý</button>
+    <button type="button" data-theme-choice="dark">☾ Tmavý</button>
+  </div>
   <div class="eyebrow">Samostatná tvorba dokumentu · Microsoft Word</div>
   <h1>Projekt vo Worde krok za krokom</h1>
   <p class="lede">Návod ku každej podmienke zo zadania. Kroky idú v poradí, v akom ich máš robiť: od zapnutia sledovania zmien až po odovzdanie súborov .docx a .pdf.</p>
@@ -1030,6 +1045,19 @@ const zad=document.getElementById('zadanie');
 const openZad=()=>{if(location.hash==='#zadanie'){zad.open=true;zad.scrollIntoView()}};
 document.querySelector('#toc a[href="#zadanie"]').addEventListener('click',()=>{zad.open=true});
 addEventListener('hashchange',openZad);openZad();
+/* light / dark switch, shared with the home page via localStorage */
+(() => {
+  const root = document.documentElement;
+  const buttons = document.querySelectorAll('[data-theme-choice]');
+  const show = () => buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === (root.dataset.theme || 'auto'))));
+  buttons.forEach(b => b.addEventListener('click', () => {
+    const choice = b.dataset.themeChoice;
+    if (choice === 'auto') delete root.dataset.theme; else root.dataset.theme = choice;
+    try { choice === 'auto' ? localStorage.removeItem('pvalo-theme') : localStorage.setItem('pvalo-theme', choice); } catch {}
+    show();
+  }));
+  show();
+})();
 </script>
 
 </body></html>

@@ -1,0 +1,948 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Word projekt krok za krokom</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: sticky step index on the left, one long manual on the right; each step = path chip + numbered actions + Word sketch with matching numbered markers */
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --ink:#172131; --muted:#5a6678; --line:#dbe1ea;
+  --accent:#2b579a; --accent-ink:#ffffff; --accent-soft:#e7eef9;
+  --mark:#ffcf33; --mark-ink:#2e2400; --warn:#a64b06; --warn-soft:#fff3e2; --ok:#1d7a4b; --ok-soft:#e3f5ea;
+  --rb-bg:#f3f3f3; --rb-line:#d6d6d6; --rb-ink:#262626; --rb-muted:#6b6b6b; --rb-tab:#e9e9e9; --ctx:#7a4fbf;
+  --paper:#ffffff; --paper-line:#cfd6e0; --shadow:0 1px 2px rgba(20,30,50,.06),0 6px 18px rgba(20,30,50,.07);
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",Calibri,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151d; --surface:#171f2a; --ink:#e6ebf2; --muted:#9ba7b8; --line:#2a3442;
+  --accent:#86aee8; --accent-ink:#0d1520; --accent-soft:#1b2a40;
+  --mark:#ffcf33; --mark-ink:#2e2400; --warn:#f2a65a; --warn-soft:#2c2117; --ok:#62c995; --ok-soft:#15291f;
+  --rb-bg:#262c35; --rb-line:#3a4350; --rb-ink:#e3e7ee; --rb-muted:#a0a9b6; --rb-tab:#1f252d; --ctx:#b58df0;
+  --paper:#1e2733; --paper-line:#3a4554; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151d; --surface:#171f2a; --ink:#e6ebf2; --muted:#9ba7b8; --line:#2a3442;
+  --accent:#86aee8; --accent-ink:#0d1520; --accent-soft:#1b2a40;
+  --mark:#ffcf33; --mark-ink:#2e2400; --warn:#f2a65a; --warn-soft:#2c2117; --ok:#62c995; --ok-soft:#15291f;
+  --rb-bg:#262c35; --rb-line:#3a4350; --rb-ink:#e3e7ee; --rb-muted:#a0a9b6; --rb-tab:#1f252d; --ctx:#b58df0;
+  --paper:#1e2733; --paper-line:#3a4554; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+kbd{font-family:var(--f-mono);font-size:.8em;background:var(--surface);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;white-space:nowrap}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* hero */
+.hero{padding-block:40px 28px;display:grid;gap:18px}
+.eyebrow{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-.01em}
+.lede{max-width:66ch;color:var(--muted);font-size:19px;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
+.facts li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:15px}
+.facts b{color:var(--accent)}
+.intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin-top:6px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;min-width:0}
+.note h3{font-size:16px;margin-bottom:6px}
+.note p{margin:0 0 6px}
+.note ul{margin:4px 0 0;padding-left:20px}
+.note.ai{border-left:4px solid var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:15px}
+.legend .demo-hl{outline:2px solid var(--mark);background:color-mix(in srgb,var(--mark) 25%,transparent);padding:0 6px;border-radius:4px}
+
+/* layout */
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;align-items:start;padding-bottom:60px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);max-height:calc(100vh - 32px);overflow:auto;padding:14px 0}
+.toc h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.toc ol{list-style:none;padding:0;margin:0;display:grid;gap:2px;counter-reset:t}
+.toc a{display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:6px;font-size:15px;line-height:1.3}
+.toc a:hover{background:var(--accent-soft)}
+.toc a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.toc .n{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:20px}
+.toc .sep{height:1px;background:var(--line);margin:8px 8px}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;gap:10px}
+  .toc{position:static;max-height:none;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:14px}
+  .toc ol{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+}
+
+/* step */
+.step{padding-block:34px;border-top:1px solid var(--line);display:grid;gap:16px;scroll-margin-top:12px}
+.step:first-child{border-top:0;padding-top:12px}
+.step-head{display:flex;gap:14px;align-items:flex-start}
+.step-no{flex:none;font-family:var(--f-display);font-weight:800;font-size:15px;color:var(--accent-ink);background:var(--accent);border-radius:8px;width:38px;height:38px;display:grid;place-items:center;margin-top:2px}
+.step-head h2{font-size:clamp(23px,3vw,30px);font-weight:700}
+.step-head .why{margin:4px 0 0;color:var(--muted)}
+.path{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px}
+.path .lbl{font-family:var(--f-display);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.path span.c{background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:2px 9px;font-weight:600}
+.path i{font-style:normal;color:var(--muted)}
+.prose{max-width:72ch}
+.prose p{margin:0 0 10px}
+.prose ul{margin:0 0 10px;padding-left:22px}
+.prose li{margin-bottom:4px}
+ol.do{list-style:none;padding:0;margin:0;display:grid;gap:10px;max-width:72ch;counter-reset:d}
+ol.do>li{counter-increment:d;position:relative;padding-left:38px;min-width:0}
+ol.do>li::before{content:counter(d);position:absolute;left:0;top:0;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--mark);color:var(--mark-ink);font:700 13px/1 var(--f-display);margin-top:2px;box-shadow:0 0 0 2px var(--surface)}
+ol.do>li.plain::before{background:var(--line);color:var(--ink)}
+ol.do ul{margin:6px 0 0;padding-left:20px}
+.call{border-radius:10px;padding:12px 16px;max-width:72ch;font-size:16px}
+.call b.t{display:block;font-family:var(--f-display);font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.call.tip{background:var(--accent-soft)}
+.call.tip b.t{color:var(--accent)}
+.call.warn{background:var(--warn-soft)}
+.call.warn b.t{color:var(--warn)}
+.call p{margin:0}
+.call p+p{margin-top:6px}
+
+/* figures */
+figure{margin:0;display:grid;gap:8px;min-width:0}
+figcaption{font-size:14px;color:var(--muted)}
+figcaption b{color:var(--ink)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px;align-items:start}
+.scroll{overflow-x:auto;padding:16px 4px 6px;-webkit-overflow-scrolling:touch}
+
+/* ribbon sketch */
+.rb{min-width:max-content;background:var(--rb-bg);border:1px solid var(--rb-line);border-radius:8px;color:var(--rb-ink);font-family:"Segoe UI",var(--f-body);font-size:12.5px;box-shadow:var(--shadow);overflow:visible}
+.rb-tabs{display:flex;gap:2px;padding:6px 8px 0;border-bottom:1px solid var(--rb-line)}
+.rb-tab{position:relative;padding:5px 10px 7px;color:var(--rb-ink);white-space:nowrap}
+.rb-tab.on{font-weight:600;color:#2b579a;box-shadow:inset 0 -3px 0 #2b579a}
+.rb-tab.ctx{color:var(--ctx)}
+.rb-tab.ctx.on{color:var(--ctx);box-shadow:inset 0 -3px 0 var(--ctx)}
+:root[data-theme="dark"] .rb-tab.on:not(.ctx){color:#8fb3ec;box-shadow:inset 0 -3px 0 #8fb3ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rb-tab.on:not(.ctx){color:#8fb3ec;box-shadow:inset 0 -3px 0 #8fb3ec}}
+.rb-body{display:flex;align-items:stretch;padding:6px 4px 0}
+.rb-g{display:flex;flex-direction:column;justify-content:space-between;padding:0 8px;border-right:1px solid var(--rb-line)}
+.rb-g:last-child{border-right:0}
+.rb-items{display:flex;gap:4px;align-items:flex-start;min-height:72px}
+.rb-gl{text-align:center;color:var(--rb-muted);font-size:11.5px;padding:3px 0 5px}
+.it{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 6px;border-radius:4px;text-align:center;line-height:1.15;max-width:86px}
+.it .ic{font-size:22px;line-height:1;height:26px;display:grid;place-items:center;color:var(--rb-ink)}
+.col{display:flex;flex-direction:column;gap:2px}
+.it.sm{flex-direction:row;gap:6px;max-width:none;padding:2px 6px;text-align:left}
+.it.sm .ic{font-size:14px;height:auto;width:16px}
+.it.chk{flex-direction:row;gap:6px;padding:2px 6px;max-width:none}
+.it.chk .box{width:13px;height:13px;border:1.5px solid var(--rb-muted);border-radius:2px;display:grid;place-items:center;font-size:11px;line-height:1}
+.it.chk.on .box{background:#2b579a;border-color:#2b579a;color:#fff}
+.it.sty{border:1px solid var(--rb-line);background:var(--paper);width:78px;max-width:none;padding:6px 4px;gap:4px}
+.it.sty .ic{font-size:17px;height:22px}
+.it.sty .lb{font-size:11px;color:var(--rb-muted)}
+.s-normal .ic{font-family:Calibri,Arial,sans-serif;font-size:14px}
+.s-h1 .ic{color:#2f5496;font-size:17px}
+.s-h2 .ic{color:#2f5496;font-size:15px}
+.s-title .ic{font-size:21px;font-family:"Calibri Light",Arial,sans-serif;letter-spacing:-.02em}
+.s-sub .ic{color:#5a5a5a;font-size:14px;letter-spacing:.06em}
+.fieldrow{display:flex;gap:6px;align-items:center;padding:2px 6px}
+.fieldrow .bx{border:1px solid var(--rb-line);background:var(--paper);padding:1px 6px;min-width:58px;border-radius:2px}
+.hl{outline:2.5px solid var(--mark);outline-offset:1px;background:color-mix(in srgb,var(--mark) 26%,transparent)}
+.mk{position:absolute;top:-11px;right:-11px;z-index:2;width:22px;height:22px;border-radius:50%;background:var(--mark);color:var(--mark-ink);font:800 12px/22px var(--f-display);text-align:center;box-shadow:0 0 0 2px var(--surface);font-style:normal}
+
+/* dropdown menu sketch */
+.menu{display:inline-block;min-width:230px;background:var(--surface);border:1px solid var(--rb-line);border-radius:6px;box-shadow:var(--shadow);padding:6px 0;font-family:"Segoe UI",var(--f-body);font-size:13px;color:var(--rb-ink)}
+.menu .mh{padding:4px 12px;font-weight:600;color:var(--rb-muted);font-size:12px;background:var(--rb-bg)}
+.menu .mi{position:relative;padding:6px 14px 6px 34px;display:flex;align-items:center;gap:8px}
+.menu .mi .mic{position:absolute;left:10px;width:16px;text-align:center}
+.menu .sep{height:1px;background:var(--rb-line);margin:4px 0}
+.menu .thumb{margin:4px 12px;border:1px solid var(--rb-line);border-radius:3px;padding:6px 8px;background:var(--paper);font-size:11px;line-height:1.5;position:relative}
+.menu .thumb .tt{font-weight:700;color:#2f5496}
+
+/* dialog sketch */
+.dlg{position:relative;width:min(100%,430px);background:var(--surface);border:1px solid var(--rb-line);border-radius:8px;box-shadow:var(--shadow);font-family:"Segoe UI",var(--f-body);font-size:13px;color:var(--rb-ink);overflow:visible}
+.dlg-h{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--rb-line);font-weight:600;background:var(--rb-bg);border-radius:8px 8px 0 0}
+.dlg-h .x{color:var(--rb-muted)}
+.dlg-tabs{display:flex;gap:2px;padding:8px 12px 0;border-bottom:1px solid var(--rb-line);flex-wrap:wrap}
+.dlg-tabs span{padding:4px 10px;border:1px solid transparent;border-bottom:0;border-radius:4px 4px 0 0;position:relative}
+.dlg-tabs span.on{border-color:var(--rb-line);background:var(--surface);margin-bottom:-1px}
+.dlg-b{padding:12px;display:grid;gap:9px}
+.dlg-sec{font-weight:600;color:var(--rb-muted);font-size:12px;border-bottom:1px solid var(--rb-line);padding-bottom:2px}
+.frow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.fld{position:relative;display:flex;gap:6px;align-items:center;border-radius:3px;padding:1px 2px}
+.inp{border:1px solid var(--rb-line);background:var(--paper);padding:2px 8px;min-width:70px;border-radius:2px}
+.sel::after{content:" ▾";color:var(--rb-muted)}
+.cb{display:inline-grid;place-items:center;width:13px;height:13px;border:1.5px solid var(--rb-muted);border-radius:2px;font-size:10px;line-height:1}
+.cb.on{background:#2b579a;border-color:#2b579a;color:#fff}
+.rd{display:inline-block;width:12px;height:12px;border:1.5px solid var(--rb-muted);border-radius:50%}
+.rd.on{background:radial-gradient(circle,#2b579a 0 3px,transparent 4px)}
+.btns{display:flex;justify-content:flex-end;gap:8px;padding:10px 12px;border-top:1px solid var(--rb-line)}
+.btn{position:relative;border:1px solid var(--rb-line);background:var(--rb-bg);padding:3px 14px;border-radius:3px}
+.btn.pri{background:#2b579a;color:#fff;border-color:#2b579a}
+
+/* page sketches */
+.pages{display:flex;gap:16px;flex-wrap:wrap}
+.pg{position:relative;width:150px;aspect-ratio:210/297;max-width:100%;background:var(--paper);border:1px solid var(--paper-line);border-radius:3px;box-shadow:var(--shadow);padding:16px 12px;display:flex;flex-direction:column;gap:5px;font-size:9px;color:var(--muted);overflow:hidden}
+.pg .pn{position:absolute;bottom:4px;left:0;right:0;font-size:8px;display:flex;justify-content:space-between;padding:0 10px}
+.pg .hd{position:absolute;top:4px;right:10px;font-size:8px}
+.pg .ln{height:3px;background:var(--paper-line);border-radius:2px}
+.pg .ln.s{width:70%}
+.pg .h1{height:6px;width:60%;background:var(--accent);border-radius:2px;margin-top:4px}
+.pg .h2{height:5px;width:45%;background:color-mix(in srgb,var(--accent) 65%,var(--paper));border-radius:2px;margin-top:2px}
+.pg .im{height:30px;background:color-mix(in srgb,var(--accent) 22%,var(--paper));border-radius:2px}
+.pg .tb{height:28px;background:repeating-linear-gradient(0deg,var(--paper-line) 0 1px,transparent 1px 7px),var(--paper);border:1px solid var(--paper-line)}
+.pgcap{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
+.pgw{display:flex;flex-direction:column;align-items:center}
+
+/* title page mock */
+.tp{width:min(100%,300px);aspect-ratio:210/297;background:var(--paper);border:1px solid var(--paper-line);box-shadow:var(--shadow);border-radius:3px;padding:30px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;color:var(--ink);position:relative}
+.tp .t1{font-family:"Calibri Light",var(--f-body);font-size:24px;line-height:1.1;font-weight:400;color:var(--accent);margin-top:18px}
+.tp .t2{font-size:12px;letter-spacing:.08em;color:var(--muted)}
+.tp .tim{width:72%;flex:1;max-height:42%;border-radius:4px;background:linear-gradient(160deg,color-mix(in srgb,var(--mark) 55%,var(--paper)),color-mix(in srgb,var(--accent) 35%,var(--paper)));display:grid;place-items:center;font-size:11px;color:var(--ink)}
+.tp .tinfo{margin-top:auto;font-size:11px;line-height:1.5}
+.tp .lab{position:absolute;left:calc(100% + 8px);font-size:12px;color:var(--muted);white-space:nowrap}
+.tpw{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.tplist{display:grid;gap:6px;margin:0;padding:0;list-style:none;font-size:15px;min-width:0;flex:1 1 220px}
+.tplist li{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px;border-bottom:1px dashed var(--line);padding-bottom:4px}
+.tplist b{font-weight:600}
+
+/* wrap demos */
+.wraps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.wd{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;padding:10px;font-size:13px}
+.wd .area{height:96px;position:relative;overflow:hidden;background:repeating-linear-gradient(180deg,var(--paper-line) 0 3px,transparent 3px 9px)}
+.wd .pic{position:absolute;background:color-mix(in srgb,var(--accent) 45%,var(--paper));border:2px solid var(--paper);outline:1px solid var(--accent)}
+.wd.inl .pic{left:0;top:27px;width:44px;height:30px;box-shadow:0 0 0 0 transparent}
+.wd.inl .area::after{content:"";position:absolute;left:46px;right:0;top:27px;height:30px;background:var(--paper)}
+.wd.sq .pic{left:0;top:18px;width:58px;height:44px;box-shadow:0 0 0 6px var(--paper)}
+.wd.td .pic{left:30%;top:24px;width:40%;height:40px;box-shadow:-200px 0 0 6px var(--paper),200px 0 0 6px var(--paper)}
+.wd b{display:block;margin-top:8px}
+.wd small{color:var(--muted);display:block;line-height:1.35}
+.wd.good{border-color:var(--ok)}
+
+/* aspect demo */
+.asp{display:flex;gap:18px;flex-wrap:wrap}
+.asp figure{width:170px}
+.asp svg{width:100%;height:auto;display:block;border-radius:4px}
+.asp .bad svg{transform:scaleX(1.55) scaleY(.75);transform-origin:left top;margin-bottom:-25%}
+.verdict{font-size:14px;font-weight:600}
+.verdict.ok{color:var(--ok)}
+.verdict.no{color:var(--warn)}
+
+/* marks demo */
+.marks{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;padding:14px 16px;font-family:Calibri,var(--f-body);font-size:15px;line-height:1.7;color:var(--ink);max-width:520px}
+.marks .pm{color:var(--accent);font-weight:700}
+.marks .brk{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:12px}
+.marks .brk::before,.marks .brk::after{content:"";flex:1;border-top:1px dotted var(--accent)}
+
+/* nav pane */
+.navp{width:min(100%,260px);background:var(--surface);border:1px solid var(--rb-line);border-radius:6px;box-shadow:var(--shadow);font-family:"Segoe UI",var(--f-body);font-size:13px;color:var(--rb-ink)}
+.navp .nh{padding:8px 12px;font-weight:600;border-bottom:1px solid var(--rb-line)}
+.navp .tabs{display:flex;gap:12px;padding:6px 12px;font-size:12px;color:var(--rb-muted)}
+.navp .tabs .on{color:#2b579a;font-weight:600;border-bottom:2px solid #2b579a}
+.navp ul{list-style:none;margin:0;padding:4px 0 10px}
+.navp li{padding:3px 12px}
+.navp li.l2{padding-left:30px;color:var(--rb-muted)}
+.navp li.on{background:var(--accent-soft)}
+
+/* outline tree */
+.tree{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;font-size:15px;max-width:520px}
+.tree div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.tree div:last-child{border-bottom:0}
+.tree .tag{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:2px}
+.tree .h1t{font-weight:700;color:var(--accent)}
+.tree .h2t{padding-left:18px;font-weight:600}
+.tree .tt{font-size:18px;font-weight:700}
+
+/* example table */
+.extab{border-collapse:collapse;font-family:Calibri,var(--f-body);font-size:15px;min-width:520px;background:var(--paper);color:var(--ink)}
+.extab caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--muted);padding-top:6px;font-style:italic}
+.extab th{background:var(--accent);color:var(--accent-ink);padding:7px 10px;text-align:center;font-weight:700}
+.extab td{padding:6px 10px;border-bottom:1px solid var(--paper-line)}
+.extab tr:nth-child(even) td{background:color-mix(in srgb,var(--accent) 8%,var(--paper))}
+.extab td.c{text-align:center}
+
+/* sources */
+.src{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;padding:16px 18px;font-family:Calibri,var(--f-body);font-size:14.5px;max-width:720px;color:var(--ink);overflow-wrap:anywhere}
+.src h4{margin:0 0 6px;font-size:15px;color:var(--accent)}
+.src ol{margin:0 0 10px;padding-left:22px}
+.src li{margin-bottom:4px}
+
+/* cheat sheet */
+.cheat{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+.cheat th{text-align:left;font-family:var(--f-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--line)}
+.cheat td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.cheat td:first-child{font-weight:600}
+
+/* checklist */
+.chk-wrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:16px}
+.chk-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.prog{flex:1 1 220px;height:10px;background:var(--line);border-radius:999px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
+.cnt{font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums}
+.reset{font:inherit;font-size:14px;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:4px 12px;cursor:pointer}
+.chk-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px}
+.chk-g h3{font-size:15px;margin-bottom:6px}
+.chk-g label{display:flex;gap:10px;align-items:flex-start;padding:4px 0;font-size:15px;line-height:1.4;cursor:pointer}
+.chk-g input{margin-top:3px;width:17px;height:17px;accent-color:var(--ok);flex:none}
+.chk-g label:has(input:checked) span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--ok)}
+.foot{font-size:14px;color:var(--muted);padding-block:20px 40px;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">Samostatná tvorba dokumentu · Microsoft Word</div>
+  <h1>Projekt vo Worde krok za krokom</h1>
+  <p class="lede">Návod ku každej podmienke zo zadania. Kroky idú v poradí, v akom ich máš robiť: od zapnutia sledovania zmien až po odovzdanie súborov .docx a .pdf.</p>
+  <ul class="facts">
+    <li><b>4 – 6</b> strán vrátane titulky a obsahu</li>
+    <li><b>3</b> kapitoly + <b>2</b> podkapitoly</li>
+    <li><b>2</b> obrázky · <b>1</b> tabuľka · <b>1</b> zoznam</li>
+    <li>max <b>2</b> písma · <b>3</b> farby</li>
+    <li>odovzdáš <b>.docx + .pdf</b></li>
+  </ul>
+  <div class="intro-grid">
+    <div class="note ai">
+      <h3>AI ti môže poradiť, robiť musíš ty</h3>
+      <p>Tento návod ti ukazuje, <b>ako</b> sa veci vo Worde robia. Všetko klikanie a formátovanie urob sám/sama. Sledovanie zmien ukáže učiteľovi, ako dokument vznikal.</p>
+      <ul>
+        <li>Dovolené: pýtať sa, ako sa niečo robí; navrhnúť osnovu; opraviť text.</li>
+        <li>Nedovolené: nechať AI vytvoriť .docx, titulku, obsah, tabuľku či formátovanie.</li>
+      </ul>
+    </div>
+    <div class="note">
+      <h3>Ako čítať obrázky v návode</h3>
+      <p>Obrázky sú zjednodušené nákresy Wordu (Microsoft 365, slovenčina). Tvoja verzia môže vyzerať trochu inak, názvy tlačidiel sú rovnaké.</p>
+      <div class="legend">
+        <span><span class="mk" style="position:static;display:inline-block">1</span> = krok v postupe</span>
+        <span><span class="demo-hl">Tlačidlo</span> = sem klikni</span>
+        <span><span style="color:var(--ctx);font-weight:600">fialová karta</span> = objaví sa až po kliknutí na obrázok, tabuľku či hlavičku</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="toc" aria-label="Kroky návodu">
+  <h2>Kroky</h2>
+  <ol id="toc">
+    <li><a href="#krok-1"><span class="n">01</span>Sledovanie zmien a uloženie</a></li>
+    <li><a href="#krok-2"><span class="n">02</span>Písmo, farby, bežný text</a></li>
+    <li><a href="#krok-3"><span class="n">03</span>Osnova a text</a></li>
+    <li><a href="#krok-4"><span class="n">04</span>Nadpisy cez štýly</a></li>
+    <li><a href="#krok-5"><span class="n">05</span>Titulná strana</a></li>
+    <li><a href="#krok-6"><span class="n">06</span>Zlom strany</a></li>
+    <li><a href="#krok-7"><span class="n">07</span>Automatický obsah</a></li>
+    <li><a href="#krok-8"><span class="n">08</span>Obrázky</a></li>
+    <li><a href="#krok-9"><span class="n">09</span>Tabuľka</a></li>
+    <li><a href="#krok-10"><span class="n">10</span>Zoznam</a></li>
+    <li><a href="#krok-11"><span class="n">11</span>Hlavička, päta, čísla strán</a></li>
+    <li><a href="#krok-12"><span class="n">12</span>Úvod, záver, zdroje</a></li>
+    <li><a href="#krok-13"><span class="n">13</span>Kontrola pred odovzdaním</a></li>
+    <li><a href="#krok-14"><span class="n">14</span>Uloženie do PDF a odovzdanie</a></li>
+    <li class="sep" aria-hidden="true"></li>
+    <li><a href="#tahak"><span class="n">→</span>Ťahák: kde čo nájdem</a></li>
+    <li><a href="#kontrola"><span class="n">✓</span>Kontrolný zoznam</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- 1 -->
+<section class="step" id="krok-1">
+  <div class="step-head"><div class="step-no">1</div><div>
+    <h2>Zapni sledovanie zmien a ulož súbor</h2>
+    <p class="why">Toto urob ako úplne prvé, ešte skôr, než napíšeš prvé slovo.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Revízia</span><i>→</i><span class="c">Sledovanie</span><i>→</i><span class="c">Sledovať zmeny</span><i>·</i><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd></div>
+  <ol class="do">
+    <li>Otvor Word a vyber <b>Prázdny dokument</b>.</li>
+    <li>Hneď ho ulož: <b>Súbor → Uložiť ako → Prehľadávať</b>. Názov: <code>Priezvisko_Projekt_Word</code> (napr. <code>Novak_Projekt_Word</code>), typ <b>Dokument programu Word (*.docx)</b>.</li>
+    <li>Klikni na kartu <b>Revízia</b>.</li>
+    <li>V skupine <b>Sledovanie</b> klikni na <b>Sledovať zmeny</b>. Tlačidlo ostane podfarbené, to znamená, že je zapnuté.</li>
+    <li>V rozbaľovacom zozname vedľa vyber <b>Jednoduché revízie</b>. Zmeny sa budú sledovať, ale červené značky ťa nebudú rušiť.</li>
+  </ol>
+  <div class="scroll"><div id="rb-track"></div></div>
+  <div class="call warn"><b class="t">Pozor</b><p>Sledovanie počas práce nevypínaj a nikdy nepoužívaj <b>Prijať všetky zmeny</b> ani <b>Odmietnuť všetky zmeny</b>. Priebežne ukladaj pomocou <kbd>Ctrl</kbd>+<kbd>S</kbd>.</p></div>
+</section>
+
+<!-- 2 -->
+<section class="step" id="krok-2">
+  <div class="step-head"><div class="step-no">2</div><div>
+    <h2>Nastav písmo, farby a bežný text</h2>
+    <p class="why">Keď to nastavíš raz v štýle Normálny, celý dokument bude jednotný sám od seba.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Domov</span><i>→</i><span class="c">Štýly</span><i>→</i><span class="c">pravý klik na Normálny</span><i>→</i><span class="c">Upraviť…</span></div>
+  <div class="prose">
+    <p><b>Najprv sa rozhodni:</b> zadanie povoľuje najviac <b>2 druhy písma</b> a <b>3 hlavné farby</b>. Napríklad:</p>
+    <ul>
+      <li>písmo nadpisov <b>Cambria</b> alebo <b>Georgia</b>, písmo textu <b>Calibri</b> alebo <b>Aptos</b> (alebo jedno písmo na všetko),</li>
+      <li>farby: tmavá na text, jedna hlavná farba na nadpisy, jedna doplnková (napr. na hlavičku tabuľky).</li>
+    </ul>
+  </div>
+  <ol class="do">
+    <li>Na karte <b>Domov</b> v skupine <b>Štýly</b> klikni <b>pravým tlačidlom</b> na <b>Normálny</b> a vyber <b>Upraviť…</b></li>
+    <li>V okne <b>Upraviť štýl</b> nastav písmo a veľkosť <b>11</b> alebo <b>12</b> bodov.</li>
+    <li>Vľavo dole klikni na <b>Formát → Odsek…</b></li>
+    <li>Nastav <b>Zarovnanie</b>: <b>Do bloku</b> alebo <b>Vľavo</b> (vyber jedno a drž sa ho). <b>Riadkovanie: Viacnásobné</b>, <b>Na: 1,15</b>. Medzeru <b>Za</b> daj napr. 6 – 8 bodov.</li>
+    <li>Potvrď <b>OK</b> v oboch oknách.</li>
+  </ol>
+  <div class="figs">
+    <figure><div class="scroll"><div id="rb-normal"></div></div><figcaption><b>Domov → Štýly.</b> Pravý klik na Normálny otvorí ponuku s Upraviť…</figcaption></figure>
+    <figure>
+      <div class="dlg" role="img" aria-label="Okno Odsek s riadkovaním 1,15">
+        <div class="dlg-h"><span>Odsek</span><span class="x">✕</span></div>
+        <div class="dlg-tabs"><span class="on">Zarážky a medzery</span><span>Riadky a zlomy strán</span></div>
+        <div class="dlg-b">
+          <div class="dlg-sec">Všeobecné</div>
+          <div class="frow"><span class="fld hl">Zarovnanie: <span class="inp sel">Do bloku</span><b class="mk">4</b></span></div>
+          <div class="dlg-sec">Medzery</div>
+          <div class="frow"><span class="fld">Pred: <span class="inp">0 b</span></span><span class="fld">Za: <span class="inp">8 b</span></span></div>
+          <div class="frow"><span class="fld hl">Riadkovanie: <span class="inp sel">Viacnásobné</span> Na: <span class="inp">1,15</span><b class="mk">4</b></span></div>
+        </div>
+        <div class="btns"><span class="btn">Tabulátory…</span><span class="btn pri">OK<b class="mk">5</b></span><span class="btn">Zrušiť</span></div>
+      </div>
+      <figcaption><b>Formát → Odsek…</b> Zarovnanie a riadkovanie bežného textu.</figcaption>
+    </figure>
+  </div>
+  <div class="call tip"><b class="t">Tip</b><p>Písma pre celý dokument naraz zmeníš aj cez <b>Návrh → Písma</b>, farby cez <b>Návrh → Farby</b>. Vtedy sa zmenia aj nadpisy.</p></div>
+</section>
+
+<!-- 3 -->
+<section class="step" id="krok-3">
+  <div class="step-head"><div class="step-no">3</div><div>
+    <h2>Priprav osnovu a napíš text</h2>
+    <p class="why">Najprv obsah, potom vzhľad. Text píš obyčajne, bez ručného zväčšovania a farbenia.</p></div></div>
+  <div class="prose">
+    <p>Zadanie vyžaduje aspoň <b>úvod</b>, <b>3 hlavné kapitoly</b>, <b>2 podkapitoly</b>, <b>záver</b> a <b>zdroje</b>. Ukážka osnovy na tému „Včely“ (tvoja téma bude iná):</p>
+  </div>
+  <div class="tree" role="list">
+    <div role="listitem"><span class="tag">Názov</span><span class="tt">Včely – malí pomocníci prírody</span></div>
+    <div role="listitem"><span class="tag">Nadpis 1</span><span class="h1t">Úvod</span></div>
+    <div role="listitem"><span class="tag">Nadpis 1</span><span class="h1t">Život včelstva</span></div>
+    <div role="listitem"><span class="tag">Nadpis 2</span><span class="h2t">Kráľovná, robotnice a trúdy</span></div>
+    <div role="listitem"><span class="tag">Nadpis 2</span><span class="h2t">Ako vzniká med</span></div>
+    <div role="listitem"><span class="tag">Nadpis 1</span><span class="h1t">Prečo sú včely dôležité</span></div>
+    <div role="listitem"><span class="tag">Nadpis 1</span><span class="h1t">Čo včely ohrozuje a ako im pomôcť</span></div>
+    <div role="listitem"><span class="tag">Nadpis 1</span><span class="h1t">Záver</span></div>
+    <div role="listitem"><span class="tag">Nadpis 1</span><span class="h1t">Zdroje</span></div>
+  </div>
+  <ol class="do">
+    <li class="plain">Do každej kapitoly napíš 1 – 3 odseky vlastného textu. <kbd>Enter</kbd> stláčaj len na konci odseku, nie na konci riadku.</li>
+    <li class="plain">Rozsah: titulka + obsah + asi 2,5 – 3,5 strany textu s obrázkami a tabuľkou vyjde na 4 – 6 strán.</li>
+    <li class="plain">Ak ti AI pomáha s osnovou alebo opravou textu, fakty si over a text prepíš vlastnými slovami.</li>
+  </ol>
+</section>
+
+<!-- 4 -->
+<section class="step" id="krok-4">
+  <div class="step-head"><div class="step-no">4</div><div>
+    <h2>Nadpisy urob pomocou štýlov</h2>
+    <p class="why">Bez štýlov nebude fungovať automatický obsah a nadpisy nebudú jednotné.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Domov</span><i>→</i><span class="c">Štýly</span></div>
+  <ol class="do">
+    <li>Klikni kamkoľvek do riadku s <b>názvom kapitoly</b> (aj Úvod, Záver, Zdroje) a klikni na štýl <b>Nadpis 1</b>.</li>
+    <li>Klikni do riadku <b>podkapitoly</b> a klikni na <b>Nadpis 2</b>.</li>
+    <li>Bežné odseky nechaj v štýle <b>Normálny</b>.</li>
+    <li>Názov projektu na titulnej strane bude mať štýl <b>Názov</b> (krok 5).</li>
+  </ol>
+  <div class="figs">
+    <figure><div class="scroll"><div id="rb-styles"></div></div><figcaption><b>Galéria štýlov.</b> Ak ich nevidíš, rozbaľ galériu šípkou vpravo dole.</figcaption></figure>
+    <figure>
+      <div class="navp" role="img" aria-label="Navigačná tabla so zoznamom nadpisov">
+        <div class="nh">Navigácia</div>
+        <div class="tabs"><span class="on">Nadpisy</span><span>Strany</span><span>Výsledky</span></div>
+        <ul><li>Úvod</li><li class="on">Život včelstva</li><li class="l2">Kráľovná, robotnice a trúdy</li><li class="l2">Ako vzniká med</li><li>Prečo sú včely dôležité</li><li>Čo včely ohrozuje…</li><li>Záver</li><li>Zdroje</li></ul>
+      </div>
+      <figcaption><b>Kontrola:</b> Zobraziť → Navigačná tabla. Čo je tu, to bude v obsahu.</figcaption>
+    </figure>
+  </div>
+  <div class="call tip"><b class="t">Chceš iný vzhľad nadpisov?</b><p>Nemeň každý nadpis ručne. Klikni pravým na <b>Nadpis 1</b> v galérii → <b>Upraviť…</b> a nastav písmo, veľkosť a farbu. Zmenia sa všetky nadpisy naraz. Druhá možnosť: uprav jeden nadpis, potom pravý klik na štýl → <b>Aktualizovať Nadpis 1 podľa výberu</b>.</p></div>
+</section>
+
+<!-- 5 -->
+<section class="step" id="krok-5">
+  <div class="step-head"><div class="step-no">5</div><div>
+    <h2>Vytvor titulnú stranu</h2>
+    <p class="why">Prvá strana dokumentu. Musí byť prehľadná, vycentrovaná a bez čísla strany.</p></div></div>
+  <div class="tpw">
+    <div class="tp" role="img" aria-label="Náčrt titulnej strany">
+      <div class="t1">Včely – malí pomocníci prírody</div>
+      <div class="t2">ŽIVOT, VÝZNAM A OCHRANA VČIEL</div>
+      <div class="tim">tematický obrázok</div>
+      <div class="tinfo">Ján Novák<br>Trieda: I. A<br>Školský rok 2026/2027</div>
+    </div>
+    <ul class="tplist">
+      <li><span>Názov projektu</span><span>štýl <b>Názov</b>, na stred</span></li>
+      <li><span>Krátky podnadpis</span><span>štýl <b>Podnadpis</b>, na stred</span></li>
+      <li><span>Tematický obrázok</span><span>Vložiť → Obrázky, obtekanie <b>V rovine s textom</b>, na stred</span></li>
+      <li><span>Meno a priezvisko</span><span>Normálny, na stred</span></li>
+      <li><span>Trieda</span><span>Normálny, na stred</span></li>
+      <li><span>Školský rok</span><span>napr. 2026/2027</span></li>
+    </ul>
+  </div>
+  <ol class="do">
+    <li>Choď na úplný začiatok dokumentu: <kbd>Ctrl</kbd>+<kbd>Home</kbd>. Napíš sem názov, podnadpis, meno, triedu a školský rok, každé do samostatného riadku.</li>
+    <li>Názvu daj štýl <b>Názov</b>, podnadpisu štýl <b>Podnadpis</b>.</li>
+    <li>Označ všetko na titulke a zarovnaj na stred: <b>Domov → Odsek → Zarovnať na stred</b> (<kbd>Ctrl</kbd>+<kbd>E</kbd>).</li>
+    <li>Medzi podnadpis a meno vlož obrázok (postup v kroku 8). Na titulke mu nechaj obtekanie <b>V rovine s textom</b>, potom ho zarovnáš na stred ako text.</li>
+    <li>Ak chceš meno, triedu a rok nižšie, nedávaj veľa Enterov. Klikni do riadku s menom → <b>Rozloženie → Odsek → Medzery Pred</b> a zvýš hodnotu.</li>
+    <li>Za školský rok vlož <b>zlom strany</b> (krok 6).</li>
+  </ol>
+  <div class="call tip"><b class="t">Tip</b><p>Word má aj hotové titulné strany (<b>Vložiť → Titulná strana</b>), ale ťažko sa upravujú a zadanie hodnotí tvoju vlastnú úpravu. Titulku si urob sám/sama.</p></div>
+</section>
+
+<!-- 6 -->
+<section class="step" id="krok-6">
+  <div class="step-head"><div class="step-no">6</div><div>
+    <h2>Novú stranu začni zlomom strany</h2>
+    <p class="why">Nikdy nie opakovaným stláčaním Enter. Pri každej zmene by sa text posunul a rozbil.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Vložiť</span><i>→</i><span class="c">Strany</span><i>→</i><span class="c">Zlom strany</span><i>·</i><kbd>Ctrl</kbd>+<kbd>Enter</kbd></div>
+  <ol class="do">
+    <li>Klikni na koniec posledného riadku strany (napr. za „Školský rok 2026/2027“).</li>
+    <li>Stlač <kbd>Ctrl</kbd>+<kbd>Enter</kbd>, alebo <b>Vložiť → Zlom strany</b>.</li>
+    <li>Zapni <b>Domov → Odsek → ¶ (Zobraziť všetko)</b>. Zlom uvidíš ako bodkovanú čiaru s nápisom <i>Zlom strany</i>. Keď ho chceš zmazať, klikni pred neho a stlač <kbd>Delete</kbd>.</li>
+  </ol>
+  <div class="figs">
+    <figure><div class="scroll"><div id="rb-break"></div></div><figcaption><b>Vložiť → Strany.</b> To isté nájdeš aj v Rozloženie → Zlomy → Strana.</figcaption></figure>
+    <figure>
+      <div class="marks" role="img" aria-label="Skryté značky so zlomom strany">
+        Trieda: I. A<span class="pm">¶</span><br>
+        Školský rok 2026/2027<span class="pm">¶</span>
+        <div class="brk">Zlom strany</div>
+        <span style="color:var(--muted)">(nová strana: obsah)</span>
+      </div>
+      <figcaption><b>So zapnutým ¶</b> vidíš Entery aj zlomy. Dobré na hľadanie prázdnych strán.</figcaption>
+    </figure>
+  </div>
+  <div class="prose"><p><b>Kam dať zlomy:</b> za titulnú stranu, za obsah. Podľa potreby aj pred Záver alebo Zdroje, aby nadpis nezačínal úplne dole na strane.</p></div>
+</section>
+
+<!-- 7 -->
+<section class="step" id="krok-7">
+  <div class="step-head"><div class="step-no">7</div><div>
+    <h2>Vlož automatický obsah</h2>
+    <p class="why">Word ho poskladá sám z nadpisov, aj s číslami strán. Preto musia mať nadpisy štýly.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Referencie</span><i>→</i><span class="c">Obsah</span><i>→</i><span class="c">Automatická tabuľka 1</span></div>
+  <ol class="do">
+    <li>Klikni na začiatok strany 2, hneď za zlom strany titulky.</li>
+    <li>Na karte <b>Referencie</b> klikni na <b>Obsah</b>.</li>
+    <li>Vyber <b>Automatická tabuľka 1</b> alebo <b>2</b>.</li>
+    <li>Za obsah vlož zlom strany (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>), aby Úvod začínal na novej strane.</li>
+  </ol>
+  <div class="figs">
+    <figure><div class="scroll"><div id="rb-toc"></div></div><figcaption><b>Referencie → Obsah.</b> Vpravo je Aktualizovať tabuľku.</figcaption></figure>
+    <figure>
+      <div class="menu" role="img" aria-label="Ponuka Obsah">
+        <div class="mh">Vstavané</div>
+        <div class="thumb hl"><b class="mk">3</b><div class="tt">Automatická tabuľka 1</div>Obsah<br>Úvod ........................ 3<br>Život včelstva ........... 3</div>
+        <div class="thumb"><div class="tt">Automatická tabuľka 2</div>Obsah<br>Úvod ........................ 3</div>
+        <div class="thumb"><div class="tt">Manuálna tabuľka</div><span style="color:var(--rb-muted)">nepoužívaj, neaktualizuje sa</span></div>
+        <div class="sep"></div>
+        <div class="mi"><span class="mic">☰</span>Vlastný obsah…</div>
+      </div>
+      <figcaption><b>Vyber automatickú</b>, nie manuálnu tabuľku.</figcaption>
+    </figure>
+  </div>
+  <div class="figs">
+    <div class="prose">
+      <p><b>Aktualizácia obsahu.</b> Obsah sa nemení sám. Keď pridáš kapitolu alebo sa posunú strany:</p>
+      <ol class="do">
+        <li class="plain">Klikni do obsahu a hore klikni na <b>Aktualizovať tabuľku</b> (alebo <b>Referencie → Aktualizovať tabuľku</b>, <kbd>F9</kbd>).</li>
+        <li class="plain">Vyber <b>Aktualizovať celú tabuľku</b> → <b>OK</b>.</li>
+      </ol>
+    </div>
+    <figure>
+      <div class="dlg" role="img" aria-label="Okno Aktualizovať obsah">
+        <div class="dlg-h"><span>Aktualizovať obsah</span><span class="x">✕</span></div>
+        <div class="dlg-b">
+          <div>Word aktualizuje obsah. Vyberte jednu z nasledujúcich možností:</div>
+          <div class="fld"><span class="rd"></span> Aktualizovať iba čísla strán</div>
+          <div class="fld hl"><span class="rd on"></span> Aktualizovať celú tabuľku<b class="mk">2</b></div>
+        </div>
+        <div class="btns"><span class="btn pri">OK</span><span class="btn">Zrušiť</span></div>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="step" id="krok-8">
+  <div class="step-head"><div class="step-no">8</div><div>
+    <h2>Vlož aspoň 2 obrázky a nastav obtekanie</h2>
+    <p class="why">Obrázky musia súvisieť s témou, mať obtekanie textu a nesmú byť zdeformované.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Vložiť</span><i>→</i><span class="c">Obrázky</span><i>→</i><span class="c">Toto zariadenie…</span></div>
+  <h3 style="font-size:19px">A. Nájdi a vlož obrázok</h3>
+  <ol class="do">
+    <li>Obrázok hľadaj na stránkach s voľnou licenciou: <b>Pixabay</b>, <b>Unsplash</b>, <b>Pexels</b>, <b>Wikimedia Commons</b>. Stiahni ho a <b>hneď si zapíš adresu (URL)</b>. Budeš ju potrebovať do zdrojov.</li>
+    <li>Klikni do odseku, ku ktorému obrázok patrí.</li>
+    <li><b>Vložiť → Obrázky → Toto zariadenie…</b>, vyber súbor → <b>Vložiť</b>.</li>
+  </ol>
+  <div class="scroll"><div id="rb-insert-pic"></div></div>
+
+  <h3 style="font-size:19px">B. Nastav obtekanie textu</h3>
+  <ol class="do">
+    <li>Klikni na obrázok. Hore sa objaví karta <b style="color:var(--ctx)">Formát obrázka</b>.</li>
+    <li>Klikni na <b>Obtekanie textu</b> a vyber <b>Štvorcové</b> alebo <b>Hore a dole</b>. Rovnaké možnosti otvorí aj malá ikona <b>Možnosti rozloženia</b> vedľa obrázka.</li>
+    <li>Obrázok potiahni na miesto, kde má byť (napr. k pravému okraju vedľa odseku).</li>
+  </ol>
+  <div class="figs">
+    <figure><div class="scroll"><div id="rb-picfmt"></div></div><figcaption><b>Formát obrázka</b> sa zobrazí, len keď je obrázok vybratý.</figcaption></figure>
+    <figure>
+      <div class="menu" role="img" aria-label="Ponuka Obtekanie textu">
+        <div class="mi"><span class="mic">▤</span>V rovine s textom</div>
+        <div class="sep"></div>
+        <div class="mi hl"><span class="mic">▣</span>Štvorcové<b class="mk">2</b></div>
+        <div class="mi"><span class="mic">▣</span>Tesné</div>
+        <div class="mi"><span class="mic">▣</span>Prechádzajúce</div>
+        <div class="mi hl"><span class="mic">▬</span>Hore a dole</div>
+        <div class="mi"><span class="mic">▢</span>Za textom</div>
+        <div class="mi"><span class="mic">▢</span>Pred textom</div>
+        <div class="sep"></div>
+        <div class="mi"><span class="mic"></span>Ďalšie možnosti rozloženia…</div>
+      </div>
+      <figcaption><b>Obtekanie textu.</b> Za textom a Pred textom do projektu nepoužívaj.</figcaption>
+    </figure>
+  </div>
+  <div class="wraps" role="list">
+    <div class="wd inl" role="listitem"><div class="area"><div class="pic"></div></div><b>V rovine s textom</b><small>Obrázok sa správa ako písmeno. Vhodné na titulku, keď je obrázok sám v riadku na stred.</small></div>
+    <div class="wd sq good" role="listitem"><div class="area"><div class="pic"></div></div><b>Štvorcové</b><small>Text obteká okolo obrázka. Vhodné pre menší obrázok pri odseku.</small></div>
+    <div class="wd td good" role="listitem"><div class="area"><div class="pic"></div></div><b>Hore a dole</b><small>Text je len nad a pod obrázkom. Vhodné pre široký obrázok.</small></div>
+  </div>
+
+  <h3 style="font-size:19px">C. Zachovaj pôvodný pomer strán</h3>
+  <ol class="do">
+    <li>Veľkosť meň <b>iba rohovými úchytmi</b> (krúžky v rohoch). Bočné úchyty obrázok natiahnu alebo stlačia.</li>
+    <li>Kontrola: <b style="color:var(--ctx)">Formát obrázka</b> → skupina <b>Veľkosť</b> → malá šípka vpravo dole → karta <b>Veľkosť</b> → zaškrtnuté <b>Zamknúť pomer strán</b>.</li>
+    <li>Zdeformovaný obrázok opravíš cez <b>Formát obrázka → Obnoviť obrázok → Obnoviť obrázok a veľkosť</b>.</li>
+  </ol>
+  <div class="figs">
+    <div class="asp">
+      <figure><svg viewBox="0 0 160 110" role="img" aria-label="Správny obrázok"><rect width="160" height="110" fill="var(--accent-soft)"/><circle cx="118" cy="30" r="14" fill="var(--mark)"/><path d="M0 110 L48 50 L80 85 L108 60 L160 110Z" fill="var(--accent)"/></svg><div class="verdict ok">✓ pôvodný pomer</div></figure>
+      <figure class="bad"><svg viewBox="0 0 160 110" role="img" aria-label="Zdeformovaný obrázok"><rect width="160" height="110" fill="var(--accent-soft)"/><circle cx="118" cy="30" r="14" fill="var(--mark)"/><path d="M0 110 L48 50 L80 85 L108 60 L160 110Z" fill="var(--accent)"/></svg><div class="verdict no">✕ natiahnutý do šírky</div></figure>
+    </div>
+    <figure>
+      <div class="dlg" role="img" aria-label="Okno Rozloženie, karta Veľkosť">
+        <div class="dlg-h"><span>Rozloženie</span><span class="x">✕</span></div>
+        <div class="dlg-tabs"><span>Umiestnenie</span><span>Obtekanie textu</span><span class="on">Veľkosť</span></div>
+        <div class="dlg-b">
+          <div class="dlg-sec">Mierka</div>
+          <div class="frow"><span class="fld">Výška: <span class="inp">48 %</span></span><span class="fld">Šírka: <span class="inp">48 %</span></span></div>
+          <div class="fld hl"><span class="cb on">✓</span> Zamknúť pomer strán<b class="mk">2</b></div>
+          <div class="fld"><span class="cb on">✓</span> Relatívne k pôvodnej veľkosti obrázka</div>
+        </div>
+        <div class="btns"><span class="btn pri">OK</span><span class="btn">Zrušiť</span></div>
+      </div>
+      <figcaption><b>Výška aj šírka</b> musia mať rovnaké percento.</figcaption>
+    </figure>
+  </div>
+  <div class="call tip"><b class="t">Bonus: popis obrázka</b><p>Pravý klik na obrázok → <b>Vložiť popis…</b> → Označenie <b>Obrázok</b> → dopíš text, napr. „Obrázok 1: Včela na kvete levandule“. Číslo pomôže pri zdrojoch obrázkov.</p></div>
+</section>
+
+<!-- 9 -->
+<section class="step" id="krok-9">
+  <div class="step-head"><div class="step-no">9</div><div>
+    <h2>Vytvor tabuľku</h2>
+    <p class="why">Aspoň 3 stĺpce a 4 riadky vrátane hlavičky, s čitateľnou úpravou.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Vložiť</span><i>→</i><span class="c">Tabuľky</span><i>→</i><span class="c">Tabuľka</span></div>
+  <ol class="do">
+    <li>Napíš vetu, ktorá tabuľku uvedie, a stlač <kbd>Enter</kbd>.</li>
+    <li><b>Vložiť → Tabuľka</b> a myšou označ mriežku aspoň <b>3 × 4</b> (3 stĺpce, 4 riadky). Klikni.</li>
+    <li>Vyplň ju. <b>Prvý riadok je hlavička</b>. Medzi bunkami sa posúvaš klávesom <kbd>Tab</kbd>; <kbd>Tab</kbd> v poslednej bunke pridá nový riadok.</li>
+    <li>Na karte <b style="color:var(--ctx)">Návrh tabuľky</b> vyber jednoduchý štýl vo svojich farbách a nechaj zaškrtnutý <b>Riadok hlavičky</b>.</li>
+    <li>Na karte <b style="color:var(--ctx)">Rozloženie</b> (tabuľky) v skupine <b>Zarovnanie</b> zarovnaj hlavičku na stred, text vľavo a čísla na stred. Cez <b>Prispôsobiť → Prispôsobiť oknu</b> roztiahneš tabuľku na šírku strany.</li>
+  </ol>
+  <div class="figs">
+    <figure><div class="scroll"><div id="rb-table-ins"></div></div><figcaption><b>Vložiť → Tabuľka</b> a označ mriežku.</figcaption></figure>
+    <figure><div class="scroll"><div id="rb-table-lay"></div></div><figcaption><b>Rozloženie tabuľky</b> sa zobrazí, keď je kurzor v tabuľke.</figcaption></figure>
+  </div>
+  <figure>
+    <div class="scroll" style="padding-top:4px">
+      <table class="extab">
+        <caption>Ukážka: 4 stĺpce, 4 riadky vrátane hlavičky. Hlavička je zvýraznená a zarovnaná na stred.</caption>
+        <thead><tr><th>Člen včelstva</th><th>Počet v úli</th><th>Hlavná úloha</th><th>Dĺžka života</th></tr></thead>
+        <tbody>
+          <tr><td>Kráľovná</td><td class="c">1</td><td>kladie vajíčka</td><td class="c">3 – 5 rokov</td></tr>
+          <tr><td>Robotnica</td><td class="c">desaťtisíce</td><td>zbiera nektár, stavia plásty, stráži úľ</td><td class="c">5 – 6 týždňov (leto)</td></tr>
+          <tr><td>Trúd</td><td class="c">stovky</td><td>oplodnenie kráľovnej</td><td class="c">do konca leta</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </figure>
+  <div class="call tip"><b class="t">Tip</b><p>Ak tabuľka pokračuje na ďalšej strane, klikni do hlavičky → <b>Rozloženie → Opakovať riadky hlavičky</b>.</p></div>
+</section>
+
+<!-- 10 -->
+<section class="step" id="krok-10">
+  <div class="step-head"><div class="step-no">10</div><div>
+    <h2>Pridaj odrážkový alebo číslovaný zoznam</h2>
+    <p class="why">Odrážky použi na vymenovanie, čísla na postup alebo poradie.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Domov</span><i>→</i><span class="c">Odsek</span><i>→</i><span class="c">Odrážky / Číslovanie</span></div>
+  <ol class="do">
+    <li>Napíš položky, každú do samostatného riadku (<kbd>Enter</kbd>).</li>
+    <li>Označ ich myšou.</li>
+    <li>Klikni na <b>Odrážky</b> alebo <b>Číslovanie</b>. Šípka vedľa tlačidla ponúkne iný tvar odrážky.</li>
+    <li>Podpoložku vytvoríš klávesom <kbd>Tab</kbd>, späť o úroveň vyššie <kbd>Shift</kbd>+<kbd>Tab</kbd>.</li>
+  </ol>
+  <div class="scroll"><div id="rb-list"></div></div>
+</section>
+
+<!-- 11 -->
+<section class="step" id="krok-11">
+  <div class="step-head"><div class="step-no">11</div><div>
+    <h2>Hlavička, päta a čísla strán</h2>
+    <p class="why">Hlavička so skráteným názvom, päta s menom a automatické číslo strany. Na titulke nič z toho.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Vložiť</span><i>→</i><span class="c">Hlavička a päta</span><i>·</i><span>alebo dvojklik do horného okraja strany</span></div>
+  <ol class="do">
+    <li>Choď na stranu 2 a <b>dvojklikni do horného okraja</b> strany (alebo <b>Vložiť → Hlavička → Upraviť hlavičku</b>). Objaví sa karta <b style="color:var(--ctx)">Hlavička a päta</b>.</li>
+    <li>Zaškrtni <b>Iná prvá strana</b>. Titulka tak nebude mať hlavičku, pätu ani číslo.</li>
+    <li>Do hlavičky napíš <b>skrátený názov</b> projektu (napr. „Včely – malí pomocníci prírody“ → „Včely“) a zarovnaj ho vpravo.</li>
+    <li>Klikni na <b>Prejsť na pätu</b>. Napíš svoje <b>meno a priezvisko</b>, potom stlač dvakrát <kbd>Tab</kbd> (kurzor skočí doprava).</li>
+    <li>Klikni na <b>Číslo strany → Aktuálna pozícia → Obyčajné číslo</b>.</li>
+    <li>Klikni na <b>Zavrieť hlavičku a pätu</b> (alebo stlač <kbd>Esc</kbd>).</li>
+  </ol>
+  <div class="scroll"><div id="rb-hf"></div></div>
+  <div class="figs">
+    <figure>
+      <div class="menu" role="img" aria-label="Ponuka Číslo strany">
+        <div class="mi"><span class="mic">▔</span>Horná časť strany ›</div>
+        <div class="mi"><span class="mic">▁</span>Dolná časť strany ›</div>
+        <div class="mi"><span class="mic">▏</span>Okraje strany ›</div>
+        <div class="mi hl"><span class="mic">#</span>Aktuálna pozícia ›<b class="mk">5</b></div>
+        <div class="sep"></div>
+        <div class="mi"><span class="mic"></span>Formát čísel strán…</div>
+        <div class="mi"><span class="mic">✕</span>Odstrániť čísla strán</div>
+      </div>
+      <figcaption><b>Aktuálna pozícia</b> vloží číslo tam, kde je kurzor, a nezmaže tvoje meno.</figcaption>
+    </figure>
+    <figure>
+      <div class="pages" role="img" aria-label="Náčrt strán s hlavičkou a pätou">
+        <div class="pgw"><div class="pg"><div class="h1" style="margin:auto auto 4px;width:70%"></div><div class="ln s" style="margin:0 auto 8px;width:50%"></div><div class="im" style="width:70%;margin:0 auto"></div><div class="ln s" style="margin:auto auto 0;width:40%"></div></div><div class="pgcap">1 · titulka, prázdna päta</div></div>
+        <div class="pgw"><div class="pg"><span class="hd">Včely</span><div class="h1"></div><div class="ln"></div><div class="ln"></div><div class="ln s"></div><div class="ln"></div><div class="pn"><span>Ján Novák</span><span>2</span></div></div><div class="pgcap">2 · obsah</div></div>
+        <div class="pgw"><div class="pg"><span class="hd">Včely</span><div class="h1"></div><div class="ln"></div><div class="ln s"></div><div class="h2"></div><div class="ln"></div><div class="im"></div><div class="ln"></div><div class="pn"><span>Ján Novák</span><span>3</span></div></div><div class="pgcap">3 · úvod, kapitola 1</div></div>
+      </div>
+      <figcaption><b>Výsledok:</b> hlavička vpravo hore, meno vľavo dole, číslo vpravo dole.</figcaption>
+    </figure>
+  </div>
+  <div class="call warn"><b class="t">Pozor</b><p>Čísla strán nikdy nepíš ručne. Ak použiješ <b>Číslo strany → Dolná časť strany</b>, Word môže nahradiť celý obsah päty aj s tvojím menom. Preto <b>Aktuálna pozícia</b>.</p></div>
+  <div class="call tip"><b class="t">Voliteľné</b><p>Chceš, aby obsah mal číslo 1? <b>Číslo strany → Formát čísel strán… → Začať od: 0</b>.</p></div>
+</section>
+
+<!-- 12 -->
+<section class="step" id="krok-12">
+  <div class="step-head"><div class="step-no">12</div><div>
+    <h2>Úvod, záver a zdroje</h2>
+    <p class="why">Na konci musia byť aspoň 2 informačné zdroje a zdroje všetkých obrázkov.</p></div></div>
+  <div class="prose">
+    <ul>
+      <li><b>Úvod:</b> o čom je projekt, prečo si si vybral/a túto tému, čo sa čitateľ dozvie.</li>
+      <li><b>Záver:</b> zhrnutie najdôležitejších vecí a tvoj vlastný názor alebo zaujímavosť, ktorá ťa prekvapila.</li>
+      <li><b>Zdroje:</b> nadpis „Zdroje“ v štýle <b>Nadpis 1</b> a pod ním dva číslované zoznamy. Zápis podľa normy STN ISO 690:</li>
+    </ul>
+  </div>
+  <div class="src">
+    <h4>Informačné zdroje</h4>
+    <ol>
+      <li>PRIEZVISKO, Meno. <i>Názov knihy</i>. Miesto vydania: Vydavateľstvo, rok. ISBN 000-00-000-0000-0.</li>
+      <li>PRIEZVISKO, Meno (alebo NÁZOV ORGANIZÁCIE). <i>Názov článku</i> [online]. Názov webu, rok [cit. 2026-11-04]. Dostupné na: https://www.priklad.sk/clanok</li>
+    </ol>
+    <h4>Zdroje obrázkov</h4>
+    <ol>
+      <li>Obrázok na titulnej strane: Meno autora. <i>Popis obrázka</i> [online]. Pixabay [cit. 2026-11-04]. Dostupné na: https://pixabay.com/…</li>
+      <li>Obrázok 1: Meno autora. <i>Včela na kvete</i> [online]. Wikimedia Commons [cit. 2026-11-04]. Dostupné na: https://commons.wikimedia.org/…</li>
+    </ol>
+  </div>
+  <div class="call tip"><b class="t">Tip</b><p><b>[cit. …]</b> je dátum, kedy si stránku čítal/a. Adresu skopíruj presne z prehliadača. Ak autora nepoznáš, začni názvom článku.</p></div>
+</section>
+
+<!-- 13 -->
+<section class="step" id="krok-13">
+  <div class="step-head"><div class="step-no">13</div><div>
+    <h2>Skontroluj dokument pred odovzdaním</h2>
+    <p class="why">Štyri kontroly zo zadania plus počet strán.</p></div></div>
+  <ol class="do">
+    <li><b>Pravopis:</b> <b>Revízia → Pravopis a gramatika</b> (<kbd>F7</kbd>). Ak Word podčiarkuje správne slová, nastav jazyk: označ celý text (<kbd>Ctrl</kbd>+<kbd>A</kbd>) → <b>Revízia → Jazyk → Nastaviť jazyk kontroly…</b> → <b>slovenčina</b>.</li>
+    <li><b>Prázdne strany:</b> zapni <b>¶</b> a zmaž nadbytočné Entery a zlomy strán. Prázdnu stranu za tabuľkou na konci odstrániš tak, že posledný ¶ označíš a dáš mu veľkosť písma 1.</li>
+    <li><b>Obsah:</b> klikni do obsahu → <b>Aktualizovať tabuľku → Aktualizovať celú tabuľku</b>. Skontroluj, že čísla strán sedia.</li>
+    <li><b>Rozloženie:</b> <b>Zobraziť → Viac strán</b>. Obrázky neprekrývajú text ani okraje, tabuľka nie je zle rozdelená a žiadny nadpis nie je sám na konci strany.</li>
+    <li><b>Počet strán:</b> vľavo dole v stavovom riadku musí byť <i>Strana x z 4</i> až <i>z 6</i>.</li>
+  </ol>
+  <div class="scroll"><div id="rb-review"></div></div>
+</section>
+
+<!-- 14 -->
+<section class="step" id="krok-14">
+  <div class="step-head"><div class="step-no">14</div><div>
+    <h2>Ulož ako .docx aj .pdf a odovzdaj</h2>
+    <p class="why">Dva súbory s presným názvom: Priezvisko_Projekt_Word.docx a Priezvisko_Projekt_Word.pdf.</p></div></div>
+  <div class="path"><span class="lbl">Kde</span><span class="c">Súbor</span><i>→</i><span class="c">Uložiť ako</span><i>→</i><span class="c">Uložiť vo formáte: PDF</span></div>
+  <ol class="do">
+    <li>Ulož dokument Word: <kbd>Ctrl</kbd>+<kbd>S</kbd>. Sledovanie zmien nechaj zapnuté a zmeny <b>neprijímaj</b>.</li>
+    <li>Aby v PDF neboli červené značky revízií: <b>Revízia</b> → zoznam zobrazenia vedľa <b>Sledovať zmeny</b> → vyber zobrazenie bez značiek (podľa verzie <b>Bez označení</b> / <b>Žiadne revízie</b>).</li>
+    <li><b>Súbor → Uložiť ako → Prehľadávať</b>. V poli <b>Uložiť vo formáte</b> vyber <b>PDF (*.pdf)</b>. Názov nechaj <code>Priezvisko_Projekt_Word</code>.</li>
+    <li>Klikni na <b>Možnosti…</b> a pri <b>Publikovať</b> vyber <b>Dokument</b> (nie „Dokument s revíziami“). <b>OK</b> → <b>Uložiť</b>.</li>
+    <li>Otvor PDF a prezri si ho. Potom nahraj <b>oba súbory</b> do priečinka na odovzdanie.</li>
+  </ol>
+  <figure>
+    <div class="dlg" role="img" aria-label="Okno Uložiť ako s formátom PDF" style="width:min(100%,520px)">
+      <div class="dlg-h"><span>Uložiť ako</span><span class="x">✕</span></div>
+      <div class="dlg-b">
+        <div class="frow"><span class="fld">Názov súboru: <span class="inp" style="min-width:200px">Novak_Projekt_Word</span></span></div>
+        <div class="frow"><span class="fld hl">Uložiť vo formáte: <span class="inp sel" style="min-width:150px">PDF (*.pdf)</span><b class="mk">3</b></span></div>
+        <div class="frow"><span class="fld"><span class="rd on"></span> Štandardné (publikovanie online a tlač)</span></div>
+        <div class="frow"><span class="btn hl">Možnosti…<b class="mk">4</b></span></div>
+      </div>
+      <div class="btns"><span class="btn pri">Uložiť</span><span class="btn">Zrušiť</span></div>
+    </div>
+    <figcaption><b>Rovnaký výsledok:</b> Súbor → Exportovať → Vytvoriť dokument PDF/XPS.</figcaption>
+  </figure>
+  <div class="call tip"><b class="t">Kam odovzdať</b><p><a href="https://gdusecovcesk-my.sharepoint.com/:f:/g/personal/patricia_valova_gdusecovce_sk/IgBnYQlSCYUERKSayvqRj_UPAWWxNy-poBHAW1sfkKxcTtk" target="_blank" rel="noopener">Priečinok na odovzdanie projektu (SharePoint)</a></p></div>
+</section>
+
+<!-- cheat sheet -->
+<section class="step" id="tahak">
+  <div class="step-head"><div class="step-no">→</div><div><h2>Ťahák: kde čo nájdem</h2></div></div>
+  <div class="scroll" style="padding-top:0">
+  <table class="cheat">
+    <thead><tr><th>Čo chcem urobiť</th><th>Kde to je vo Worde</th><th>Skratka</th></tr></thead>
+    <tbody>
+      <tr><td>Sledovať zmeny</td><td>Revízia → Sledovanie → Sledovať zmeny</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd></td></tr>
+      <tr><td>Upraviť bežný text</td><td>Domov → Štýly → pravý klik Normálny → Upraviť…</td><td></td></tr>
+      <tr><td>Riadkovanie 1,15</td><td>Domov → Odsek → šípka v rohu → Riadkovanie: Viacnásobné, Na: 1,15</td><td></td></tr>
+      <tr><td>Nadpis kapitoly / podkapitoly</td><td>Domov → Štýly → Nadpis 1 / Nadpis 2</td><td></td></tr>
+      <tr><td>Zlom strany</td><td>Vložiť → Strany → Zlom strany</td><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td></tr>
+      <tr><td>Zobraziť skryté značky</td><td>Domov → Odsek → ¶</td><td></td></tr>
+      <tr><td>Automatický obsah</td><td>Referencie → Obsah → Automatická tabuľka 1</td><td></td></tr>
+      <tr><td>Aktualizovať obsah</td><td>Referencie → Aktualizovať tabuľku → celú tabuľku</td><td><kbd>F9</kbd></td></tr>
+      <tr><td>Vložiť obrázok</td><td>Vložiť → Obrázky → Toto zariadenie…</td><td></td></tr>
+      <tr><td>Obtekanie obrázka</td><td>Formát obrázka → Obtekanie textu</td><td></td></tr>
+      <tr><td>Zamknúť pomer strán</td><td>Formát obrázka → Veľkosť → šípka → Zamknúť pomer strán</td><td></td></tr>
+      <tr><td>Tabuľka</td><td>Vložiť → Tabuľka</td><td></td></tr>
+      <tr><td>Zarovnanie v tabuľke</td><td>Rozloženie (tabuľky) → Zarovnanie</td><td></td></tr>
+      <tr><td>Odrážky / číslovanie</td><td>Domov → Odsek → Odrážky / Číslovanie</td><td></td></tr>
+      <tr><td>Hlavička a päta</td><td>Vložiť → Hlavička / Päta → Upraviť</td><td>dvojklik do okraja</td></tr>
+      <tr><td>Titulka bez čísla</td><td>Hlavička a päta → Iná prvá strana</td><td></td></tr>
+      <tr><td>Číslo strany</td><td>Hlavička a päta → Číslo strany → Aktuálna pozícia</td><td></td></tr>
+      <tr><td>Pravopis</td><td>Revízia → Pravopis a gramatika</td><td><kbd>F7</kbd></td></tr>
+      <tr><td>Uložiť ako PDF</td><td>Súbor → Uložiť ako → PDF (*.pdf)</td><td><kbd>F12</kbd></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- checklist -->
+<section class="step" id="kontrola">
+  <div class="step-head"><div class="step-no">✓</div><div>
+    <h2>Kontrolný zoznam pred odovzdaním</h2>
+    <p class="why">Všetky povinné podmienky zo zadania. Odškrtnuté položky si prehliadač zapamätá.</p></div></div>
+  <div class="chk-wrap">
+    <div class="chk-top"><div class="prog" aria-hidden="true"><i id="prog"></i></div><span class="cnt" id="cnt">0 / 0</span><button class="reset" id="reset" type="button">Zrušiť odškrtnutie</button></div>
+    <div class="chk-groups" id="chk"></div>
+  </div>
+</section>
+
+<p class="foot">Nákresy zodpovedajú Wordu z Microsoft 365 v slovenčine. V starších verziách (2016, 2019) môžu byť niektoré tlačidlá inde alebo mať trochu iný názov. Keď niečo nenájdeš, napíš názov funkcie do vyhľadávacieho poľa navrchu Wordu.</p>
+</main>
+</div>
+</div>
+
+<script>
+const TABS=['Súbor','Domov','Vložiť','Návrh','Rozloženie','Referencie','Korešpondencia','Revízia','Zobraziť'];
+const mk=n=>n?`<b class="mk">${n}</b>`:'';
+function item(it){
+  if(it.col) return `<div class="col">${it.col.map(item).join('')}</div>`;
+  const [ic,lb,kind='big',m=0,cls='']=it;
+  const h=m?' hl':'';
+  if(kind==='sty') return `<div class="it sty ${cls}${h}"><span class="ic">${ic}</span><span class="lb">${lb}</span>${mk(m)}</div>`;
+  if(kind==='chk') return `<div class="it chk${cls==='on'?' on':''}${h}"><span class="box">${cls==='on'?'✓':''}</span><span>${lb}</span>${mk(m)}</div>`;
+  if(kind==='fld') return `<div class="fieldrow${h}" style="position:relative"><span>${ic}</span><span class="bx">${lb}</span>${mk(m)}</div>`;
+  if(kind==='sm') return `<div class="it sm${h}"><span class="ic">${ic}</span><span>${lb}</span>${mk(m)}</div>`;
+  return `<div class="it${h}"><span class="ic">${ic}</span><span>${lb}</span>${mk(m)}</div>`;
+}
+function ribbon(s){
+  const tabs=s.ctx?TABS.concat(s.ctx):TABS;
+  let h=`<div class="rb" role="img" aria-label="${s.alt}"><div class="rb-tabs">`;
+  tabs.forEach(t=>{const on=t===s.active,c=s.ctx&&s.ctx.includes(t);
+    h+=`<span class="rb-tab${on?' on':''}${c?' ctx':''}${on&&s.tm?' hl':''}">${t}${on?mk(s.tm):''}</span>`});
+  h+='</div><div class="rb-body">';
+  s.groups.forEach(g=>{h+=`<div class="rb-g"><div class="rb-items">${g[1].map(item).join('')}</div><div class="rb-gl">${g[0]}</div></div>`});
+  return h+'</div></div>';
+}
+const R={
+ 'rb-track':{alt:'Karta Revízia so zvýrazneným tlačidlom Sledovať zmeny',active:'Revízia',tm:3,groups:[
+   ['Korektúra',[['abc✓','Pravopis a gramatika'],{col:[['Ⓣ','Tezaurus','sm'],['123','Počet slov','sm']]}]],
+   ['Jazyk',[['あA','Jazyk']]],
+   ['Komentáre',[['▱','Nový komentár']]],
+   ['Sledovanie',[['✎','Sledovať zmeny','big',4],{col:[['▾','Jednoduché revízie','sm',5],['▾','Zobraziť revízie','sm'],['▤','Tabla revízií','sm']]}]],
+   ['Zmeny',[['✓','Prijať'],['✕','Odmietnuť']]]]},
+ 'rb-normal':{alt:'Karta Domov, galéria štýlov so zvýrazneným štýlom Normálny',active:'Domov',groups:[
+   ['Písmo',[{col:[['A','Calibri (Základný text) · 11','sm'],['B I U','Tučné, kurzíva, podčiarknuté','sm']]}]],
+   ['Odsek',[{col:[['•≡','Odrážky · Číslovanie','sm'],['≡','Zarovnanie · Riadkovanie','sm']]}]],
+   ['Štýly',[['AaBbCcDd','Normálny','sty',1,'s-normal'],['AaBbCcDd','Bez medzier','sty',0,'s-normal'],['AaBbCc','Nadpis 1','sty',0,'s-h1'],['AaBbCcD','Nadpis 2','sty',0,'s-h2'],['AaB','Názov','sty',0,'s-title']]]]},
+ 'rb-styles':{alt:'Galéria štýlov s Nadpis 1, Nadpis 2, Názov a Normálny',active:'Domov',groups:[
+   ['Odsek',[{col:[['•≡','Odrážky','sm'],['1≡','Číslovanie','sm'],['¶','Zobraziť všetko','sm']]}]],
+   ['Štýly',[['AaBbCcDd','Normálny','sty',3,'s-normal'],['AaBbCc','Nadpis 1','sty',1,'s-h1'],['AaBbCcD','Nadpis 2','sty',2,'s-h2'],['AaB','Názov','sty',4,'s-title'],['AaBbCcD','Podnadpis','sty',0,'s-sub']]]]},
+ 'rb-break':{alt:'Karta Vložiť, skupina Strany so zvýrazneným Zlom strany',active:'Vložiť',tm:0,groups:[
+   ['Strany',[{col:[['▭','Titulná strana','sm'],['□','Prázdna strana','sm'],['⇣','Zlom strany','sm',2]]}]],
+   ['Tabuľky',[['▦','Tabuľka']]],
+   ['Ilustrácie',[['▣','Obrázky'],['◇','Tvary'],['⧉','SmartArt']]],
+   ['Hlavička a päta',[{col:[['▔','Hlavička','sm'],['▁','Päta','sm'],['#','Číslo strany','sm']]}]]]},
+ 'rb-toc':{alt:'Karta Referencie so zvýrazneným tlačidlom Obsah',active:'Referencie',tm:2,groups:[
+   ['Obsah',[['☰','Obsah','big',2],{col:[['+','Pridať text','sm'],['↻','Aktualizovať tabuľku','sm']]}]],
+   ['Poznámky pod čiarou',[['AB¹','Vložiť poznámku pod čiarou']]],
+   ['Citácie a bibliografia',[['❝','Vložiť citáciu']]],
+   ['Popisy',[['▤','Vložiť popis']]]]},
+ 'rb-insert-pic':{alt:'Karta Vložiť, tlačidlo Obrázky a ponuka Toto zariadenie',active:'Vložiť',groups:[
+   ['Strany',[{col:[['▭','Titulná strana','sm'],['□','Prázdna strana','sm'],['⇣','Zlom strany','sm']]}]],
+   ['Tabuľky',[['▦','Tabuľka']]],
+   ['Ilustrácie',[['▣','Obrázky','big',3],{col:[['▭','Toto zariadenie…','sm',3],['◎','Obrázky online…','sm']]},['◇','Tvary'],['☆','Ikony']]]]},
+ 'rb-picfmt':{alt:'Kontextová karta Formát obrázka s Obtekanie textu a Veľkosť',active:'Formát obrázka',ctx:['Formát obrázka'],tm:1,groups:[
+   ['Upraviť',[['☀','Opravy'],['◐','Farba'],['↺','Obnoviť obrázok']]],
+   ['Štýly obrázkov',[['▣','Rýchle štýly']]],
+   ['Usporiadať',[['⊡','Pozícia'],['▤','Obtekanie textu','big',2],{col:[['⬆','Posunúť dopredu','sm'],['⬇','Posunúť dozadu','sm']]}]],
+   ['Veľkosť ↘',[{col:[['↕','4,2 cm','fld'],['↔','6,3 cm','fld']]}]]]},
+ 'rb-table-ins':{alt:'Karta Vložiť, tlačidlo Tabuľka',active:'Vložiť',groups:[
+   ['Strany',[{col:[['▭','Titulná strana','sm'],['⇣','Zlom strany','sm']]}]],
+   ['Tabuľky',[['▦','Tabuľka','big',2]]],
+   ['Ilustrácie',[['▣','Obrázky'],['◇','Tvary']]]]},
+ 'rb-table-lay':{alt:'Kontextová karta Rozloženie tabuľky so skupinou Zarovnanie',active:'Rozloženie ',ctx:['Návrh tabuľky','Rozloženie '],groups:[
+   ['Riadky a stĺpce',[['⊞','Vložiť nad'],['⊞','Vložiť pod']]],
+   ['Veľkosť bunky',[['↔','Prispôsobiť','big',5]]],
+   ['Zarovnanie',[['⫷','Na stred','big',5],['A↕','Smer textu']]],
+   ['Údaje',[['⇅','Opakovať riadky hlavičky']]]]},
+ 'rb-list':{alt:'Karta Domov, skupina Odsek s tlačidlami Odrážky a Číslovanie',active:'Domov',groups:[
+   ['Písmo',[{col:[['A','Calibri · 11','sm'],['B I U','Tučné, kurzíva','sm']]}]],
+   ['Odsek',[['•≡','Odrážky','big',3],['1≡','Číslovanie','big',3],['1.1','Viacúrovňový zoznam'],['¶','Zobraziť všetko']]],
+   ['Štýly',[['AaBbCcDd','Normálny','sty',0,'s-normal'],['AaBbCc','Nadpis 1','sty',0,'s-h1']]]]},
+ 'rb-hf':{alt:'Kontextová karta Hlavička a päta s možnosťou Iná prvá strana',active:'Hlavička a päta',ctx:['Hlavička a päta'],tm:1,groups:[
+   ['Hlavička a päta',[{col:[['▔','Hlavička','sm'],['▁','Päta','sm'],['#','Číslo strany','sm',5]]}]],
+   ['Navigácia',[['▁','Prejsť na pätu','big',4],{col:[['↑','Predchádzajúce','sm'],['↓','Ďalšie','sm']]}]],
+   ['Možnosti',[{col:[['','Iná prvá strana','chk',2,'on'],['','Rôzne nepárne a párne strany','chk'],['','Zobraziť text dokumentu','chk',0,'on']]}]],
+   ['Zavrieť',[['✕','Zavrieť hlavičku a pätu','big',6]]]]},
+ 'rb-review':{alt:'Karta Revízia, tlačidlo Pravopis a gramatika a Jazyk',active:'Revízia',groups:[
+   ['Korektúra',[['abc✓','Pravopis a gramatika','big',1],{col:[['123','Počet slov','sm']]}]],
+   ['Jazyk',[['あA','Jazyk','big',1]]],
+   ['Sledovanie',[['✎','Sledovať zmeny'],{col:[['▾','Jednoduché revízie','sm']]}]],
+   ['Zmeny',[['✓','Prijať'],['✕','Odmietnuť']]]]}
+};
+for(const id in R){const el=document.getElementById(id);if(el)el.innerHTML=ribbon(R[id])}
+
+/* checklist */
+const CL=[
+ ['Začiatok a súbor',['Sledovanie zmien zapnuté od začiatku a nevypnuté','Žiadne „Prijať/Odmietnuť všetky zmeny“','Súbory: Priezvisko_Projekt_Word.docx a .pdf']],
+ ['Štruktúra',['4 až 6 strán vrátane titulky a obsahu','Titulka: názov, podnadpis, obrázok, meno, trieda, školský rok','Automatický obsah hneď za titulkou, aktualizovaný','Úvod, 3 hlavné kapitoly, 2 podkapitoly, záver, zdroje','Nové strany cez zlom strany, žiadne prázdne strany']],
+ ['Štýly a text',['Štýly Názov, Nadpis 1, Nadpis 2, Normálny','Rovnaké nadpisy vyzerajú rovnako','Text 11 alebo 12 bodov, riadkovanie 1,15, jednotné zarovnanie','Najviac 2 písma a 3 hlavné farby','Pravopis skontrolovaný']],
+ ['Obrázky, tabuľka, zoznam',['Aspoň 2 obrázky k téme','Obrázky majú obtekanie a nie sú zdeformované','Tabuľka: aspoň 3 stĺpce a 4 riadky s hlavičkou, zarovnaná','Aspoň 1 odrážkový alebo číslovaný zoznam']],
+ ['Hlavička, päta, zdroje',['Hlavička so skráteným názvom','Päta s menom autora','Automatické čísla strán','Titulka bez čísla strany','Aspoň 2 informačné zdroje','Zdroje všetkých obrázkov']]
+];
+const KEY='wordprojekt-checklist-v1';let saved={};
+try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){saved={}}
+const box=document.getElementById('chk');let n=0;
+box.innerHTML=CL.map(([g,items])=>`<div class="chk-g"><h3>${g}</h3>${items.map(t=>{const id='c'+(n++);return `<label for="${id}"><input type="checkbox" id="${id}"${saved[id]?' checked':''}><span>${t}</span></label>`}).join('')}</div>`).join('');
+function upd(){const all=box.querySelectorAll('input'),on=[...all].filter(i=>i.checked);
+  document.getElementById('cnt').textContent=on.length+' / '+all.length;
+  document.getElementById('prog').style.width=(on.length/all.length*100)+'%';
+  const s={};on.forEach(i=>s[i.id]=1);try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+box.addEventListener('change',upd);
+document.getElementById('reset').addEventListener('click',()=>{box.querySelectorAll('input').forEach(i=>i.checked=false);upd()});
+upd();
+
+/* active step in toc */
+const links=[...document.querySelectorAll('#toc a')];
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-30% 0px -60% 0px'});
+document.querySelectorAll('section.step').forEach(s=>io.observe(s));
+</script>
+
+</body></html>

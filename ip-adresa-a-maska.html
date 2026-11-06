@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IP adresa a maska</title>
+  <meta name="description" content="Prevod IP adresy do dvojkovej sústavy, maska siete podľa prefixu, sieťová a hostová časť a výpočet počtu adries.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b8fbf'/%3E%3Ctext x='16' y='21' font-family='monospace' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3E%2F24%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --bg-glow: rgba(11, 143, 191, 0.13);
+      --card: #ffffff;
+      --border: #e3e7f0;
+      --text: #141a29;
+      --muted: #5d667a;
+      --accent: #0b8fbf;
+      --net: #2f6fec;
+      --net-soft: rgba(47, 111, 236, 0.12);
+      --host: #d9770f;
+      --host-soft: rgba(217, 119, 15, 0.12);
+      --zero: #eef1f7;
+      --err: #c8322b;
+      --shadow: 0 1px 2px rgba(20, 26, 41, 0.04), 0 4px 16px rgba(20, 26, 41, 0.05);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0d111a;
+        --bg-glow: rgba(60, 194, 238, 0.13);
+        --card: #161c29;
+        --border: #262f42;
+        --text: #eef1f8;
+        --muted: #98a1b6;
+        --accent: #3cc2ee;
+        --net: #6b9bff;
+        --net-soft: rgba(107, 155, 255, 0.16);
+        --host: #f5a54a;
+        --host-soft: rgba(245, 165, 74, 0.15);
+        --zero: #1d2434;
+        --err: #ff7b72;
+        --shadow: none;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0d111a;
+      --bg-glow: rgba(60, 194, 238, 0.13);
+      --card: #161c29;
+      --border: #262f42;
+      --text: #eef1f8;
+      --muted: #98a1b6;
+      --accent: #3cc2ee;
+      --net: #6b9bff;
+      --net-soft: rgba(107, 155, 255, 0.16);
+      --host: #f5a54a;
+      --host-soft: rgba(245, 165, 74, 0.15);
+      --zero: #1d2434;
+      --err: #ff7b72;
+      --shadow: none;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(60rem 30rem at 50% -10rem, var(--bg-glow), transparent 70%), var(--bg);
+      color: var(--text);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .mono { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; }
+
+    main { max-width: 1180px; margin: 0 auto; padding: 56px 16px 40px; }
+
+    .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-size: 14px; }
+    .back:hover { color: var(--accent); }
+    h1 { margin: 10px 0 4px; font-size: clamp(24px, 3vw, 32px); letter-spacing: -0.02em; }
+    .lead { margin: 0 0 24px; color: var(--muted); }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+    .stack { display: grid; gap: 18px; min-width: 0; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+    .card h2 { margin: 0 0 14px; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .card h2 b { color: var(--text); text-transform: none; letter-spacing: 0; font-size: 14px; }
+
+    /* IP input */
+    .ip-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+    #ip {
+      flex: 1 1 240px; min-width: 0;
+      font: 700 24px "JetBrains Mono", ui-monospace, monospace;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border); border-radius: 12px;
+      background: var(--bg); color: var(--text);
+    }
+    #ip:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+    #ip[aria-invalid="true"] { border-color: var(--err); }
+    .examples { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      border-radius: 999px; padding: 5px 11px; font: 500 13px "JetBrains Mono", ui-monospace, monospace; cursor: pointer;
+    }
+    .chip:hover { color: var(--accent); border-color: var(--accent); }
+    .msg { min-height: 21px; font-size: 14px; color: var(--err); margin: 0 0 8px; }
+
+    /* Bits */
+    .octets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .octet { display: grid; gap: 4px; min-width: 0; }
+    .row8 { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 3px; }
+    .place { font-size: 10px; color: var(--muted); text-align: center; font-family: "JetBrains Mono", ui-monospace, monospace; }
+    .bit {
+      height: 36px; border-radius: 7px;
+      display: grid; place-items: center;
+      font: 700 16px "JetBrains Mono", ui-monospace, monospace;
+      background: var(--zero); color: var(--muted);
+      transition: background .2s, color .2s, box-shadow .2s;
+    }
+    .dec { text-align: center; font: 700 22px "JetBrains Mono", ui-monospace, monospace; }
+    .dec small { display: block; font: 500 11px Inter, system-ui, sans-serif; color: var(--muted); letter-spacing: .04em; }
+
+    /* IP bits: tinted by part */
+    #ipBits .bit.net { background: var(--net-soft); color: var(--net); }
+    #ipBits .bit.host { background: var(--host-soft); color: var(--host); }
+    /* Mask bits: ones glow */
+    #maskBits .bit.net {
+      background: var(--net); color: #fff;
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--net) 60%, transparent), 0 0 14px color-mix(in srgb, var(--net) 55%, transparent);
+    }
+    #maskBits .bit.host { background: var(--host-soft); color: var(--host); }
+
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-size: 14px; }
+    .legend span { display: inline-flex; align-items: center; gap: 7px; }
+    .sw { width: 14px; height: 14px; border-radius: 4px; }
+    .sw.net { background: var(--net); }
+    .sw.host { background: var(--host); }
+
+    /* Slider */
+    .prefix-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .prefix-val { font: 700 44px/1 "JetBrains Mono", ui-monospace, monospace; color: var(--net); }
+    .steppers { display: flex; gap: 6px; }
+    .step {
+      width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 20px; cursor: pointer;
+    }
+    .step:hover { border-color: var(--net); color: var(--net); }
+    .step:focus-visible, .chip:focus-visible, .back:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    input[type="range"] {
+      --p: 75%;
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 14px; margin: 18px 0 6px; border-radius: 999px;
+      background: linear-gradient(90deg, var(--net) 0 var(--p), var(--host) var(--p) 100%);
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%;
+      background: var(--card); border: 3px solid var(--text); box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--card); border: 3px solid var(--text);
+    }
+    input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+    .ticks { position: relative; height: 18px; font: 500 12px "JetBrains Mono", ui-monospace, monospace; color: var(--muted); }
+    .ticks span { position: absolute; transform: translateX(-50%); }
+
+    .mask-dec { margin-top: 16px; font: 700 26px "JetBrains Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
+    .mask-dec small { font: 500 14px Inter, system-ui, sans-serif; color: var(--muted); display: block; }
+    .partial { margin-top: 10px; font-size: 14px; color: var(--muted); }
+    .partial .mono { color: var(--text); }
+
+    /* Side panel */
+    .side { position: sticky; top: 16px; }
+    .big { font: 700 40px/1.1 "JetBrains Mono", ui-monospace, monospace; color: var(--host); overflow-wrap: anywhere; }
+    .big-label { font-size: 14px; color: var(--muted); margin-bottom: 18px; }
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: s; }
+    .steps li {
+      counter-increment: s;
+      display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start;
+      padding: 10px 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border);
+    }
+    .steps li::before {
+      content: counter(s); width: 26px; height: 26px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 13px; font-weight: 700;
+      background: var(--net-soft); color: var(--net);
+    }
+    .steps .what { font-size: 13px; color: var(--muted); }
+    .steps .calc { font: 700 17px "JetBrains Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
+    .note { margin: 12px 0 0; font-size: 13.5px; color: var(--muted); }
+    .addr { margin: 18px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; }
+    .addr dt { color: var(--muted); }
+    .addr dd { margin: 0; font: 700 14px "JetBrains Mono", ui-monospace, monospace; text-align: right; overflow-wrap: anywhere; }
+
+    .theme-switch {
+      position: absolute; top: 16px; right: 16px;
+      display: flex; gap: 2px; padding: 3px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    }
+    .theme-switch button {
+      padding: 5px 10px; border: 0; border-radius: 7px;
+      background: transparent; color: var(--muted);
+      font: inherit; font-size: 12px; cursor: pointer;
+    }
+    .theme-switch button[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { position: static; }
+    }
+    @media (max-width: 640px) {
+      main { padding-top: 64px; }
+      .card { padding: 16px; }
+      .octets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
+      .bit { height: 32px; font-size: 14px; }
+      .prefix-val { font-size: 36px; }
+      .big { font-size: 32px; }
+      .mask-dec { font-size: 21px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .bit { transition: none; } }
+  </style>
+  <script>
+    try {
+      const saved = localStorage.getItem('pvalo-theme');
+      if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+    } catch {}
+  </script>
+</head>
+<body>
+  <div class="theme-switch" role="group" aria-label="Farebný režim">
+    <button type="button" data-theme-choice="auto" title="Podľa nastavenia systému">◐ Auto</button>
+    <button type="button" data-theme-choice="light">☀ Svetlý</button>
+    <button type="button" data-theme-choice="dark">☾ Tmavý</button>
+  </div>
+
+  <main>
+    <a class="back" href="/">← pvalo.site</a>
+    <h1>IP adresa a maska siete</h1>
+    <p class="lead">Zadaj IP adresu, posúvaj prefix a sleduj, ktoré bity patria sieti a ktoré zariadeniam.</p>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-labelledby="h-ip">
+          <h2 id="h-ip">1 · IP adresa v desiatkovej sústave</h2>
+          <div class="ip-row">
+            <input id="ip" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="192.168.1.10" aria-describedby="ip-msg" aria-label="IP adresa">
+            <div class="examples" aria-label="Príklady">
+              <button class="chip" type="button" data-ex="192.168.1.10/24">192.168.1.10</button>
+              <button class="chip" type="button" data-ex="10.20.30.40/8">10.20.30.40</button>
+              <button class="chip" type="button" data-ex="172.16.45.200/20">172.16.45.200</button>
+            </div>
+          </div>
+          <p class="msg" id="ip-msg" role="alert"></p>
+
+          <h2>V dvojkovej sústave</h2>
+          <div class="octets" id="ipBits"></div>
+        </section>
+
+        <section class="card" aria-labelledby="h-prefix">
+          <div class="prefix-head">
+            <h2 id="h-prefix" style="margin:0">2 · Prefix (dĺžka masky)</h2>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div class="steppers">
+                <button class="step" type="button" id="minus" aria-label="Zmenšiť prefix">−</button>
+                <button class="step" type="button" id="plus" aria-label="Zväčšiť prefix">+</button>
+              </div>
+              <output class="prefix-val" id="prefixOut" for="prefix">/24</output>
+            </div>
+          </div>
+          <input type="range" id="prefix" min="0" max="32" step="1" value="24" aria-label="Prefix">
+          <div class="ticks" aria-hidden="true">
+            <span style="left:0%">0</span><span style="left:25%">8</span><span style="left:50%">16</span><span style="left:75%">24</span><span style="left:100%">32</span>
+          </div>
+          <div class="legend">
+            <span><i class="sw net"></i>Sieťová časť: <b id="netBitsTxt">24 bitov</b></span>
+            <span><i class="sw host"></i>Hostová časť: <b id="hostBitsTxt">8 bitov</b></span>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="h-mask">
+          <h2 id="h-mask">3 · Maska siete v dvojkovej sústave</h2>
+          <div class="octets" id="maskBits"></div>
+          <div class="mask-dec"><small>Maska v desiatkovej sústave</small><span id="maskDec">255.255.255.0</span></div>
+          <div class="partial" id="partial"></div>
+        </section>
+      </div>
+
+      <aside class="card side" aria-labelledby="h-count" aria-live="polite">
+        <h2 id="h-count">Koľko máme možností</h2>
+        <div class="big" id="usable">254</div>
+        <div class="big-label" id="usableLabel">adries pre zariadenia (hostov)</div>
+        <ol class="steps">
+          <li><div><div class="what">Hostové bity = 32 − prefix</div><div class="calc" id="s1">32 − 24 = 8</div></div></li>
+          <li><div><div class="what">Všetky adresy v sieti = 2<sup>hostové bity</sup></div><div class="calc" id="s2">2⁸ = 256</div></div></li>
+          <li><div><div class="what">Použiteľné = všetky − adresa siete − broadcast</div><div class="calc" id="s3">256 − 2 = 254</div></div></li>
+        </ol>
+        <p class="note" id="note">Prvú adresu (všetky hostové bity 0) má sieť, poslednú (všetky hostové bity 1) má broadcast.</p>
+        <dl class="addr">
+          <dt>Adresa siete</dt><dd id="aNet">192.168.1.0</dd>
+          <dt>Prvý host</dt><dd id="aFirst">192.168.1.1</dd>
+          <dt>Posledný host</dt><dd id="aLast">192.168.1.254</dd>
+          <dt>Broadcast</dt><dd id="aBc">192.168.1.255</dd>
+        </dl>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const buttons = document.querySelectorAll('[data-theme-choice]');
+      const show = () => buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === (root.dataset.theme || 'auto'))));
+      buttons.forEach(b => b.addEventListener('click', () => {
+        const choice = b.dataset.themeChoice;
+        if (choice === 'auto') delete root.dataset.theme; else root.dataset.theme = choice;
+        try { choice === 'auto' ? localStorage.removeItem('pvalo-theme') : localStorage.setItem('pvalo-theme', choice); } catch {}
+        show();
+      }));
+      show();
+    })();
+
+    (() => {
+      const $ = id => document.getElementById(id);
+      const ipInput = $('ip'), slider = $('prefix'), msg = $('ip-msg');
+      const PLACES = [128, 64, 32, 16, 8, 4, 2, 1];
+      const ORD = ['Prvý', 'Druhý', 'Tretí', 'Štvrtý'];
+      const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+      const sup = n => String(n).split('').map(d => SUP[d]).join('');
+      const fmt = n => n.toLocaleString('sk-SK');
+      const bitsWord = n => n === 1 ? 'bit' : (n >= 2 && n <= 4 ? 'bity' : 'bitov');
+
+      // Build bit grids once.
+      function build(container, decOnTop) {
+        const cells = [], decs = [];
+        for (let o = 0; o < 4; o++) {
+          const oct = document.createElement('div');
+          oct.className = 'octet';
+          const dec = document.createElement('div');
+          dec.className = 'dec';
+          const places = document.createElement('div');
+          places.className = 'row8';
+          const row = document.createElement('div');
+          row.className = 'row8';
+          for (let b = 0; b < 8; b++) {
+            const p = document.createElement('span');
+            p.className = 'place'; p.textContent = PLACES[b];
+            places.appendChild(p);
+            const c = document.createElement('span');
+            c.className = 'bit';
+            row.appendChild(c); cells.push(c);
+          }
+          if (decOnTop) oct.append(dec, places, row); else oct.append(places, row, dec);
+          container.appendChild(oct); decs.push(dec);
+        }
+        return { cells, decs };
+      }
+      const ipView = build($('ipBits'), true);
+      const maskView = build($('maskBits'), false);
+
+      let ip = 0;
+      const toStr = v => [24, 16, 8, 0].map(s => (v >>> s) & 255).join('.');
+
+      function parse(str) {
+        const m = str.trim().match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?:\s*\/\s*(\d{1,2}))?$/);
+        if (!m) return { error: 'Zadaj adresu v tvare a.b.c.d, napríklad 192.168.1.10' };
+        const parts = m.slice(1, 5).map(Number);
+        const bad = parts.findIndex(p => p > 255);
+        if (bad >= 0) return { error: `${ORD[bad]} oktet je ${parts[bad]}, ale môže byť najviac 255 (8 bitov).` };
+        const prefix = m[5] === undefined ? null : Number(m[5]);
+        if (prefix !== null && prefix > 32) return { error: 'Prefix môže byť od 0 do 32.' };
+        return { value: ((parts[0] << 24) >>> 0) + (parts[1] << 16) + (parts[2] << 8) + parts[3], prefix };
+      }
+
+      function render() {
+        const n = Number(slider.value), h = 32 - n;
+        const mask = n === 0 ? 0 : (0xFFFFFFFF << h) >>> 0;
+        const net = (ip & mask) >>> 0, bc = (net | ~mask) >>> 0;
+
+        for (let i = 0; i < 32; i++) {
+          const part = i < n ? 'net' : 'host';
+          const ipBit = (ip >>> (31 - i)) & 1;
+          ipView.cells[i].textContent = ipBit;
+          ipView.cells[i].className = 'bit ' + part;
+          maskView.cells[i].textContent = i < n ? 1 : 0;
+          maskView.cells[i].className = 'bit ' + part;
+        }
+        for (let o = 0; o < 4; o++) {
+          ipView.decs[o].textContent = (ip >>> (24 - 8 * o)) & 255;
+          maskView.decs[o].textContent = (mask >>> (24 - 8 * o)) & 255;
+        }
+
+        $('prefixOut').textContent = '/' + n;
+        slider.style.setProperty('--p', (n / 32 * 100) + '%');
+        slider.setAttribute('aria-valuetext', `/${n}, ${n} sieťových a ${h} hostových bitov`);
+        $('netBitsTxt').textContent = `${n} ${bitsWord(n)}`;
+        $('hostBitsTxt').textContent = `${h} ${bitsWord(h)}`;
+        $('maskDec').textContent = toStr(mask);
+
+        // Explain a partially filled octet, e.g. 11110000 = 128+64+32+16 = 240.
+        const po = Math.floor(n / 8), pb = n % 8;
+        if (pb) {
+          const ones = PLACES.slice(0, pb);
+          const val = ones.reduce((a, b) => a + b, 0);
+          $('partial').innerHTML = `${ORD[po]} oktet masky: <span class="mono">${'1'.repeat(pb)}${'0'.repeat(8 - pb)}</span> = <span class="mono">${ones.join(' + ')} = ${val}</span>`;
+        } else {
+          $('partial').textContent = 'Prefix je násobok 8, takže oktety masky sú celé 255 alebo celé 0.';
+        }
+
+        const total = 2 ** h;
+        $('s1').textContent = `32 − ${n} = ${h}`;
+        $('s2').textContent = `2${sup(h)} = ${fmt(total)}`;
+        let usable, label, note;
+        if (n === 32) {
+          usable = 1; label = 'adresa – jedno konkrétne zariadenie';
+          $('s3').textContent = `${fmt(total)} (nič neodčítame)`;
+          note = 'Pri /32 nie je žiadny hostový bit – maska určuje presne jednu adresu.';
+        } else if (n === 31) {
+          usable = 2; label = 'adresy – spoj medzi dvoma smerovačmi';
+          $('s3').textContent = `${fmt(total)} (výnimka, nič neodčítame)`;
+          note = 'Pri /31 sa adresa siete a broadcast nepoužívajú, obe adresy dostanú dve zariadenia na spoji (point-to-point).';
+        } else {
+          usable = total - 2; label = 'adries pre zariadenia (hostov)';
+          $('s3').textContent = `${fmt(total)} − 2 = ${fmt(usable)}`;
+          note = 'Prvú adresu (všetky hostové bity 0) má sieť, poslednú (všetky hostové bity 1) má broadcast.';
+        }
+        $('usable').textContent = fmt(usable);
+        $('usableLabel').textContent = label;
+        $('note').textContent = note;
+
+        $('aNet').textContent = toStr(net);
+        $('aBc').textContent = toStr(bc);
+        $('aFirst').textContent = n >= 31 ? toStr(net) : toStr(net + 1);
+        $('aLast').textContent = n >= 31 ? toStr(bc) : toStr(bc - 1);
+
+        try { history.replaceState(null, '', '#' + toStr(ip) + '/' + n); } catch {}
+      }
+
+      function applyInput(str, fromTyping) {
+        const r = parse(str);
+        if (r.error) {
+          msg.textContent = r.error;
+          ipInput.setAttribute('aria-invalid', 'true');
+          return;
+        }
+        msg.textContent = '';
+        ipInput.removeAttribute('aria-invalid');
+        ip = r.value;
+        if (r.prefix !== null) slider.value = r.prefix;
+        if (!fromTyping) ipInput.value = toStr(ip);
+        render();
+      }
+
+      ipInput.addEventListener('input', () => applyInput(ipInput.value, true));
+      ipInput.addEventListener('blur', () => { if (!parse(ipInput.value).error) applyInput(ipInput.value, false); });
+      slider.addEventListener('input', render);
+      $('minus').addEventListener('click', () => { slider.value = Math.max(0, +slider.value - 1); render(); });
+      $('plus').addEventListener('click', () => { slider.value = Math.min(32, +slider.value + 1); render(); });
+      document.querySelectorAll('[data-ex]').forEach(b => b.addEventListener('click', () => applyInput(b.dataset.ex, false)));
+
+      const fromHash = decodeURIComponent(location.hash.slice(1));
+      applyInput(fromHash && !parse(fromHash).error ? fromHash : ipInput.value, false);
+    })();
+  </script>
+</body>
+</html>

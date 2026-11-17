@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Excel – práca s dátami a prvé cvičenie</title>
+  <meta name="description" content="Úvod do Excelu, bunky a rozsahy, formátovanie a podrobný postup k cvičeniu DAT LVL0 H01. Prezentácie a pracovný zošit na stiahnutie.">
+  <script>try { const theme = localStorage.getItem('pvalo-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+  <link rel="stylesheet" href="src/excel-guide.css">
+  <script src="src/excel-guide.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topline">
+    <a class="back" href="index.html">← Kancelárske aplikácie</a>
+    <div class="theme-switch" role="group" aria-label="Farebný režim">
+      <button type="button" data-theme-choice="auto" aria-pressed="true">◐ Auto</button>
+      <button type="button" data-theme-choice="light" aria-pressed="false">☀ Svetlý</button>
+      <button type="button" data-theme-choice="dark" aria-pressed="false">☾ Tmavý</button>
+    </div>
+  </div>
+  <header class="hero">
+    <div class="eyebrow">Kancelárske aplikácie · DAT LVL0 H01</div>
+    <h1>Excel a prvé kroky s dátami</h1>
+    <p class="lede">Spoznaj bunky, riadky a stĺpce. Potom si v pracovnom zošite precvič vyfarbovanie rozsahov, dopĺňanie údajov a ovládanie Excelu bez myši.</p>
+    <ul class="facts"><li>Pre začiatočníkov</li><li>3 hárky v zošite</li><li>10 krokov cvičenia</li><li>3 súbory na stiahnutie</li></ul>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Materiály k Excelu">
+    <button type="button" id="intro-tab" role="tab" data-tab="uvod" aria-controls="uvod" aria-selected="true" tabindex="0">01 · Úvod do Excelu</button>
+    <button type="button" id="exercise-tab" role="tab" data-tab="cvicenie" aria-controls="cvicenie" aria-selected="false" tabindex="-1">02 · Cvičenie krok za krokom</button>
+    <button type="button" id="files-tab" role="tab" data-tab="subory-na-stiahnutie" aria-controls="subory-na-stiahnutie" aria-selected="false" tabindex="-1">03 · Súbory na stiahnutie</button>
+  </nav>
+  <main>
+    <div id="uvod" role="tabpanel" aria-labelledby="intro-tab" tabindex="0">
+      <div class="layout">
+        <nav class="toc" aria-label="Obsah úvodu"><h2>Čo sa naučíš</h2><ol>
+          <li><a href="#co-su-data"><span class="n">01</span>Dáta a Excel</a></li>
+          <li><a href="#casti-zosita"><span class="n">02</span>Zošit, hárok a bunka</a></li>
+          <li><a href="#adresy"><span class="n">03</span>Adresy a rozsahy</a></li>
+          <li><a href="#pisanie"><span class="n">04</span>Písanie a úprava údajov</a></li>
+          <li><a href="#formatovanie"><span class="n">05</span>Formátovanie</a></li>
+          <li><a href="#klavesy"><span class="n">06</span>Klávesové skratky</a></li>
+        </ol></nav>
+        <div class="content">
+          <section class="section" id="co-su-data">
+            <h2>Čo sú dáta a na čo slúži Excel</h2>
+            <div class="prose"><p><b>Dáta sú údaje</b>, ktoré môžeme zapisovať, porovnávať a spracovávať. Sú to napríklad názvy kanálov, počty odberateľov, ceny, dátumy alebo výsledky meraní. Dáta môžu mať podobu textu aj čísel.</p><p><b>Microsoft Excel je tabuľkový kalkulátor.</b> Usporiada údaje do tabuľky, pomôže s výpočtami a umožní z údajov vytvoriť graf. Podobne fungujú Google Sheets a Apple Numbers.</p><p>V tejto hodine sa sústredíš na orientáciu v tabuľke, vkladanie údajov a úpravu vzhľadu. Vzorce a grafy budeš môcť pridať neskôr.</p></div>
+            <div class="table-scroll"><table><caption>Príklad usporiadaných údajov</caption><thead><tr><th>Údaj</th><th>Príklad</th><th>Čo vyjadruje</th></tr></thead><tbody><tr><td>Text</td><td>Školský kanál</td><td>Názov položky</td></tr><tr><td>Číslo</td><td>850 000</td><td>Počet odberateľov</td></tr><tr><td>Dátum</td><td>15. 9. 2025</td><td>Kedy údaj platil alebo kedy sme ho zistili</td></tr></tbody></table></div>
+          </section>
+          <section class="section" id="casti-zosita">
+            <h2>Zošit, hárok, riadok, stĺpec a bunka</h2>
+            <dl class="definitions">
+              <div><dt>Zošit</dt><dd>Celý súbor Excelu, zvyčajne s príponou <code>.xlsx</code>. Môže obsahovať viac hárkov.</dd></div>
+              <div><dt>Hárok</dt><dd>Jedna pracovná plocha s bunkami. Medzi hárkami prepínaš kliknutím na ich názvy dolu v okne.</dd></div>
+              <div><dt>Stĺpec</dt><dd>Zvislý pás buniek. Hore má písmeno: <b>A, B, C…</b></dd></div>
+              <div><dt>Riadok</dt><dd>Vodorovný pás buniek. Vľavo má číslo: <b>1, 2, 3…</b></dd></div>
+              <div><dt>Bunka</dt><dd>Jedno políčko na priesečníku stĺpca a riadka. Do bunky píšeš údaj.</dd></div>
+              <div><dt>Aktívna bunka</dt><dd>Práve vybraná bunka s výrazným rámčekom. Jej adresu vidíš v <b>poli názvov</b> naľavo od riadka vzorcov.</dd></div>
+            </dl>
+          </section>
+          <section class="section" id="adresy">
+            <h2>Ako prečítať adresu a rozsah buniek</h2>
+            <div class="prose"><p>Adresa sa skladá z <b>písmena stĺpca a čísla riadka</b>. <code>C1</code> znamená stĺpec C, riadok 1. <code>P14</code> znamená stĺpec P, riadok 14.</p><p><b>Rozsah</b> je skupina buniek. <code>C1:C4</code> zahŕňa C1, C2, C3 a C4. <code>B2:D7</code> je obdĺžnik od B2 po D7 vrátane okrajových buniek: 3 stĺpce a 6 riadkov, spolu <b>18 buniek</b>.</p></div>
+            <div class="tool-demo">
+              <div class="demo-options" role="group" aria-label="Ukážky rozsahov">
+                <span class="demo-address" id="demo-address">C1</span>
+                <button type="button" data-range="C1" aria-pressed="true">Bunka C1</button>
+                <button type="button" data-range="C1:C4" aria-pressed="false">Rozsah C1:C4</button>
+                <button type="button" data-range="B2:D7" aria-pressed="false">Rozsah B2:D7</button>
+              </div>
+              <div class="table-scroll"><table class="mini-sheet" id="address-demo" aria-label="Ukážkový hárok na učenie adries buniek"></table></div>
+              <p id="range-description" role="status">Vybraná je bunka C1: stĺpec C, riadok 1.</p>
+              <p>Klikni na ľubovoľnú bunku alebo na ukážku rozsahu. Ide o názornú ukážku; svoje cvičenie robíš v stiahnutom Exceli.</p>
+            </div>
+            <div class="callout"><b>Rýchly výber v Exceli</b><p>Klikni do <b>poľa názvov</b>, napíš napríklad <code>B2:D7</code> a stlač <kbd>Enter</kbd>. Excel vyberie celý rozsah. Ak adresu napíšeš priamo do bunky, uloží sa ako text.</p></div>
+          </section>
+          <section class="section" id="pisanie">
+            <h2>Ako písať a upravovať údaje</h2>
+            <ol class="actions"><li><b>Nový údaj:</b> klikni na bunku, začni písať a potvrď <kbd>Enter</kbd> alebo <kbd>Tab</kbd>.</li><li><b>Prepísanie:</b> označ vyplnenú bunku a začni písať nový údaj. Pôvodný obsah sa nahradí.</li><li><b>Úprava časti textu:</b> dvojklikni na bunku alebo stlač <kbd>F2</kbd>. Uprav text a potvrď <kbd>Enter</kbd>.</li><li><b>Nový riadok v tej istej bunke:</b> počas písania stlač <kbd>Alt</kbd> + <kbd>Enter</kbd>.</li><li><b>Chybný krok:</b> stlač <kbd>Ctrl</kbd> + <kbd>Z</kbd>. Rozpísaný zápis môžeš zrušiť klávesom <kbd>Esc</kbd>.</li></ol>
+            <div class="callout"><b>Číslo a jeho zobrazenie</b><p>Do číselnej bunky píš číslo bez slov „miliónov“ alebo „kusov“. V slovenskom nastavení sa zvyčajne používa desatinná čiarka, napríklad <code>1,7</code>. Číslo <code>1,7</code> sa môže zobraziť ako <code>1,700</code>, ak má bunka nastavené tri desatinné miesta.</p></div>
+          </section>
+          <section class="section" id="formatovanie">
+            <h2>Formátovanie mení vzhľad bunky</h2>
+            <p>Najprv označ bunku alebo rozsah. Potom na karte <b>Domov</b> v skupine <b>Písmo</b> nastav typ a veľkosť písma, tučné písmo, farbu písma alebo farbu výplne. Samotný údaj pritom zostáva rovnaký.</p>
+            <div class="format-examples">
+              <div><b>Farba výplne</b><span class="sample sample-fill">Excel</span><small>Ikona vedierka mení pozadie bunky.</small></div>
+              <div><b>Farba písma</b><span class="sample sample-font">Excel</span><small>Ikona písmena A s farebnou čiarou mení text.</small></div>
+            </div>
+            <p>Šípka vedľa ikony otvorí paletu farieb. Kliknutie priamo na ikonu použije naposledy zvolenú farbu. Ak je text useknutý, zväčši šírku stĺpca, výšku riadka alebo použi <b>Domov → Zarovnanie → Zalomiť text</b>.</p>
+          </section>
+          <section class="section" id="klavesy">
+            <h2>Klávesy, ktoré použiješ pri cvičení</h2>
+            <div class="table-scroll"><table><caption>Skratky pre počítačový Excel vo Windows pri bežnom nastavení pohybu po potvrdení.</caption><thead><tr><th>Kláves</th><th>Čo urobí</th></tr></thead><tbody>
+              <tr><td><kbd>Enter</kbd></td><td>Potvrdí zápis a zvyčajne prejde o bunku nadol.</td></tr>
+              <tr><td><kbd>Tab</kbd></td><td>Potvrdí zápis a prejde o bunku doprava.</td></tr>
+              <tr><td><kbd>Shift</kbd> + <kbd>Tab</kbd></td><td>Prejde o bunku doľava.</td></tr>
+              <tr><td><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td>Presúva aktívnu bunku, keď práve neupravuješ jej text.</td></tr>
+              <tr><td><kbd>Alt</kbd> + <kbd>Enter</kbd></td><td>Vloží nový riadok do tej istej bunky.</td></tr>
+              <tr><td><kbd>F2</kbd></td><td>Zapne úpravu obsahu aktívnej bunky.</td></tr>
+              <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>Uloží zošit.</td></tr>
+              <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>Vráti poslednú zmenu.</td></tr>
+              <tr><td><kbd>Ctrl</kbd> + <kbd>Page Down</kbd></td><td>V počítačovom Exceli prejde na nasledujúci hárok.</td></tr>
+            </tbody></table></div>
+            <a class="button next-section" href="#cvicenie">Prejsť na cvičenie →</a>
+          </section>
+        </div>
+      </div>
+    </div>
+    <div id="cvicenie" role="tabpanel" aria-labelledby="exercise-tab" tabindex="0" hidden>
+      <div class="layout">
+        <nav class="toc" aria-label="Kroky cvičenia"><h2>Postup cvičenia</h2><ol>
+          <li><a href="#krok-1"><span class="n">01</span>Otvor a ulož zošit</a></li>
+          <li><a href="#krok-2"><span class="n">02</span>Vyber rozsah buniek</a></li>
+          <li><a href="#krok-3"><span class="n">03</span>Žltá výplň</a></li>
+          <li><a href="#krok-4"><span class="n">04</span>Modrá výplň</a></li>
+          <li><a href="#krok-5"><span class="n">05</span>Čierne a červené písmo</a></li>
+          <li><a href="#krok-6"><span class="n">06</span>Oči a veľkosť písma</a></li>
+          <li><a href="#krok-7"><span class="n">07</span>Počty odberateľov</a></li>
+          <li><a href="#krok-8"><span class="n">08</span>Počty telefónov</a></li>
+          <li><a href="#krok-9"><span class="n">09</span>Výzva bez myši</a></li>
+          <li><a href="#krok-10"><span class="n">10</span>Skontroluj a ulož</a></li>
+          <li><a href="#kontrola"><span class="n">✓</span>Kontrolný zoznam</a></li>
+        </ol></nav>
+        <div class="content">
+          <section class="step" id="krok-1">
+            <div class="section-title"><span class="step-no">01</span><div><h2>Stiahni, otvor a ulož pracovný zošit</h2><p class="why">Cvičenie robíš v súbore XLSX. Prezentácie obsahujú vysvetlenia a zadanie.</p></div></div>
+            <ol class="actions"><li>Otvor záložku <a href="#subory-na-stiahnutie">Súbory na stiahnutie</a> a stiahni <b>Pracovný zošit – cvičenie</b>. Stiahnuť si môžeš aj obe prezentácie.</li><li>Otvor súbor <code>DAT_LVL0_H01_Praca_s_datami_cvicenie.xlsx</code> v počítačovom Exceli pre Windows.</li><li>Cez <b>Súbor → Uložiť ako → Prehľadávať</b> si vytvor pracovnú kópiu, napríklad <code>Priezvisko_Excel_H01.xlsx</code>. Zachovaj typ <b>Zošit programu Excel (*.xlsx)</b>.</li><li>Dolu skontroluj tri záložky: <b>Hárok 1</b>, <b>Hárok 2</b> a <b>Hárok 3 - Výzva</b>. Začni na <b>Hárku 1</b>.</li></ol>
+          </section>
+          <section class="step" id="krok-2">
+            <div class="section-title"><span class="step-no">02</span><div><h2>Nauč sa označiť presný rozsah</h2><p class="why">Adresy píš do poľa názvov, aby si označil správne bunky.</p></div></div>
+            <ol class="actions"><li>Na <b>Hárku 1</b> klikni do <b>poľa názvov</b> vľavo nad tabuľkou. Zvyčajne v ňom vidíš adresu aktívnej bunky.</li><li>Označ existujúcu adresu, napíš <code>A8:A13</code> a stlač <kbd>Enter</kbd>.</li><li>Skontroluj výber: má byť vybraná časť stĺpca <b>A</b>, od riadka <b>8</b> po riadok <b>13</b>, spolu <b>6 buniek</b>.</li><li>Rovnakým spôsobom budeš postupovať pri každom rozsahu. Bunky vieš vybrať aj ťahaním myši od prvej po poslednú.</li></ol>
+            <div class="sheet-sketch" role="img" aria-label="Schéma Excelu: na karte Domov je skupina Písmo. Pod pásom je pole názvov s adresou A8:A13 a vedľa neho riadok vzorcov."><div class="sketch-tabs"><span>Súbor</span><span class="on">Domov</span><span>Vložiť</span><span>Rozloženie strany</span></div><div class="sketch-toolbar"><span>Calibri</span><span>11 ▾</span><span>Farba výplne ▾</span><span>Farba písma ▾</span></div><div class="sketch-toolbar"><span class="point"><b>A8:A13</b> ▾</span><span>fx</span><span>Riadok vzorcov</span></div><div class="sketch-foot">Žltým rámčekom je označené pole názvov. Sem napíš adresu rozsahu.</div></div>
+          </section>
+          <section class="step" id="krok-3">
+            <div class="section-title"><span class="step-no">03</span><div><h2>Vyfarbi základ obrázka žltou</h2><p class="why">Meníš farbu výplne, teda pozadie buniek.</p></div></div>
+            <div class="path"><b>Domov</b><span>→</span><b>Písmo</b><span>→</span><b>Farba výplne ▾</b></div>
+            <ol class="actions"><li>Nechaj vybraný rozsah <code>A8:A13</code>. Na karte <b>Domov</b> otvor šípku pri <b>Farba výplne</b> – ikona vedierka – a vyber <b>žltú</b>.</li><li>Do poľa názvov postupne zadaj ďalšie rozsahy z tabuľky. Po každom stlač <kbd>Enter</kbd> a použi rovnakú žltú výplň.</li><li>Po dokončení skontroluj všetkých päť rozsahov. Predpripravené znaky v bunkách nemaž.</li></ol>
+            <div class="table-scroll"><table class="reference-table"><thead><tr><th>Rozsah</th><th>Výplň</th><th>Čo označuje</th></tr></thead><tbody>
+              <tr><td><code>A8:A13</code></td><td><span class="swatch yellow"></span>Žltá</td><td>Stĺpec A, riadky 8 až 13</td></tr>
+              <tr><td><code>B4:B16</code></td><td><span class="swatch yellow"></span>Žltá</td><td>Stĺpec B, riadky 4 až 16</td></tr>
+              <tr><td><code>C2:G18</code></td><td><span class="swatch yellow"></span>Žltá</td><td>Obdĺžnik od C2 po G18</td></tr>
+              <tr><td><code>H4:H16</code></td><td><span class="swatch yellow"></span>Žltá</td><td>Stĺpec H, riadky 4 až 16</td></tr>
+              <tr><td><code>I8:I13</code></td><td><span class="swatch yellow"></span>Žltá</td><td>Stĺpec I, riadky 8 až 13</td></tr>
+            </tbody></table></div>
+          </section>
+          <section class="step" id="krok-4">
+            <div class="section-title"><span class="step-no">04</span><div><h2>Pridaj dva modré rozsahy</h2><p class="why">Modrá výplň v týchto miestach nahradí predchádzajúcu žltú.</p></div></div>
+            <ol class="actions"><li>Do poľa názvov napíš <code>C5:D7</code>, potvrď <kbd>Enter</kbd> a cez <b>Domov → Farba výplne</b> nastav <b>modrú</b>.</li><li>Rovnakou modrou vyfarbi rozsah <code>F5:G7</code>.</li><li>Skontroluj dva modré obdĺžniky. Ostatné vyfarbené bunky majú zostať žlté.</li></ol>
+            <div class="table-scroll"><table class="reference-table"><thead><tr><th>Rozsah</th><th>Výplň</th></tr></thead><tbody><tr><td><code>C5:D7</code></td><td><span class="swatch blue"></span>Modrá</td></tr><tr><td><code>F5:G7</code></td><td><span class="swatch blue"></span>Rovnaká modrá</td></tr></tbody></table></div>
+            <div class="callout"><b>Zachovaj poradie</b><p>Najprv urob žlté rozsahy, až potom modré. Opätovné vyfarbenie celého <code>C2:G18</code> žltou by prekrylo modré časti.</p></div>
+          </section>
+          <section class="step" id="krok-5">
+            <div class="section-title"><span class="step-no">05</span><div><h2>Zmeň farbu písma na čiernu a červenú</h2><p class="why">Teraz použi farbu písma, teda ikonu A s farebnou čiarou.</p></div></div>
+            <ol class="actions"><li>Označ <code>C15:G15</code>. Otvor <b>Domov → Farba písma ▾</b> a vyber <b>čiernu</b>.</li><li>Čiernu farbu písma nastav aj v bunkách <code>E16</code>, <code>F17</code> a <code>G16</code>. Najjednoduchšie je urobiť každú bunku samostatne cez pole názvov.</li><li>Označ bunku <code>F16</code> a nastav jej farbu písma na <b>červenú</b>.</li><li>Kontroluj písmená vo vnútri buniek. Pozadie buniek má zostať rovnaké.</li></ol>
+            <div class="table-scroll"><table class="reference-table"><thead><tr><th>Bunky</th><th>Farba písma</th></tr></thead><tbody><tr><td><code>C15:G15</code></td><td><span class="swatch black"></span>Čierna</td></tr><tr><td><code>E16</code>, <code>F17</code>, <code>G16</code></td><td><span class="swatch black"></span>Čierna</td></tr><tr><td><code>F16</code></td><td><span class="swatch red"></span>Červená</td></tr></tbody></table></div>
+          </section>
+          <section class="step" id="krok-6">
+            <div class="section-title"><span class="step-no">06</span><div><h2>Dokonči oči a zväčši písmo</h2><p class="why">V bunkách D6 a G6 sú predpripravené bodky. Upravíš ich vzhľad.</p></div></div>
+            <ol class="actions"><li>Označ <code>D6</code> a nastav <b>bielu farbu písma</b>. To isté zopakuj pre <code>G6</code>.</li><li>Klikni na číslo riadka <b>6</b> vľavo, čím označíš celý riadok. Na karte <b>Domov</b> klikni do poľa veľkosti písma, zadaj <b>36</b> a stlač <kbd>Enter</kbd>. Zadanie požaduje veľkosť <b>aspoň 36</b>.</li><li>Ak sa znaky nezmestia, zväčši výšku riadka potiahnutím hranice medzi číslami riadkov 6 a 7.</li><li>Porovnaj farebné rozloženie s ukážkou. V zošite ponechaj pôvodné znaky; nevkladaj namiesto nich obrázok.</li></ol>
+            <div class="tool-demo">
+              <div class="demo-options" role="group" aria-label="Vrstvy farebnej schémy"><button type="button" data-pixel-stage="yellow" aria-pressed="false">Žltý základ</button><button type="button" data-pixel-stage="blue" aria-pressed="false">Aj modrá výplň</button><button type="button" data-pixel-stage="final" aria-pressed="true">Hotová schéma</button></div>
+              <div class="pixel-grid-wrap"><div class="table-scroll"><table id="pixel-preview" class="pixel-grid" aria-label="Schéma rozsahov od A1 po I18"></table></div><p class="pixel-description">Schéma zobrazuje presné rozsahy a farby zo zadania. Modré oblasti ležia v žltom základe. Oči majú biele písmo, dolné znaky čierne a stredná bunka F16 červené. Veľkosť buniek a písma je v ukážke zmenšená.</p></div>
+            </div>
+          </section>
+          <section class="step" id="krok-7">
+            <div class="section-title"><span class="step-no">07</span><div><h2>Hárok 2: doplň počty odberateľov</h2><p class="why">Úloha 1 pracuje s počtami odberateľov v miliónoch.</p></div></div>
+            <ol class="actions"><li>Prejdi na <b>Hárok 2</b>. Pri Úlohe 1 vidíš názvy kanálov v <code>E6:E12</code> a žlté číselné bunky v <code>F6:F12</code>.</li><li>Bunky <code>F6:F8</code> už obsahujú ukážkové údaje <code>1,7</code>, <code>1,17</code> a <code>1,08</code>. Chýbajúce údaje sú v <code>F9:F12</code>. Ak máš aktualizovať celý zoznam, over aj prvé tri hodnoty k rovnakému dátumu.</li><li>Vyhľadaj kanál podľa presného názvu. Použiť môžeš jeho stránku na YouTube alebo <a href="https://sk.wikipedia.org/wiki/Zoznam_najodoberanej%C5%A1%C3%ADch_slovensk%C3%BDch_youtuberov" target="_blank" rel="noopener">zoznam odkazovaný v zošite</a>. Pri každom údaji skontroluj, ku ktorému dátumu platí.</li><li>Počet prepočítaj na <b>milióny</b>: 1 700 000 odberateľov zapíšeš ako <code>1,7</code>. Ilustračných 850 000 odberateľov by bolo <code>0,85</code>. Do bunky nepíš slovo „miliónov“.</li><li>Klikni na <code>F9</code>, zapíš údaj pre Expl0ited a potvrď <kbd>Enter</kbd>. Pokračuj bunkami <code>F10</code>, <code>F11</code> a <code>F12</code>. Po každom zápise skontroluj názov kanála v rovnakom riadku.</li></ol>
+            <div class="table-scroll"><table class="reference-table"><thead><tr><th>Kanál v zdrojovom zošite</th><th>Bunka</th><th>Stav</th></tr></thead><tbody><tr><td>GoGoManTV</td><td><code>F6</code></td><td>Predvyplnené: 1,7</td></tr><tr><td>StudioMoonTV</td><td><code>F7</code></td><td>Predvyplnené: 1,17</td></tr><tr><td>Asimister</td><td><code>F8</code></td><td>Predvyplnené: 1,08</td></tr><tr><td>Expl0ited</td><td><code>F9</code></td><td>Doplň z overeného zdroja</td></tr><tr><td>Duklock</td><td><code>F10</code></td><td>Doplň z overeného zdroja</td></tr><tr><td>menameselassie</td><td><code>F11</code></td><td>Doplň z overeného zdroja</td></tr><tr><td>Naked Bananas</td><td><code>F12</code></td><td>Doplň z overeného zdroja</td></tr></tbody></table></div>
+            <div class="callout"><b>Počet odberateľov sa mení</b><p>Predvyplnené čísla v zošite sú podklady cvičenia. Pri dohľadávaní ďalších údajov sleduj názov kanála, jednotku a dátum. Zdroj a dátum si poznač vedľa tabuľky alebo podľa pokynu učiteľa.</p></div>
+          </section>
+          <section class="step" id="krok-8">
+            <div class="section-title"><span class="step-no">08</span><div><h2>Hárok 2: doplň počty telefónov za rok 2025</h2><p class="why">Úloha 2 má šesť výrobcov a žlté bunky F25 až F30.</p></div></div>
+            <ol class="actions"><li>Na <b>Hárku 2</b> prejdi na Úlohu 2. Výrobcovia sú v <code>E25:E30</code>, výsledky zapisuješ do <code>F25:F30</code>.</li><li>Otvor <a href="https://www.businesswire.com/news/home/20260129170791/en/Omdia-Global-Smartphone-Market-Grew-2-in-2025-While-Memory-Headwinds-Set-the-Stage-for-a-Challenging-2026" target="_blank" rel="noopener">zdroj Omdia odkazovaný priamo v zošite</a>. Nájdi celoročnú tabuľku <b>Omdia Smartphone Market Pulse: 2025</b>. V článku je aj tabuľka <b>4Q25</b>, ktorá pokrýva iba posledný štvrťrok.</li><li>Vyber stĺpec <b>2025 shipments (millions)</b>. Sleduj počet zariadení, nie percentuálny podiel na trhu ani údaje za rok 2024.</li><li>Hlavička zošita uvádza počet telefónov. Do buniek zapisuj <b>počet kusov</b>: údaj v miliónoch vynásob 1 000 000. Ilustračných <code>12,5</code> milióna by znamenalo <code>12 500 000</code> kusov. Tento príklad nie je údaj konkrétneho výrobcu.</li><li>Údaje priraď k správnym výrobcom podľa tabuľky nižšie. Vždy over, že zdroj hovorí o <b>celom svete a celom roku 2025</b>.</li><li>Ak výrobca v tabuľke samostatne chýba, ďalší postup dohodni s učiteľom. Použitý zdroj a jednotku si poznač pri tabuľke.</li></ol>
+            <div class="table-scroll"><table class="reference-table"><thead><tr><th>Výrobca</th><th>Bunka pre počet kusov</th></tr></thead><tbody><tr><td>Samsung</td><td><code>F25</code></td></tr><tr><td>Apple</td><td><code>F26</code></td></tr><tr><td>Huawei</td><td><code>F27</code></td></tr><tr><td>Xiaomi</td><td><code>F28</code></td></tr><tr><td>vivo</td><td><code>F29</code></td></tr><tr><td>Oppo</td><td><code>F30</code></td></tr></tbody></table></div>
+            <div class="callout warn"><b>Dve dôležité vysvetlivky k zdroju</b><p>Omdia uvádza <b>dodávky na trh (shipments)</b>. To sa líši od predaja koncovým zákazníkom, hoci zadanie používa slovo „predané“.</p><p>V celoročnej tabuľke nie je Huawei uvedený samostatne. Hodnota „Others“ zahŕňa viacerých výrobcov. Pre <code>F27</code> preto nevymýšľaj číslo ani nezapisuj nulu. Bunku nechaj prázdnu, pridaj poznámku „Huawei nie je samostatne uvedený v zdroji“ a vyžiadaj si od učiteľa doplňujúci zdroj.</p></div>
+          </section>
+          <section class="step" id="krok-9">
+            <div class="section-title"><span class="step-no">09</span><div><h2>Hárok 3: vytvor slovnú tabuľku bez myši</h2><p class="why">Päť slov vytvorí reťazec a pod každé pridáš tri súvisiace slová.</p></div></div>
+            <ol class="actions"><li>Prejdi na <b>Hárok 3 - Výzva</b> a prečítaj si zadanie. Na prácu môžeš použiť voľný rozsah <code>B17:F20</code>, aby pôvodné zadanie zostalo viditeľné.</li><li><b>Pred začiatkom</b> klikni na <code>B17</code>. Odteraz myš nepoužívaj. Medzi bunkami sa presúvaj pomocou <kbd>Tab</kbd>, <kbd>Enter</kbd> a šípok.</li><li>Do riadka <code>B17:F17</code> zapíš <b>päť vlastných slov</b>. Každé ďalšie slovo musí začínať posledným písmenom predchádzajúceho. Po každom slove stlač <kbd>Tab</kbd>.</li><li>Šípkami sa vráť pod prvé slovo do <code>B18</code>. Do riadka <code>B18:F18</code> zapíš po jednej asociácii ku každému slovu. Medzi stĺpcami použi <kbd>Tab</kbd>.</li><li>Rovnako vyplň riadky <code>B19:F19</code> a <code>B20:F20</code>. Pod každým hlavným slovom budú <b>tri súvisiace slová</b>, každé vo vlastnej bunke.</li><li>Skontroluj nadväzovanie piatich hlavných slov aj všetkých pätnásť asociácií. Nasledujúca tabuľka je ukážka rozloženia; do vlastnej práce si vyber svoje slová.</li></ol>
+            <div class="table-scroll"><table class="word-example"><caption>Ukážka: hudba → auto → okuliare → energia → ananás</caption><thead><tr><th>hudba</th><th>auto</th><th>okuliare</th><th>energia</th><th>ananás</th></tr></thead><tbody><tr><td>spev</td><td>koleso</td><td>sklo</td><td>slnko</td><td>ovocie</td></tr><tr><td>gitara</td><td>cesta</td><td>oči</td><td>pohyb</td><td>šťava</td></tr><tr><td>koncert</td><td>volant</td><td>rám</td><td>elektrina</td><td>trópy</td></tr></tbody></table></div>
+            <details class="callout"><summary><b>Bonus: ako sa vyhnúť vracaniu šípkami</b></summary><p>Ešte pred začiatkom vyber cez pole názvov celý prázdny rozsah <code>B17:F20</code>. Potom píš údaje po riadkoch a po každej bunke stlač <kbd>Tab</kbd>. V označenom obdĺžniku Tab po poslednom stĺpci pokračuje na prvý stĺpec ďalšieho riadka. Výber počas vypĺňania nezruš.</p></details>
+          </section>
+          <section class="step" id="krok-10">
+            <div class="section-title"><span class="step-no">10</span><div><h2>Skontroluj všetky hárky a ulož výsledok</h2><p class="why">Výsledkom je jeden vypracovaný zošit XLSX s tromi hárkami.</p></div></div>
+            <ol class="actions"><li>Na <b>Hárku 1</b> over všetky žlté a modré rozsahy, farby písma a veľkosť písma v riadku 6.</li><li>Na <b>Hárku 2</b> skontroluj, či každé číslo patrí správnemu názvu. Odberatelia sú v <b>miliónoch</b>, telefóny zapisuješ v <b>kusoch za rok 2025</b>. Pri nedostupnom údaji ponechaj vysvetľujúcu poznámku.</li><li>Na <b>Hárku 3</b> over päť hlavných slov a tri asociácie pod každým z nich.</li><li>Stlač <kbd>Ctrl</kbd> + <kbd>S</kbd>. Ak máš súbor odovzdať, použi spôsob a názov súboru určený učiteľom.</li></ol>
+          </section>
+          <section class="step" id="kontrola">
+            <h2>Kontrolný zoznam</h2>
+            <div class="checklist">
+              <div class="check-header"><div class="progress" aria-hidden="true"><span id="check-progress"></span></div><span class="check-count" id="check-count" role="status">0 / 8</span><button type="button" class="reset" id="reset-checks">Zrušiť odškrtnutie</button></div>
+              <label><input type="checkbox" data-check="saved"><span>Mám vlastnú pracovnú kópiu vo formáte XLSX.</span></label>
+              <label><input type="checkbox" data-check="fills"><span>Päť žltých a dva modré rozsahy sú vyfarbené podľa zadania.</span></label>
+              <label><input type="checkbox" data-check="fonts"><span>Farby písma sú čierne, červené a biele v správnych bunkách.</span></label>
+              <label><input type="checkbox" data-check="size"><span>Riadok 6 má veľkosť písma aspoň 36 a znaky sú viditeľné.</span></label>
+              <label><input type="checkbox" data-check="subscribers"><span>Doplnil/a som chýbajúce počty odberateľov v miliónoch a poznačil/a zdroj.</span></label>
+              <label><input type="checkbox" data-check="phones"><span>Overil/a som údaje o telefónoch za rok 2025, jednotku a chýbajúce údaje som označil/a poznámkou.</span></label>
+              <label><input type="checkbox" data-check="words"><span>Slovná tabuľka obsahuje päť nadväzujúcich slov a pätnásť asociácií.</span></label>
+              <label><input type="checkbox" data-check="final"><span>Všetky tri hárky som skontroloval/a a zošit uložil/a.</span></label>
+            </div>
+            <p class="why">Odškrtnutie sa ukladá iba v tomto prehliadači. Označenie položky neupraví stiahnutý súbor.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+    <section id="subory-na-stiahnutie" role="tabpanel" aria-labelledby="files-tab" tabindex="0" hidden>
+      <h2>Podklady na stiahnutie</h2>
+      <p class="download-intro">Pracuj v zošite XLSX. Úvodná prezentácia vysvetľuje základné pojmy, druhá prezentácia pripomína zadanie cvičenia. Všetky tri súbory sú pôvodné dodané podklady.</p>
+      <ul class="download-list">
+        <li><article class="download-card"><span class="file-meta">XLSX · 22 kB</span><h3>Pracovný zošit</h3><p>Tri hárky: vyfarbovanie, dopĺňanie údajov a výzva bez myši. Tento súbor vypracuješ.</p><a class="button" href="downloads/DAT_LVL0_H01_Praca_s_datami_cvicenie.xlsx" download="DAT_LVL0_H01_Praca_s_datami_cvicenie.xlsx" aria-label="Stiahnuť pracovný zošit Excel (XLSX)">↓ Stiahnuť XLSX</a></article></li>
+        <li><article class="download-card"><span class="file-meta">PPTX · 5,1 MB</span><h3>Práca s dátami – úvod</h3><p>Dáta, tabuľkový kalkulátor, bunky, rozsahy, formátovanie a klávesové skratky.</p><a class="button" href="downloads/DAT_LVL0_H01_Praca_s_datami_uvod.pptx" download="DAT_LVL0_H01_Praca_s_datami_uvod.pptx" aria-label="Stiahnuť úvodnú prezentáciu (PPTX)">↓ Stiahnuť PPTX</a></article></li>
+        <li><article class="download-card"><span class="file-meta">PPTX · 4,0 MB</span><h3>Práca s dátami – cvičenie</h3><p>Rozsahy a farby pre spoločné precvičovanie, samostatná práca a výzva.</p><a class="button" href="downloads/DAT_LVL0_H01_Praca_s_datami_cvicenie.pptx" download="DAT_LVL0_H01_Praca_s_datami_cvicenie.pptx" aria-label="Stiahnuť prezentáciu so zadaním cvičenia (PPTX)">↓ Stiahnuť PPTX</a></article></li>
+      </ul>
+      <a class="button" href="#krok-1">Otvoriť postup cvičenia →</a>
+    </section>
+  </main>
+  <footer>
+    <div class="sources"><b>Podklady a doplňujúca pomoc</b><ul>
+      <li>Obsah hodiny a zadanie: dodané materiály DAT LVL0 H01 „Práca s dátami – úvod“ a pracovný zošit, dostupné v záložke <a href="#subory-na-stiahnutie">Súbory na stiahnutie</a>.</li>
+      <li>Ovládanie: <a href="https://support.microsoft.com/sk-sk/accessibility/excel/keyboard-shortcuts-in-excel" target="_blank" rel="noopener">Microsoft – klávesové skratky v Exceli</a> a <a href="https://support.microsoft.com/sk-sk/excel/select-specific-cells-or-ranges-in-excel" target="_blank" rel="noopener">výber buniek a rozsahov</a>.</li>
+      <li>Vysvetlenie údajov o telefónoch: <a href="https://www.businesswire.com/news/home/20260129170791/en/Omdia-Global-Smartphone-Market-Grew-2-in-2025-While-Memory-Headwinds-Set-the-Stage-for-a-Challenging-2026" target="_blank" rel="noopener">Omdia – celoročná tabuľka 2025</a>, zdroj pripojený v pôvodnom zošite.</li>
+    </ul></div>
+    <p style="margin:18px 0 0">pvalo.site · Excel pre začiatočníkov</p>
+  </footer>
+</div>
+</body>
+</html>

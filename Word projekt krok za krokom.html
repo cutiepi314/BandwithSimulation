@@ -308,21 +308,6 @@ html{scroll-behavior:smooth}
 .zadanie-body a{color:var(--accent);word-break:break-all}
 .zadanie-body .ai-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:4px 24px}
 .zadanie-body .ai-cols h4{font-size:15px;margin:6px 0 2px}
-.word-tabs{display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line);padding-bottom:12px}
-.word-tabs button{font:600 16px var(--f-body);padding:10px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
-.word-tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.guide-intro{display:grid;gap:18px;padding-bottom:28px}
-.downloads{padding-bottom:60px}
-.downloads h2{font-size:clamp(23px,3vw,30px)}
-.downloads>p{color:var(--muted);margin:10px 0 24px}
-.download-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;list-style:none;margin:0;padding:0}
-.download-card{height:100%;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
-.download-card h3{font-size:20px}
-.download-card p{margin:0;color:var(--muted)}
-.download-meta{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-.download-button{display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding:9px 16px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
-.download-button:hover{box-shadow:0 0 0 3px var(--accent-soft)}
-.download-button svg{width:18px;height:18px}
 </style>
 
 <div class="wrap">
@@ -335,13 +320,6 @@ html{scroll-behavior:smooth}
   <div class="eyebrow">Samostatná tvorba dokumentu · Microsoft Word</div>
   <h1>Projekt vo Worde krok za krokom</h1>
   <p class="lede">Návod ku každej podmienke zo zadania. Kroky idú v poradí, v akom ich máš robiť: od zapnutia sledovania zmien až po odovzdanie súborov .docx a .pdf.</p>
-  <nav class="word-tabs" role="tablist" aria-label="Materiály k Wordu">
-    <button type="button" id="word-guide-tab" role="tab" aria-controls="word-guide-panel" aria-selected="true" tabindex="0">Návod krok za krokom</button>
-    <button type="button" id="word-downloads-tab" role="tab" aria-controls="word-downloads-panel" aria-selected="false" tabindex="-1">Súbory na stiahnutie</button>
-  </nav>
-</header>
-<div id="word-guide-panel" role="tabpanel" aria-labelledby="word-guide-tab" tabindex="0">
-<div class="guide-intro">
   <ul class="facts">
     <li><b>4 – 6</b> strán vrátane titulky a obsahu</li>
     <li><b>3</b> kapitoly + <b>2</b> podkapitoly</li>
@@ -431,7 +409,7 @@ html{scroll-behavior:smooth}
       </div>
     </div>
   </div>
-</div>
+</header>
 
 <div class="layout">
 <nav class="toc" aria-label="Kroky návodu">
@@ -956,60 +934,8 @@ html{scroll-behavior:smooth}
 </main>
 </div>
 </div>
-<section class="downloads" id="word-downloads-panel" role="tabpanel" aria-labelledby="word-downloads-tab" tabindex="0" hidden>
-  <h2>Súbory na stiahnutie</h2>
-  <p>Stiahni si podklady a otvor ich v programe Microsoft Word.</p>
-  <ul class="download-list">
-    <li><article class="download-card">
-      <span class="download-meta">01 · DOCX · 40 kB</span>
-      <h3>Zadanie a postup pre žiakov</h3>
-      <p>Dokument so zadaním a pracovným postupom.</p>
-      <a class="download-button" href="downloads/01_Zadanie_a_postup_pre_ziakov.docx" download="01_Zadanie_a_postup_pre_ziakov.docx" aria-label="Stiahnuť zadanie a postup pre žiakov (DOCX)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>Stiahnuť DOCX
-      </a>
-    </article></li>
-    <li><article class="download-card">
-      <span class="download-meta">02 · DOCX · 39 kB</span>
-      <h3>Údaje CV na import</h3>
-      <p>Podklady s údajmi pre import do životopisu.</p>
-      <a class="download-button" href="downloads/02_Udaje_CV_na_import.docx" download="02_Udaje_CV_na_import.docx" aria-label="Stiahnuť údaje CV na import (DOCX)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>Stiahnuť DOCX
-      </a>
-    </article></li>
-  </ul>
-</section>
-</div>
 
 <script>
-/* Page tabs and direct links to downloads. */
-(() => {
-  const tabs = [...document.querySelectorAll('.word-tabs [role="tab"]')];
-  function activate(tab) {
-    tabs.forEach(item => {
-      const selected = item === tab;
-      item.setAttribute('aria-selected', String(selected));
-      item.tabIndex = selected ? 0 : -1;
-      document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
-    });
-  }
-  const fromHash = () => activate(tabs[location.hash === '#subory-na-stiahnutie' ? 1 : 0]);
-  tabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => {
-      activate(tab);
-      history.replaceState(null, '', index ? '#subory-na-stiahnutie' : location.pathname + location.search);
-    });
-    tab.addEventListener('keydown', event => {
-      let next;
-      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
-      if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
-      if (event.key === 'Home') next = 0;
-      if (event.key === 'End') next = tabs.length - 1;
-      if (next !== undefined) { event.preventDefault(); tabs[next].click(); tabs[next].focus(); }
-    });
-  });
-  addEventListener('hashchange', fromHash);
-  fromHash();
-})();
 const TABS=['Súbor','Domov','Vložiť','Návrh','Rozloženie','Referencie','Korešpondencia','Revízia','Zobraziť'];
 const mk=n=>n?`<b class="mk">${n}</b>`:'';
 function item(it){

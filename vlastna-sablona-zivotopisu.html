@@ -1,0 +1,524 @@
+<!doctype html><html lang="sk"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Vlastná šablóna životopisu krok za krokom</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<script>
+  try {
+    const saved = localStorage.getItem('pvalo-theme');
+    if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+  } catch {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: sticky step index on the left, one long manual on the right; each step = path chip + numbered actions + Word sketch with matching numbered markers */
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --ink:#172131; --muted:#5a6678; --line:#dbe1ea;
+  --accent:#2b579a; --accent-ink:#ffffff; --accent-soft:#e7eef9;
+  --mark:#ffcf33; --mark-ink:#2e2400; --warn:#a64b06; --warn-soft:#fff3e2; --ok:#1d7a4b; --ok-soft:#e3f5ea;
+  --rb-bg:#f3f3f3; --rb-line:#d6d6d6; --rb-ink:#262626; --rb-muted:#6b6b6b; --rb-tab:#e9e9e9; --ctx:#7a4fbf;
+  --paper:#ffffff; --paper-line:#cfd6e0; --shadow:0 1px 2px rgba(20,30,50,.06),0 6px 18px rgba(20,30,50,.07);
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",Calibri,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151d; --surface:#171f2a; --ink:#e6ebf2; --muted:#9ba7b8; --line:#2a3442;
+  --accent:#86aee8; --accent-ink:#0d1520; --accent-soft:#1b2a40;
+  --mark:#ffcf33; --mark-ink:#2e2400; --warn:#f2a65a; --warn-soft:#2c2117; --ok:#62c995; --ok-soft:#15291f;
+  --rb-bg:#262c35; --rb-line:#3a4350; --rb-ink:#e3e7ee; --rb-muted:#a0a9b6; --rb-tab:#1f252d; --ctx:#b58df0;
+  --paper:#1e2733; --paper-line:#3a4554; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151d; --surface:#171f2a; --ink:#e6ebf2; --muted:#9ba7b8; --line:#2a3442;
+  --accent:#86aee8; --accent-ink:#0d1520; --accent-soft:#1b2a40;
+  --mark:#ffcf33; --mark-ink:#2e2400; --warn:#f2a65a; --warn-soft:#2c2117; --ok:#62c995; --ok-soft:#15291f;
+  --rb-bg:#262c35; --rb-line:#3a4350; --rb-ink:#e3e7ee; --rb-muted:#a0a9b6; --rb-tab:#1f252d; --ctx:#b58df0;
+  --paper:#1e2733; --paper-line:#3a4554; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+kbd{font-family:var(--f-mono);font-size:.8em;background:var(--surface);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;white-space:nowrap}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* hero */
+.hero{padding-block:40px 28px;display:grid;gap:18px}
+.eyebrow{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-.01em}
+.lede{max-width:66ch;color:var(--muted);font-size:19px;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
+.facts li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:15px}
+.facts b{color:var(--accent)}
+.intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin-top:6px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;min-width:0}
+.note h3{font-size:16px;margin-bottom:6px}
+.note p{margin:0 0 6px}
+.note ul{margin:4px 0 0;padding-left:20px}
+.note.ai{border-left:4px solid var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:15px}
+.legend .demo-hl{outline:2px solid var(--mark);background:color-mix(in srgb,var(--mark) 25%,transparent);padding:0 6px;border-radius:4px}
+
+/* layout */
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;align-items:start;padding-bottom:60px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);max-height:calc(100vh - 32px);overflow:auto;padding:14px 0}
+.toc h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.toc ol{list-style:none;padding:0;margin:0;display:grid;gap:2px;counter-reset:t}
+.toc a{display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:6px;font-size:15px;line-height:1.3}
+.toc a:hover{background:var(--accent-soft)}
+.toc a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.toc .n{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:20px}
+.toc .sep{height:1px;background:var(--line);margin:8px 8px}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;gap:10px}
+  .toc{position:static;max-height:none;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:14px}
+  .toc ol{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+}
+
+/* step */
+.step{padding-block:34px;border-top:1px solid var(--line);display:grid;gap:16px;scroll-margin-top:12px}
+.step:first-child{border-top:0;padding-top:12px}
+.step-head{display:flex;gap:14px;align-items:flex-start}
+.step-no{flex:none;font-family:var(--f-display);font-weight:800;font-size:15px;color:var(--accent-ink);background:var(--accent);border-radius:8px;width:38px;height:38px;display:grid;place-items:center;margin-top:2px}
+.step-head h2{font-size:clamp(23px,3vw,30px);font-weight:700}
+.step-head .why{margin:4px 0 0;color:var(--muted)}
+.path{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px}
+.path .lbl{font-family:var(--f-display);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.path span.c{background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:2px 9px;font-weight:600}
+.path i{font-style:normal;color:var(--muted)}
+.prose{max-width:72ch}
+.prose p{margin:0 0 10px}
+.prose ul{margin:0 0 10px;padding-left:22px}
+.prose li{margin-bottom:4px}
+ol.do{list-style:none;padding:0;margin:0;display:grid;gap:10px;max-width:72ch;counter-reset:d}
+ol.do>li{counter-increment:d;position:relative;padding-left:38px;min-width:0}
+ol.do>li::before{content:counter(d);position:absolute;left:0;top:0;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--mark);color:var(--mark-ink);font:700 13px/1 var(--f-display);margin-top:2px;box-shadow:0 0 0 2px var(--surface)}
+ol.do>li.plain::before{background:var(--line);color:var(--ink)}
+ol.do ul{margin:6px 0 0;padding-left:20px}
+.call{border-radius:10px;padding:12px 16px;max-width:72ch;font-size:16px}
+.call b.t{display:block;font-family:var(--f-display);font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.call.tip{background:var(--accent-soft)}
+.call.tip b.t{color:var(--accent)}
+.call.warn{background:var(--warn-soft)}
+.call.warn b.t{color:var(--warn)}
+.call p{margin:0}
+.call p+p{margin-top:6px}
+
+/* figures */
+figure{margin:0;display:grid;gap:8px;min-width:0}
+figcaption{font-size:14px;color:var(--muted)}
+figcaption b{color:var(--ink)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px;align-items:start}
+.scroll{overflow-x:auto;padding:16px 4px 6px;-webkit-overflow-scrolling:touch}
+
+/* ribbon sketch */
+.rb{min-width:max-content;background:var(--rb-bg);border:1px solid var(--rb-line);border-radius:8px;color:var(--rb-ink);font-family:"Segoe UI",var(--f-body);font-size:12.5px;box-shadow:var(--shadow);overflow:visible}
+.rb-tabs{display:flex;gap:2px;padding:6px 8px 0;border-bottom:1px solid var(--rb-line)}
+.rb-tab{position:relative;padding:5px 10px 7px;color:var(--rb-ink);white-space:nowrap}
+.rb-tab.on{font-weight:600;color:#2b579a;box-shadow:inset 0 -3px 0 #2b579a}
+.rb-tab.ctx{color:var(--ctx)}
+.rb-tab.ctx.on{color:var(--ctx);box-shadow:inset 0 -3px 0 var(--ctx)}
+:root[data-theme="dark"] .rb-tab.on:not(.ctx){color:#8fb3ec;box-shadow:inset 0 -3px 0 #8fb3ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rb-tab.on:not(.ctx){color:#8fb3ec;box-shadow:inset 0 -3px 0 #8fb3ec}}
+.rb-body{display:flex;align-items:stretch;padding:6px 4px 0}
+.rb-g{display:flex;flex-direction:column;justify-content:space-between;padding:0 8px;border-right:1px solid var(--rb-line)}
+.rb-g:last-child{border-right:0}
+.rb-items{display:flex;gap:4px;align-items:flex-start;min-height:72px}
+.rb-gl{text-align:center;color:var(--rb-muted);font-size:11.5px;padding:3px 0 5px}
+.it{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 6px;border-radius:4px;text-align:center;line-height:1.15;max-width:86px}
+.it .ic{font-size:22px;line-height:1;height:26px;display:grid;place-items:center;color:var(--rb-ink)}
+.col{display:flex;flex-direction:column;gap:2px}
+.it.sm{flex-direction:row;gap:6px;max-width:none;padding:2px 6px;text-align:left}
+.it.sm .ic{font-size:14px;height:auto;width:16px}
+.it.chk{flex-direction:row;gap:6px;padding:2px 6px;max-width:none}
+.it.chk .box{width:13px;height:13px;border:1.5px solid var(--rb-muted);border-radius:2px;display:grid;place-items:center;font-size:11px;line-height:1}
+.it.chk.on .box{background:#2b579a;border-color:#2b579a;color:#fff}
+.it.sty{border:1px solid var(--rb-line);background:var(--paper);width:78px;max-width:none;padding:6px 4px;gap:4px}
+.it.sty .ic{font-size:17px;height:22px}
+.it.sty .lb{font-size:11px;color:var(--rb-muted)}
+.s-normal .ic{font-family:Calibri,Arial,sans-serif;font-size:14px}
+.s-h1 .ic{color:#2f5496;font-size:17px}
+.s-h2 .ic{color:#2f5496;font-size:15px}
+.s-title .ic{font-size:21px;font-family:"Calibri Light",Arial,sans-serif;letter-spacing:-.02em}
+.s-sub .ic{color:#5a5a5a;font-size:14px;letter-spacing:.06em}
+.fieldrow{display:flex;gap:6px;align-items:center;padding:2px 6px}
+.fieldrow .bx{border:1px solid var(--rb-line);background:var(--paper);padding:1px 6px;min-width:58px;border-radius:2px}
+.hl{outline:2.5px solid var(--mark);outline-offset:1px;background:color-mix(in srgb,var(--mark) 26%,transparent)}
+.mk{position:absolute;top:-11px;right:-11px;z-index:2;width:22px;height:22px;border-radius:50%;background:var(--mark);color:var(--mark-ink);font:800 12px/22px var(--f-display);text-align:center;box-shadow:0 0 0 2px var(--surface);font-style:normal}
+
+/* dropdown menu sketch */
+.menu{display:inline-block;min-width:230px;background:var(--surface);border:1px solid var(--rb-line);border-radius:6px;box-shadow:var(--shadow);padding:6px 0;font-family:"Segoe UI",var(--f-body);font-size:13px;color:var(--rb-ink)}
+.menu .mh{padding:4px 12px;font-weight:600;color:var(--rb-muted);font-size:12px;background:var(--rb-bg)}
+.menu .mi{position:relative;padding:6px 14px 6px 34px;display:flex;align-items:center;gap:8px}
+.menu .mi .mic{position:absolute;left:10px;width:16px;text-align:center}
+.menu .sep{height:1px;background:var(--rb-line);margin:4px 0}
+.menu .thumb{margin:4px 12px;border:1px solid var(--rb-line);border-radius:3px;padding:6px 8px;background:var(--paper);font-size:11px;line-height:1.5;position:relative}
+.menu .thumb .tt{font-weight:700;color:#2f5496}
+
+/* dialog sketch */
+.dlg{position:relative;width:min(100%,430px);background:var(--surface);border:1px solid var(--rb-line);border-radius:8px;box-shadow:var(--shadow);font-family:"Segoe UI",var(--f-body);font-size:13px;color:var(--rb-ink);overflow:visible}
+.dlg-h{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--rb-line);font-weight:600;background:var(--rb-bg);border-radius:8px 8px 0 0}
+.dlg-h .x{color:var(--rb-muted)}
+.dlg-tabs{display:flex;gap:2px;padding:8px 12px 0;border-bottom:1px solid var(--rb-line);flex-wrap:wrap}
+.dlg-tabs span{padding:4px 10px;border:1px solid transparent;border-bottom:0;border-radius:4px 4px 0 0;position:relative}
+.dlg-tabs span.on{border-color:var(--rb-line);background:var(--surface);margin-bottom:-1px}
+.dlg-b{padding:12px;display:grid;gap:9px}
+.dlg-sec{font-weight:600;color:var(--rb-muted);font-size:12px;border-bottom:1px solid var(--rb-line);padding-bottom:2px}
+.frow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.fld{position:relative;display:flex;gap:6px;align-items:center;border-radius:3px;padding:1px 2px}
+.inp{border:1px solid var(--rb-line);background:var(--paper);padding:2px 8px;min-width:70px;border-radius:2px}
+.sel::after{content:" ▾";color:var(--rb-muted)}
+.cb{display:inline-grid;place-items:center;width:13px;height:13px;border:1.5px solid var(--rb-muted);border-radius:2px;font-size:10px;line-height:1}
+.cb.on{background:#2b579a;border-color:#2b579a;color:#fff}
+.rd{display:inline-block;width:12px;height:12px;border:1.5px solid var(--rb-muted);border-radius:50%}
+.rd.on{background:radial-gradient(circle,#2b579a 0 3px,transparent 4px)}
+.btns{display:flex;justify-content:flex-end;gap:8px;padding:10px 12px;border-top:1px solid var(--rb-line)}
+.btn{position:relative;border:1px solid var(--rb-line);background:var(--rb-bg);padding:3px 14px;border-radius:3px}
+.btn.pri{background:#2b579a;color:#fff;border-color:#2b579a}
+
+/* page sketches */
+.pages{display:flex;gap:16px;flex-wrap:wrap}
+.pg{position:relative;width:150px;aspect-ratio:210/297;max-width:100%;background:var(--paper);border:1px solid var(--paper-line);border-radius:3px;box-shadow:var(--shadow);padding:16px 12px;display:flex;flex-direction:column;gap:5px;font-size:9px;color:var(--muted);overflow:hidden}
+.pg .pn{position:absolute;bottom:4px;left:0;right:0;font-size:8px;display:flex;justify-content:space-between;padding:0 10px}
+.pg .hd{position:absolute;top:4px;right:10px;font-size:8px}
+.pg .ln{height:3px;background:var(--paper-line);border-radius:2px}
+.pg .ln.s{width:70%}
+.pg .h1{height:6px;width:60%;background:var(--accent);border-radius:2px;margin-top:4px}
+.pg .h2{height:5px;width:45%;background:color-mix(in srgb,var(--accent) 65%,var(--paper));border-radius:2px;margin-top:2px}
+.pg .im{height:30px;background:color-mix(in srgb,var(--accent) 22%,var(--paper));border-radius:2px}
+.pg .tb{height:28px;background:repeating-linear-gradient(0deg,var(--paper-line) 0 1px,transparent 1px 7px),var(--paper);border:1px solid var(--paper-line)}
+.pgcap{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
+.pgw{display:flex;flex-direction:column;align-items:center}
+
+/* title page mock */
+.tp{width:min(100%,300px);aspect-ratio:210/297;background:var(--paper);border:1px solid var(--paper-line);box-shadow:var(--shadow);border-radius:3px;padding:30px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;color:var(--ink);position:relative}
+.tp .t1{font-family:"Calibri Light",var(--f-body);font-size:24px;line-height:1.1;font-weight:400;color:var(--accent);margin-top:18px}
+.tp .t2{font-size:12px;letter-spacing:.08em;color:var(--muted)}
+.tp .tim{width:72%;flex:1;max-height:42%;border-radius:4px;background:linear-gradient(160deg,color-mix(in srgb,var(--mark) 55%,var(--paper)),color-mix(in srgb,var(--accent) 35%,var(--paper)));display:grid;place-items:center;font-size:11px;color:var(--ink)}
+.tp .tinfo{margin-top:auto;font-size:11px;line-height:1.5}
+.tp .lab{position:absolute;left:calc(100% + 8px);font-size:12px;color:var(--muted);white-space:nowrap}
+.tpw{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.tplist{display:grid;gap:6px;margin:0;padding:0;list-style:none;font-size:15px;min-width:0;flex:1 1 220px}
+.tplist li{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px;border-bottom:1px dashed var(--line);padding-bottom:4px}
+.tplist b{font-weight:600}
+
+/* wrap demos */
+.wraps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.wd{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;padding:10px;font-size:13px}
+.wd .area{height:96px;position:relative;overflow:hidden;background:repeating-linear-gradient(180deg,var(--paper-line) 0 3px,transparent 3px 9px)}
+.wd .pic{position:absolute;background:color-mix(in srgb,var(--accent) 45%,var(--paper));border:2px solid var(--paper);outline:1px solid var(--accent)}
+.wd.inl .pic{left:0;top:27px;width:44px;height:30px;box-shadow:0 0 0 0 transparent}
+.wd.inl .area::after{content:"";position:absolute;left:46px;right:0;top:27px;height:30px;background:var(--paper)}
+.wd.sq .pic{left:0;top:18px;width:58px;height:44px;box-shadow:0 0 0 6px var(--paper)}
+.wd.td .pic{left:30%;top:24px;width:40%;height:40px;box-shadow:-200px 0 0 6px var(--paper),200px 0 0 6px var(--paper)}
+.wd b{display:block;margin-top:8px}
+.wd small{color:var(--muted);display:block;line-height:1.35}
+.wd.good{border-color:var(--ok)}
+
+/* aspect demo */
+.asp{display:flex;gap:18px;flex-wrap:wrap}
+.asp figure{width:170px}
+.asp svg{width:100%;height:auto;display:block;border-radius:4px}
+.asp .bad svg{transform:scaleX(1.55) scaleY(.75);transform-origin:left top;margin-bottom:-25%}
+.verdict{font-size:14px;font-weight:600}
+.verdict.ok{color:var(--ok)}
+.verdict.no{color:var(--warn)}
+
+/* marks demo */
+.marks{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;padding:14px 16px;font-family:Calibri,var(--f-body);font-size:15px;line-height:1.7;color:var(--ink);max-width:520px}
+.marks .pm{color:var(--accent);font-weight:700}
+.marks .brk{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:12px}
+.marks .brk::before,.marks .brk::after{content:"";flex:1;border-top:1px dotted var(--accent)}
+
+/* nav pane */
+.navp{width:min(100%,260px);background:var(--surface);border:1px solid var(--rb-line);border-radius:6px;box-shadow:var(--shadow);font-family:"Segoe UI",var(--f-body);font-size:13px;color:var(--rb-ink)}
+.navp .nh{padding:8px 12px;font-weight:600;border-bottom:1px solid var(--rb-line)}
+.navp .tabs{display:flex;gap:12px;padding:6px 12px;font-size:12px;color:var(--rb-muted)}
+.navp .tabs .on{color:#2b579a;font-weight:600;border-bottom:2px solid #2b579a}
+.navp ul{list-style:none;margin:0;padding:4px 0 10px}
+.navp li{padding:3px 12px}
+.navp li.l2{padding-left:30px;color:var(--rb-muted)}
+.navp li.on{background:var(--accent-soft)}
+
+/* outline tree */
+.tree{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;font-size:15px;max-width:520px}
+.tree div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.tree div:last-child{border-bottom:0}
+.tree .tag{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:2px}
+.tree .h1t{font-weight:700;color:var(--accent)}
+.tree .h2t{padding-left:18px;font-weight:600}
+.tree .tt{font-size:18px;font-weight:700}
+
+/* example table */
+.extab{border-collapse:collapse;font-family:Calibri,var(--f-body);font-size:15px;min-width:520px;background:var(--paper);color:var(--ink)}
+.extab caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--muted);padding-top:6px;font-style:italic}
+.extab th{background:var(--accent);color:var(--accent-ink);padding:7px 10px;text-align:center;font-weight:700}
+.extab td{padding:6px 10px;border-bottom:1px solid var(--paper-line)}
+.extab tr:nth-child(even) td{background:color-mix(in srgb,var(--accent) 8%,var(--paper))}
+.extab td.c{text-align:center}
+
+/* sources */
+.src{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;padding:16px 18px;font-family:Calibri,var(--f-body);font-size:14.5px;max-width:720px;color:var(--ink);overflow-wrap:anywhere}
+.src h4{margin:0 0 6px;font-size:15px;color:var(--accent)}
+.src ol{margin:0 0 10px;padding-left:22px}
+.src li{margin-bottom:4px}
+
+/* cheat sheet */
+.cheat{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+.cheat th{text-align:left;font-family:var(--f-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--line)}
+.cheat td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.cheat td:first-child{font-weight:600}
+
+/* checklist */
+.chk-wrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:16px}
+.chk-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.prog{flex:1 1 220px;height:10px;background:var(--line);border-radius:999px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
+.cnt{font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums}
+.reset{font:inherit;font-size:14px;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:4px 12px;cursor:pointer}
+.chk-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px}
+.chk-g h3{font-size:15px;margin-bottom:6px}
+.chk-g label{display:flex;gap:10px;align-items:flex-start;padding:4px 0;font-size:15px;line-height:1.4;cursor:pointer}
+.chk-g input{margin-top:3px;width:17px;height:17px;accent-color:var(--ok);flex:none}
+.chk-g label:has(input:checked) span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--ok)}
+.foot{font-size:14px;color:var(--muted);padding-block:20px 40px;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+.hero{position:relative}
+.theme-switch{justify-self:end;display:flex;gap:2px;padding:3px;margin-bottom:-6px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.theme-switch button{padding:5px 10px;border:0;border-radius:7px;background:transparent;color:var(--muted);font:inherit;font-size:13px;line-height:1.4;cursor:pointer}
+.theme-switch button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.zadanie{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;scroll-margin-top:16px}
+.zadanie>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:14px 18px;font-weight:700;font-size:17px;color:var(--accent)}
+.zadanie>summary::-webkit-details-marker{display:none}
+.zadanie>summary::before{content:"▸";transition:transform .15s}
+.zadanie[open]>summary::before{transform:rotate(90deg)}
+.zadanie>summary .hint{margin-left:auto;font-weight:400;font-size:14px;color:var(--muted)}
+.zadanie[open]>summary .hint{display:none}
+.zadanie>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.zadanie-body{padding:0 18px 18px;max-width:80ch}
+.zadanie-body h3{font-size:17px;margin:18px 0 6px}
+.zadanie-body p{margin:0 0 8px}
+.zadanie-body ul,.zadanie-body ol{margin:4px 0 8px;padding-left:22px}
+.zadanie-body li{margin-block:2px}
+.zadanie-body ul ul{list-style:circle;margin-block:2px}
+.zadanie-body a{color:var(--accent);word-break:break-all}
+.zadanie-body .ai-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:4px 24px}
+.zadanie-body .ai-cols h4{font-size:15px;margin:6px 0 2px}
+.word-tabs{display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.word-tabs button{font:600 16px var(--f-body);padding:10px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
+.word-tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.guide-intro{display:grid;gap:18px;padding-bottom:28px}
+.downloads{padding-bottom:60px}
+.downloads h2{font-size:clamp(23px,3vw,30px)}
+.downloads>p{color:var(--muted);margin:10px 0 24px}
+.download-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;list-style:none;margin:0;padding:0}
+.download-card{height:100%;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.download-card h3{font-size:20px}
+.download-card p{margin:0;color:var(--muted)}
+.download-meta{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.download-button{display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding:9px 16px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
+.download-button:hover{box-shadow:0 0 0 3px var(--accent-soft)}
+.download-button svg{width:18px;height:18px}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;justify-self:start;font-size:15px;text-decoration:none}
+.file-name{overflow-wrap:anywhere}
+.skeleton{margin:0;background:var(--paper);color:var(--ink);border:1px solid var(--paper-line);border-radius:8px;padding:18px;font:14px/1.65 var(--f-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.skeleton-tools,.preview-tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.skeleton-tools button,.preview-tools button{font:inherit;background:var(--surface);color:var(--accent);border:1px solid var(--line);border-radius:7px;padding:6px 12px;cursor:pointer}
+.copy-status{font-size:14px;color:var(--muted)}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;max-width:680px;margin:0}
+.settings>div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.settings dt{font-size:13px;color:var(--muted)}
+.settings dd{margin:0;font-weight:600}
+.cv-preview{max-width:610px;background:#fff;color:#333;border:1px solid #cfd6e0;border-radius:4px;padding:clamp(20px,5vw,40px);font:15px/1.45 Calibri,"Segoe UI",sans-serif;box-shadow:var(--shadow)}
+.cv-name{font-size:30px;font-weight:700;color:#1f374b;line-height:1.15}
+.cv-subtitle{margin:3px 0 12px;font-size:14px}
+.cv-contact{background:#eef4f6;border-bottom:1px solid #006973;padding:7px 9px;font-size:12px;overflow-wrap:anywhere}
+.cv-preview h3{font-family:inherit;font-size:15px;color:#006973;margin:16px 0 5px}
+.cv-preview p{margin:0 0 6px}
+.field-table{width:100%;max-width:680px;border-collapse:collapse;font-size:15px}
+.field-table th,.field-table td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line)}
+.field-table th{background:var(--accent-soft);color:var(--accent)}
+.field-table code{white-space:nowrap}
+.handoff{display:grid;gap:10px;list-style:none;padding:0;margin:0}
+.handoff li{padding:14px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.handoff b{display:block;overflow-wrap:anywhere}
+.handoff span{font-size:15px;color:var(--muted)}
+.flow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:14px}
+.flow b{padding:8px 12px;border:1px solid var(--line);border-radius:7px;background:var(--surface)}
+.downloads-inline{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:14px 18px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.downloads-inline span{color:var(--muted);font-size:15px}
+@media(max-width:560px){.word-tabs button{flex:1;padding:10px;font-size:15px}.field-table th,.field-table td{padding:8px 6px;font-size:14px}}
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <a class="back-link" href="index.html">← Kancelárske aplikácie</a>
+  <div class="theme-switch" role="group" aria-label="Farebný režim"><button type="button" data-theme-choice="auto">◐ Auto</button><button type="button" data-theme-choice="light">☀ Svetlý</button><button type="button" data-theme-choice="dark">☾ Tmavý</button></div>
+  <div class="eyebrow">Kancelárske aplikácie · Microsoft Word pre Windows</div>
+  <h1>Vlastná šablóna životopisu krok za krokom</h1>
+  <p class="lede">Navrhni si životopis, ulož ho ako šablónu DOTX a pomocou hromadnej korešpondencie vytvor päť vyplnených životopisov z pripravených údajov.</p>
+  <nav class="word-tabs" role="tablist" aria-label="Materiály k životopisu"><button type="button" id="word-guide-tab" role="tab" aria-controls="word-guide-panel" aria-selected="true" tabindex="0">Návod krok za krokom</button><button type="button" id="word-downloads-tab" role="tab" aria-controls="word-downloads-panel" aria-selected="false" tabindex="-1">Súbory na stiahnutie</button></nav>
+</header>
+<div id="word-guide-panel" role="tabpanel" aria-labelledby="word-guide-tab" tabindex="0">
+<div class="guide-intro">
+  <ul class="facts"><li><b>13</b> krokov</li><li><b>13</b> zlučovacích polí</li><li><b>5</b> fiktívnych osôb</li><li><b>1</b> strana na osobu</li><li>odovzdáš <b>3 súbory</b></li></ul>
+  <div class="downloads-inline"><b>Podklady k úlohe</b><a href="#subory-na-stiahnutie">Stiahnuť zadanie a údaje CV →</a><span>2 dokumenty DOCX</span></div>
+  <div class="intro-grid"><div class="note"><h3>Čo vytvoríš</h3><p><b>DOTX</b> je opakovane použiteľná šablóna. <b>Hlavný DOCX</b> obsahuje zlučovacie polia a prepojenie na údaje. <b>Výsledný DOCX</b> obsahuje päť hotových životopisov.</p></div><div class="note"><h3>Ako čítať nákresy</h3><p>Nákresy zobrazujú dôležité príkazy vo Worde. Žlté čísla označujú kroky v postupe. V inej verzii Wordu sa rozloženie tlačidiel môže mierne líšiť.</p></div></div>
+</div>
+<div class="layout"><nav class="toc" aria-label="Kroky návodu"><h2>Kroky</h2><ol id="toc"><li><a href="#krok-1"><span class="n">01</span>Priprav si podklady</a></li><li><a href="#krok-2"><span class="n">02</span>Vytvor prázdny dokument</a></li><li><a href="#krok-3"><span class="n">03</span>Napíš kostru životopisu</a></li><li><a href="#krok-4"><span class="n">04</span>Nastav základný text</a></li><li><a href="#krok-5"><span class="n">05</span>Zvýrazni meno a podnadpis</a></li><li><a href="#krok-6"><span class="n">06</span>Uprav kontaktný riadok</a></li><li><a href="#krok-7"><span class="n">07</span>Vytvor jednotné nadpisy cez štýl</a></li><li><a href="#krok-8"><span class="n">08</span>Prispôsob si návrh a skontroluj ho</a></li><li><a href="#krok-9"><span class="n">09</span>Ulož skutočnú šablónu DOTX</a></li><li><a href="#krok-10"><span class="n">10</span>Pripoj pripravený zoznam</a></li><li><a href="#krok-11"><span class="n">11</span>Nahraď značky zlučovacími poľami</a></li><li><a href="#krok-12"><span class="n">12</span>Prezri všetkých päť osôb</a></li><li><a href="#krok-13"><span class="n">13</span>Vytvor hotový výsledok a odovzdaj súbory</a></li><li class="sep" aria-hidden="true"></li><li><a href="#kontrola"><span class="n">✓</span>Kontrolný zoznam</a></li></ol></nav>
+<main><section class="step" id="krok-1"><div class="step-head"><div class="step-no">01</div><div><h2>Priprav si podklady</h2><p class="why">Oba súbory si ulož do počítača. Zdroj údajov nemusíš prepisovať.</p></div></div><ol class="do"><li>Vytvor si pracovný priečinok <code>CV_mailmerge</code>, napríklad v priečinku Dokumenty.</li><li>Otvor záložku <a href="#subory-na-stiahnutie">Súbory na stiahnutie</a> a stiahni oba dokumenty.</li><li>Súbor <code class="file-name">01_Zadanie_a_postup_pre_ziakov.docx</code> slúži ako pôvodné zadanie. Súbor <code class="file-name">02_Udaje_CV_na_import.docx</code> je hotový zdroj údajov pre päť osôb.</li><li>Oba súbory presuň do priečinka <code>CV_mailmerge</code>. Zdroj údajov potom nechaj na rovnakom mieste.</li></ol><div class="call tip"><b class="t">V čom pracovať</b><p>Použi počítačový Microsoft Word pre Windows. Tento návod používa názvy príkazov v slovenskom rozhraní.</p></div></section>
+<section class="step" id="krok-2"><div class="step-head"><div class="step-no">02</div><div><h2>Vytvor prázdny dokument</h2><p class="why">Najprv nastav formát strany a ulož pracovný návrh.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Súbor</span><i>→</i><span class="c">Nový</span><i>→</i><span class="c">Prázdny dokument</span></div><ol class="do"><li>Spusti Word a vytvor <b>prázdny dokument</b>.</li><li>Na karte <b>Rozloženie → Veľkosť</b> vyber <b>A4</b>.</li><li>Vyber <b>Rozloženie → Okraje → Vlastné okraje</b>. Horný, dolný, ľavý aj pravý okraj nastav na <b>2 cm</b> a potvrď <b>OK</b>.</li><li>Cez <b>Súbor → Uložiť ako → Prehľadávať</b> ulož dokument do pracovného priečinka ako <code>CV_navrh_Priezvisko.docx</code>. Slovo Priezvisko nahraď svojím priezviskom.</li></ol><figure><div class="scroll"><div id="rb-layout"></div></div><figcaption><b>Rozloženie:</b> nastav veľkosť A4 a vlastné okraje.</figcaption></figure><dl class="settings"><div><dt>Veľkosť papiera</dt><dd>A4</dd></div><div><dt>Všetky štyri okraje</dt><dd>2 cm</dd></div><div><dt>Pracovný súbor</dt><dd>CV_navrh_Priezvisko.docx</dd></div></dl></section>
+<section class="step" id="krok-3"><div class="step-head"><div class="step-no">03</div><div><h2>Napíš kostru životopisu</h2><p class="why">Text v hranatých zátvorkách budeš neskôr nahrádzať údajmi jednotlivých osôb.</p></div></div><ol class="do"><li>Do dokumentu napíš nasledujúcu kostru. Každý riadok ukonči <b>jedným Enterom</b>.</li><li>Zachovaj všetkých <b>13 značiek</b> v hranatých zátvorkách. Nadpisy sekcií a podnadpis zostanú rovnaké pre všetky osoby.</li><li>Prázdne miesto medzi sekciami neskôr nastav cez <b>Odsek</b>.</li></ol><div class="skeleton-tools"><button type="button" id="copy-skeleton">Skopírovať kostru</button><span class="copy-status" id="copy-status" role="status"></span></div><pre class="skeleton" id="skeleton">[Meno] [Priezvisko]
+Študent informačných a sieťových technológií
+[Mesto] | [Email] | [Telefon]
+PROFIL
+[Profil]
+VZDELANIE
+[Skola]
+[Odbor]
+[Obdobie]
+ZRUČNOSTI
+[Zrucnosti]
+JAZYKOVÉ ZNALOSTI
+[Jazyky]
+PRAX A ŠKOLSKÉ PROJEKTY
+[Prax]
+ZÁUJMY
+[Zaujmy]</pre><div class="call tip"><b class="t">Ak text vkladáš kopírovaním</b><p>Pri vložení vyber možnosť <b>Ponechať len text</b>. Vlastné písmo, farby a rozstupy nastavíš v ďalších krokoch.</p></div></section>
+<section class="step" id="krok-4"><div class="step-head"><div class="step-no">04</div><div><h2>Nastav základný text</h2><p class="why">Všetok text dostane rovnaký čitateľný základ.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Domov</span><i>→</i><span class="c">Štýly</span><i>→</i><span class="c">Normálny</span></div><ol class="do"><li>Označ celý dokument skratkou <kbd>Ctrl</kbd> + <kbd>A</kbd>. Na karte <b>Domov</b> vyber štýl <b>Normálny</b>.</li><li>Nastav písmo <b>Calibri</b>, veľkosť <b>11</b>, zarovnanie <b>vľavo</b> a farbu <b>RGB 51, 51, 51</b>.</li><li>V skupine <b>Odsek</b> klikni na <b>malú šípku vpravo dole</b>. Nastav medzeru <b>Pred 0 b.</b>, <b>Za 6 b.</b>, riadkovanie <b>Jednoduché</b> a špeciálne odsadenie <b>Žiadne</b>. Potvrď <b>OK</b>.</li></ol><figure><div class="scroll"><div id="rb-home"></div></div><figcaption><b>Domov:</b> najprv vyber Normálny, potom nastav písmo a odsek.</figcaption></figure><dl class="settings"><div><dt>Písmo a veľkosť</dt><dd>Calibri 11</dd></div><div><dt>Farba textu</dt><dd>RGB 51, 51, 51</dd></div><div><dt>Medzery odseku</dt><dd>Pred 0 b. · Za 6 b.</dd></div><div><dt>Riadkovanie</dt><dd>Jednoduché</dd></div></dl><div class="call tip"><b class="t">Ako zadať presnú farbu</b><p><b>Domov → šípka pri Farbe písma → Ďalšie farby → Vlastné → RGB.</b> Zadaj červenú, zelenú a modrú zložku. Rovnaký postup použi pri ďalších vlastných farbách.</p></div></section>
+<section class="step" id="krok-5"><div class="step-head"><div class="step-no">05</div><div><h2>Zvýrazni meno a podnadpis</h2><p class="why">Meno má byť na prvý pohľad najvýraznejšou časťou životopisu.</p></div></div><ol class="do"><li>Označ prvý riadok <code>[Meno] [Priezvisko]</code>. Nastav <b>Calibri 26</b>, <b>tučné</b> a farbu <b>RGB 31, 55, 75</b>. V dialógu <b>Odsek</b> nastav medzeru <b>Za 2 b.</b></li><li>Označ podnadpis <b>Študent informačných a sieťových technológií</b>. Nastav veľkosť <b>11 b.</b>, bežné písmo bez tučného zvýraznenia, farbu <b>RGB 51, 51, 51</b> a medzeru <b>Za 10 b.</b>.</li></ol><figure><div class="cv-preview"><div class="cv-name">[Meno] [Priezvisko]</div><div class="cv-subtitle">Študent informačných a sieťových technológií</div></div><figcaption>Náhľad hierarchie: výrazné meno a menší podnadpis.</figcaption></figure></section>
+<section class="step" id="krok-6"><div class="step-head"><div class="step-no">06</div><div><h2>Uprav kontaktný riadok</h2><p class="why">Kontakty oddeľ od zvyšku životopisu jemnou výplňou a spodnou čiarou.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Domov</span><i>→</i><span class="c">Odsek</span><i>→</i><span class="c">Orámovanie a podfarbenie</span></div><ol class="do"><li>Označ celý kontaktný riadok <code>[Mesto] | [Email] | [Telefon]</code> a nastav veľkosť písma <b>10</b>.</li><li>V skupine <b>Odsek</b> otvor šípku pri tlačidle <b>Orámovanie</b> a vyber <b>Orámovanie a podfarbenie</b>.</li><li>Na karte <b>Podfarbenie</b> vyber výplň <b>RGB 238, 244, 246</b>. V poli <b>Použiť na</b> zvoľ <b>Odsek</b>.</li><li>V tom istom dialógu otvor kartu <b>Orámovanie</b>. Nastav <b>plnú čiaru</b>, farbu <b>RGB 0, 105, 115</b> a hrúbku <b>1 b.</b>.</li><li>V ukážke zapni <b>iba spodný okraj</b>. Ostatné okraje vypni. Skontroluj <b>Použiť na: Odsek</b> a potvrď <b>OK</b>.</li></ol><figure><div class="cv-preview"><div class="cv-contact">[Mesto] | [Email] | [Telefon]</div></div><figcaption>Farba výplne je jemná; farebná čiara je iba pod kontaktmi.</figcaption></figure><div class="call warn"><b class="t">Skontroluj rozsah</b><p>Výplň aj čiaru použi na <b>Odsek</b>. Obyčajné zvýraznenie textu nenahrádza podfarbenie celého odseku.</p></div></section>
+<section class="step" id="krok-7"><div class="step-head"><div class="step-no">07</div><div><h2>Vytvor jednotné nadpisy cez štýl</h2><p class="why">Jeden upravený štýl bude riadiť vzhľad všetkých sekcií.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Domov</span><i>→</i><span class="c">Štýly</span><i>→</i><span class="c">Nadpis 1</span><i>→</i><span class="c">Upraviť</span></div><ol class="do"><li>Klikni do nadpisu <b>PROFIL</b>. V galérii štýlov na karte <b>Domov</b> vyber <b>Nadpis 1</b>.</li><li>V galérii klikni <b>pravým tlačidlom</b> na štýl <b>Nadpis 1</b> a vyber <b>Upraviť</b>. Nastav <b>Calibri 12</b>, <b>tučné</b>, farbu <b>RGB 0, 105, 115</b> a zarovnanie <b>vľavo</b>.</li><li>V okne úpravy štýlu vyber <b>Formát → Odsek</b>. Nastav <b>Pred 10 b.</b>, <b>Za 4 b.</b>, riadkovanie <b>Jednoduché</b>, odsadenie vľavo aj vpravo <b>0 cm</b> a špeciálne odsadenie <b>Žiadne</b>. Zmeny potvrď <b>pre tento dokument</b>.</li><li>Rovnaký štýl <b>Nadpis 1</b> priraď aj nadpisom <b>VZDELANIE, ZRUČNOSTI, JAZYKOVÉ ZNALOSTI, PRAX A ŠKOLSKÉ PROJEKTY a ZÁUJMY</b>.</li></ol><figure><div class="scroll"><div id="rb-style"></div></div><figcaption><b>Domov → Štýly:</b> pravým klikom na Nadpis 1 otvoríš možnosť Upraviť.</figcaption></figure><div class="call tip"><b class="t">Prečo používať štýl</b><p>Keď neskôr upravíš farbu alebo písmo štýlu Nadpis 1, zmenia sa všetky sekcie s týmto štýlom naraz.</p></div></section>
+<section class="step" id="krok-8"><div class="step-head"><div class="step-no">08</div><div><h2>Prispôsob si návrh a skontroluj ho</h2><p class="why">Základ uprav tak, aby vznikol tvoj vlastný návrh.</p></div></div><ol class="do"><li>Zmeň <b>aspoň dve vlastnosti návrhu</b>, napríklad farbu nadpisov a čiary alebo písmo mena. Zachovaj jednotný vzhľad a čitateľnosť.</li><li>Použi <b>najviac dve rodiny písma</b>. Ak zmeníš písmo mena, ostatný text môže zostať v Calibri.</li><li>Rozstupy upravuj cez <b>Odsek</b>. Prejdi všetky sekcie a skontroluj, že nadpisy majú rovnaký štýl a kontakty sú čitateľné.</li><li>Ulož návrh skratkou <kbd>Ctrl</kbd> + <kbd>S</kbd>. Po vložení údajov ešte overíš, či sa každá osoba zmestí na jednu stranu.</li></ol><div class="call tip"><b class="t">Čo môžeš prispôsobiť</b><p>Napríklad zmeň farbu nadpisov na inú čitateľnú farbu a rovnakú farbu použi na spodnú čiaru kontaktov. Sú to dve úpravy návrhu so spoločným vzhľadom.</p></div></section>
+<section class="step" id="krok-9"><div class="step-head"><div class="step-no">09</div><div><h2>Ulož skutočnú šablónu DOTX</h2><p class="why">Zo šablóny vytvoríš nový hlavný dokument pre hromadnú korešpondenciu.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Súbor</span><i>→</i><span class="c">Uložiť ako</span><i>→</i><span class="c">Prehľadávať</span></div><ol class="do"><li>Vyber <b>Súbor → Uložiť ako → Prehľadávať</b> a otvor priečinok <code>CV_mailmerge</code>.</li><li>Do názvu napíš <code>CV_sablona_Priezvisko</code>. V poli <b>Uložiť vo formáte</b> vyber <b>Šablóna programu Word (*.dotx)</b> a klikni na <b>Uložiť</b>.</li><li><b>Zatvor dokument.</b> V Prieskumníkovi vyhľadaj uložený súbor <code>CV_sablona_Priezvisko.dotx</code> a otvor ho <b>dvojklikom</b>.</li><li>Word vytvorí nový dokument zo šablóny. Ulož ho do pracovného priečinka ako <code>CV_hlavny_Priezvisko.docx</code>. Ďalej pracuj v tomto hlavnom dokumente.</li></ol><div class="flow" aria-label="Postup súborov"><b>Návrh .docx</b><span aria-hidden="true">→</span><b>Šablóna .dotx</b><span aria-hidden="true">→</span><b>Nový hlavný .docx</b></div><div class="call warn"><b class="t">Samotné premenovanie nestačí</b><p>Príponu <b>.dotx</b> neprepisuj ručne v názve. Skutočnú šablónu vytvoríš výberom typu <b>Šablóna programu Word (*.dotx)</b>.</p></div></section>
+<section class="step" id="krok-10"><div class="step-head"><div class="step-no">10</div><div><h2>Pripoj pripravený zoznam</h2><p class="why">Hlavný dokument prepoj so zdrojom údajov piatich fiktívnych osôb.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Korešpondencia</span><i>→</i><span class="c">Spustiť hromadnú korešpondenciu</span><i>→</i><span class="c">Listy</span></div><ol class="do"><li>V súbore <code>CV_hlavny_Priezvisko.docx</code> otvor kartu <b>Korešpondencia</b>. Vyber <b>Spustiť hromadnú korešpondenciu → Listy</b>.</li><li>Klikni na <b>Vybrať príjemcov → Použiť existujúci zoznam</b>. Vyhľadaj stiahnutý súbor <code class="file-name">02_Udaje_CV_na_import.docx</code> v pracovnom priečinku a klikni na <b>Otvoriť</b>.</li><li>Otvor <b>Upraviť zoznam príjemcov</b>. Skontroluj, že vidíš <b>päť osôb</b> a všetky zostali označené. Potvrď výber.</li></ol><figure><div class="scroll"><div id="rb-recipients"></div></div><figcaption><b>Korešpondencia:</b> vyber typ Listy, potom pripoj existujúci zoznam príjemcov.</figcaption></figure><div class="call warn"><b class="t">Zdroj musí byť v počítači</b><p>Vyber lokálny DOCX súbor, ktorý si stiahol. Po pripojení ho nepremiestňuj ani nepremenúvaj. Ak Word zdroj nenájde, vyber ho znova z pracovného priečinka.</p></div></section>
+<section class="step" id="krok-11"><div class="step-head"><div class="step-no">11</div><div><h2>Nahraď značky zlučovacími poľami</h2><p class="why">Každá z 13 značiek dostane skutočné pole s rovnakým názvom.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Korešpondencia</span><i>→</i><span class="c">Vložiť zlučovacie pole</span></div><ol class="do"><li>Označ <b>celú značku</b> <code>[Meno]</code> vrátane zátvoriek. Klikni na <b>Korešpondencia → Vložiť zlučovacie pole → Meno</b>. Namiesto značky sa zobrazí <code>«Meno»</code>.</li><li>Rovnakým spôsobom nahraď <code>[Priezvisko]</code>. Medzi poľami <code>«Meno» «Priezvisko»</code> ponechaj jednu medzeru.</li><li>Postup zopakuj pri <b>všetkých 13 značkách</b> podľa tabuľky. Názvy polí sú bez diakritiky a musia zodpovedať zdroju.</li><li>Nadpisy sekcií, podnadpis aj zvislé čiary medzi kontaktmi nechaj ako bežný text. Ulož hlavný dokument.</li></ol><figure><div class="scroll"><div id="rb-fields"></div></div><figcaption><b>Vložiť zlučovacie pole:</b> vyber pole s rovnakým názvom ako označená značka.</figcaption></figure><div class="scroll"><table class="field-table"><caption>Mapovanie značiek na polia a príklad údajov prvej osoby</caption><thead><tr><th>Značka v návrhu</th><th>Vložené pole</th><th>Ukážka výsledku</th></tr></thead><tbody><tr><td><code>[Meno]</code></td><td><code>«Meno»</code></td><td>Martin</td></tr>
+<tr><td><code>[Priezvisko]</code></td><td><code>«Priezvisko»</code></td><td>Novák</td></tr>
+<tr><td><code>[Mesto]</code></td><td><code>«Mesto»</code></td><td>Sečovce</td></tr>
+<tr><td><code>[Email]</code></td><td><code>«Email»</code></td><td>martin.novak@example.com</td></tr>
+<tr><td><code>[Telefon]</code></td><td><code>«Telefon»</code></td><td>0900 000 001</td></tr>
+<tr><td><code>[Profil]</code></td><td><code>«Profil»</code></td><td>Záujem o počítačové siete a riešenie technických problémov.</td></tr>
+<tr><td><code>[Skola]</code></td><td><code>«Skola»</code></td><td>Spojená škola Sečovce</td></tr>
+<tr><td><code>[Odbor]</code></td><td><code>«Odbor»</code></td><td>Informačné a sieťové technológie</td></tr>
+<tr><td><code>[Obdobie]</code></td><td><code>«Obdobie»</code></td><td>2025 – súčasnosť</td></tr>
+<tr><td><code>[Zrucnosti]</code></td><td><code>«Zrucnosti»</code></td><td>Word, Excel, základy IPv4, Packet Tracer</td></tr>
+<tr><td><code>[Jazyky]</code></td><td><code>«Jazyky»</code></td><td>Slovenský jazyk – materinský; anglický jazyk – B1</td></tr>
+<tr><td><code>[Prax]</code></td><td><code>«Prax»</code></td><td>Školský projekt – návrh a zapojenie malej siete LAN.</td></tr>
+<tr><td><code>[Zaujmy]</code></td><td><code>«Zaujmy»</code></td><td>Počítačové siete, turistika, šach</td></tr></tbody></table></div><div class="call warn"><b class="t">Pole vlož cez ponuku</b><p>Text <code>«Meno»</code> nepíš klávesnicou: obyčajný text sa nezlúči s údajmi. Vždy použi <b>Vložiť zlučovacie pole</b>. Pole <b>Ďalší záznam</b> pri tejto úlohe nevkladaj.</p></div></section>
+<section class="step" id="krok-12"><div class="step-head"><div class="step-no">12</div><div><h2>Prezri všetkých päť osôb</h2><p class="why">Pri ukážke over obsah aj to, že každý životopis zostane na jednej strane.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Korešpondencia</span><i>→</i><span class="c">Ukážka výsledkov</span></div><ol class="do"><li>Zapni <b>Ukážku výsledkov</b>. Namiesto názvov polí sa zobrazia údaje prvej osoby.</li><li>Šípkami vedľa ukážky prejdi <b>Martina, Luciu, Samuela, Ninu a Adama</b>. Pri každej osobe skontroluj meno, kontakty aj dlhšie texty.</li><li>Každé CV musí zostať <b>na jednej strane</b>. Ak text preteká, uprav v hlavnom dokumente medzery odsekov a rozloženie tak, aby bol text stále čitateľný.</li><li>Po úprave znova prejdi všetkých päť osôb. Nasledujúca ukážka zobrazuje údaje zo stiahnutého zdroja; rozloženie skontroluj vo svojom Worde.</li></ol><figure><div class="scroll"><div id="rb-preview"></div></div><figcaption><b>Ukážka výsledkov</b> zapne údaje. Šípkami prechádzaš jednotlivých príjemcov.</figcaption></figure><div class="preview-tools"><button type="button" id="preview-prev" aria-label="Predchádzajúca osoba">← Predchádzajúca</button><span id="preview-counter" role="status"></span><button type="button" id="preview-next" aria-label="Nasledujúca osoba">Nasledujúca →</button></div><article class="cv-preview" id="cv-preview" aria-label="Ukážka životopisu z pripravených údajov"></article></section>
+<section class="step" id="krok-13"><div class="step-head"><div class="step-no">13</div><div><h2>Vytvor hotový výsledok a odovzdaj súbory</h2><p class="why">Zlúčením vytvoríš nový dokument s piatimi vyplnenými životopismi.</p></div></div><div class="path"><span class="lbl">Kde kliknúť</span><span class="c">Korešpondencia</span><i>→</i><span class="c">Dokončiť a zlúčiť</span><i>→</i><span class="c">Upraviť jednotlivé dokumenty</span></div><ol class="do"><li>Klikni na <b>Dokončiť a zlúčiť → Upraviť jednotlivé dokumenty</b>. V dialógu vyber <b>Všetky</b> a potvrď <b>OK</b>.</li><li>Otvorí sa <b>nový dokument</b> s vyplnenými údajmi. Ulož ho ako <code>CV_vysledky_Priezvisko.docx</code>. Pri jednostranovom návrhu má mať <b>päť strán</b>.</li><li>Skontroluj všetkých päť životopisov a ulož aj hlavný dokument <code>CV_hlavny_Priezvisko.docx</code>.</li><li>Odovzdaj nasledujúce <b>tri súbory</b>. Zdroj údajov si nechaj v pracovnom priečinku.</li></ol><figure><div class="scroll"><div id="rb-merge"></div></div><figcaption><b>Dokončiť a zlúčiť:</b> zvoľ Upraviť jednotlivé dokumenty a potom Všetky.</figcaption></figure><ul class="handoff"><li><b>CV_sablona_Priezvisko.dotx</b><span>Tvoj opakovane použiteľný návrh.</span></li><li><b>CV_hlavny_Priezvisko.docx</b><span>Dokument so zlučovacími poľami a pripojeným zdrojom.</span></li><li><b>CV_vysledky_Priezvisko.docx</b><span>Päť vyplnených životopisov v jednom dokumente.</span></li></ul><div class="call warn"><b class="t">Keď neskôr zmeníš údaje</b><p>Hotový výsledok sa sám neaktualizuje. Otvor hlavný dokument, podľa potreby znova vyber zdroj a vykonaj zlúčenie znova.</p></div></section>
+<section class="step" id="kontrola"><div class="step-head"><div class="step-no">✓</div><div><h2>Kontrolný zoznam pred odovzdaním</h2><p class="why">Odškrtnuté položky si tento prehliadač zapamätá.</p></div></div><div class="chk-wrap"><div class="chk-top"><div class="prog" aria-hidden="true"><i id="prog"></i></div><span class="cnt" id="cnt"></span><button class="reset" id="reset" type="button">Zrušiť odškrtnutie</button></div><div class="chk-groups" id="chk"><div class="chk-g"><h3>Podklady a návrh</h3><label><input type="checkbox" data-check="0-0"><span>Oba zdrojové DOCX sú v pracovnom priečinku CV_mailmerge.</span></label><label><input type="checkbox" data-check="0-1"><span>Dokument má formát A4 a všetky okraje 2 cm.</span></label><label><input type="checkbox" data-check="0-2"><span>Nadpisy sekcií používajú upravený štýl Nadpis 1.</span></label><label><input type="checkbox" data-check="0-3"><span>Zmenil/a som aspoň dve vlastnosti návrhu a používam najviac dve rodiny písma.</span></label></div><div class="chk-g"><h3>Šablóna a polia</h3><label><input type="checkbox" data-check="1-0"><span>Šablóna je uložená ako skutočný súbor DOTX.</span></label><label><input type="checkbox" data-check="1-1"><span>Hlavný dokument vznikol otvorením vlastnej šablóny.</span></label><label><input type="checkbox" data-check="1-2"><span>Zdroj údajov je pripojený a všetkých päť príjemcov je označených.</span></label><label><input type="checkbox" data-check="1-3"><span>Všetkých 13 značiek som nahradil/a skutočnými zlučovacími poľami.</span></label><label><input type="checkbox" data-check="1-4"><span>V dokumente nie je vložené pole Ďalší záznam.</span></label></div><div class="chk-g"><h3>Výsledok a odovzdanie</h3><label><input type="checkbox" data-check="2-0"><span>V ukážke som preveril/a všetkých päť osôb.</span></label><label><input type="checkbox" data-check="2-1"><span>Každý životopis je na jednej strane a výsledok má päť strán.</span></label><label><input type="checkbox" data-check="2-2"><span>Mám uložené súbory CV_sablona, CV_hlavny a CV_vysledky so svojím priezviskom.</span></label></div></div></div></section>
+<p class="foot">Návod vychádza z priloženého zadania „Vlastná šablóna životopisu“. Všetky ukážkové osoby a kontakty pochádzajú z pripraveného fiktívneho zdroja údajov. Rozloženie a počet strán vždy skontroluj vo svojom dokumente vo Worde.</p>
+</main></div></div>
+<section class="downloads" id="word-downloads-panel" role="tabpanel" aria-labelledby="word-downloads-tab" tabindex="0" hidden>
+  <h2>Súbory na stiahnutie</h2>
+  <p>Stiahni si podklady a otvor ich v programe Microsoft Word.</p>
+  <ul class="download-list">
+    <li><article class="download-card">
+      <span class="download-meta">01 · DOCX · 40 kB</span>
+      <h3>Zadanie a postup pre žiakov</h3>
+      <p>Dokument so zadaním a pracovným postupom.</p>
+      <a class="download-button" href="downloads/01_Zadanie_a_postup_pre_ziakov.docx" download="01_Zadanie_a_postup_pre_ziakov.docx" aria-label="Stiahnuť zadanie a postup pre žiakov (DOCX)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>Stiahnuť DOCX
+      </a>
+    </article></li>
+    <li><article class="download-card">
+      <span class="download-meta">02 · DOCX · 39 kB</span>
+      <h3>Údaje CV na import</h3>
+      <p>Podklady s údajmi pre import do životopisu.</p>
+      <a class="download-button" href="downloads/02_Udaje_CV_na_import.docx" download="02_Udaje_CV_na_import.docx" aria-label="Stiahnuť údaje CV na import (DOCX)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>Stiahnuť DOCX
+      </a>
+    </article></li>
+  </ul>
+</section>
+</div>
+<script>
+/* Page tabs and direct links to downloads. */
+(() => {
+  const tabs = [...document.querySelectorAll('.word-tabs [role="tab"]')];
+  function activate(tab) {
+    tabs.forEach(item => {
+      const selected = item === tab;
+      item.setAttribute('aria-selected', String(selected));
+      item.tabIndex = selected ? 0 : -1;
+      document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
+    });
+  }
+  const fromHash = () => activate(tabs[location.hash === '#subory-na-stiahnutie' ? 1 : 0]);
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => {
+      activate(tab);
+      history.replaceState(null, '', index ? '#subory-na-stiahnutie' : location.pathname + location.search);
+    });
+    tab.addEventListener('keydown', event => {
+      let next;
+      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = tabs.length - 1;
+      if (next !== undefined) { event.preventDefault(); tabs[next].click(); tabs[next].focus(); }
+    });
+  });
+  addEventListener('hashchange', fromHash);
+  fromHash();
+})();
+
+const TABS=['Súbor','Domov','Vložiť','Návrh','Rozloženie','Referencie','Korešpondencia','Revízia','Zobraziť'];
+const mk=n=>n?`<b class="mk">${n}</b>`:'';
+function item(it){
+  if(it.col) return `<div class="col">${it.col.map(item).join('')}</div>`;
+  const [ic,lb,kind='big',m=0,cls='']=it;
+  const h=m?' hl':'';
+  if(kind==='sty') return `<div class="it sty ${cls}${h}"><span class="ic">${ic}</span><span class="lb">${lb}</span>${mk(m)}</div>`;
+  if(kind==='chk') return `<div class="it chk${cls==='on'?' on':''}${h}"><span class="box">${cls==='on'?'✓':''}</span><span>${lb}</span>${mk(m)}</div>`;
+  if(kind==='fld') return `<div class="fieldrow${h}" style="position:relative"><span>${ic}</span><span class="bx">${lb}</span>${mk(m)}</div>`;
+  if(kind==='sm') return `<div class="it sm${h}"><span class="ic">${ic}</span><span>${lb}</span>${mk(m)}</div>`;
+  return `<div class="it${h}"><span class="ic">${ic}</span><span>${lb}</span>${mk(m)}</div>`;
+}
+function ribbon(s){
+  const tabs=s.ctx?TABS.concat(s.ctx):TABS;
+  let h=`<div class="rb" role="img" aria-label="${s.alt}"><div class="rb-tabs">`;
+  tabs.forEach(t=>{const on=t===s.active,c=s.ctx&&s.ctx.includes(t);
+    h+=`<span class="rb-tab${on?' on':''}${c?' ctx':''}${on&&s.tm?' hl':''}">${t}${on?mk(s.tm):''}</span>`});
+  h+='</div><div class="rb-body">';
+  s.groups.forEach(g=>{h+=`<div class="rb-g"><div class="rb-items">${g[1].map(item).join('')}</div><div class="rb-gl">${g[0]}</div></div>`});
+  return h+'</div></div>';
+}
+
+const R={"rb-layout":{"alt":"Karta Rozloženie, tlačidlá Okraje a Veľkosť","active":"Rozloženie","groups":[["Nastavenie strany",[["▣","Okraje","big",3],["▤","Orientácia"],["▭","Veľkosť A4","big",2]]]]},"rb-home":{"alt":"Karta Domov, štýl Normálny a nastavenia písma a odseku","active":"Domov","groups":[["Písmo",[{"col":[["A","Calibri · 11","sm",2],["A","Farba písma ▾","sm",2]]}]],["Odsek",[{"col":[["≡","Zarovnať vľavo","sm",2],["↕","Nastavenie odseku ↘","sm",3]]}]],["Štýly",[["AaBbCc","Normálny","sty",1,"s-normal"]]]]},"rb-style":{"alt":"Karta Domov, galéria štýlov a Nadpis 1","active":"Domov","groups":[["Štýly",[["AaBbCc","Normálny","sty",0,"s-normal"],["AaBbCc","Nadpis 1","sty",2,"s-h1"],["AaBbCc","Nadpis 2","sty",0,"s-h2"]]]]},"rb-recipients":{"alt":"Korešpondencia, Spustiť hromadnú korešpondenciu, Vybrať príjemcov a Upraviť zoznam príjemcov","active":"Korešpondencia","groups":[["Spustiť hromadnú korešpondenciu",[["▤","Spustiť hromadnú korešpondenciu ▾","big",1],["☷","Vybrať príjemcov ▾","big",2],["☑","Upraviť zoznam príjemcov","big",3]]]]},"rb-fields":{"alt":"Korešpondencia, Vložiť zlučovacie pole","active":"Korešpondencia","groups":[["Zapisovať a vkladať polia",[["« »","Vložiť zlučovacie pole ▾","big",1],{"col":[["M","Meno","sm",1],["P","Priezvisko","sm",2],["…","Ostatné polia","sm",3]]}]]]},"rb-preview":{"alt":"Korešpondencia, Ukážka výsledkov a šípky na prepínanie osôb","active":"Korešpondencia","groups":[["Ukážka výsledkov",[["ABC","Ukážka výsledkov","big",1],{"col":[["◀ 1 ▶","Predchádzajúci / nasledujúci","sm",2],["⌕","Vyhľadať príjemcu","sm"]]}]]]},"rb-merge":{"alt":"Korešpondencia, Dokončiť a zlúčiť, Upraviť jednotlivé dokumenty","active":"Korešpondencia","groups":[["Dokončiť",[["▤✓","Dokončiť a zlúčiť ▾","big",1],{"col":[["▤","Upraviť jednotlivé dokumenty…","sm",1],["▧","Tlačiť dokumenty…","sm"]]}]]]}};
+Object.entries(R).forEach(([id,spec])=>{document.getElementById(id).innerHTML=ribbon(spec)});
+const people=[{"Meno":"Martin","Priezvisko":"Novák","Mesto":"Sečovce","Email":"martin.novak@example.com","Telefon":"0900 000 001","Profil":"Záujem o počítačové siete a riešenie technických problémov.","Skola":"Spojená škola Sečovce","Odbor":"Informačné a sieťové technológie","Obdobie":"2025 – súčasnosť","Zrucnosti":"Word, Excel, základy IPv4, Packet Tracer","Jazyky":"Slovenský jazyk – materinský; anglický jazyk – B1","Prax":"Školský projekt – návrh a zapojenie malej siete LAN.","Zaujmy":"Počítačové siete, turistika, šach"},{"Meno":"Lucia","Priezvisko":"Kováčová","Mesto":"Trebišov","Email":"lucia.kovacova@example.com","Telefon":"0900 000 002","Profil":"Záujem o tvorbu webových stránok a grafický dizajn.","Skola":"Spojená škola Sečovce","Odbor":"Informačné a sieťové technológie","Obdobie":"2025 – súčasnosť","Zrucnosti":"Word, Canva, HTML, CSS","Jazyky":"Slovenský jazyk – materinský; anglický jazyk – B2","Prax":"Školský projekt – webová stránka fiktívnej kaviarne.","Zaujmy":"Grafika, fotografovanie, volejbal"},{"Meno":"Samuel","Priezvisko":"Horváth","Mesto":"Michalovce","Email":"samuel.horvath@example.com","Telefon":"0900 000 003","Profil":"Záujem o správu počítačov a operačné systémy.","Skola":"Spojená škola Sečovce","Odbor":"Informačné a sieťové technológie","Obdobie":"2024 – súčasnosť","Zrucnosti":"Windows, Linux, príkazový riadok, VirtualBox","Jazyky":"Slovenský jazyk – materinský; anglický jazyk – B1","Prax":"Školský projekt – inštalácia a nastavenie virtuálneho počítača.","Zaujmy":"Hardvér, cyklistika, hudba"},{"Meno":"Nina","Priezvisko":"Vargová","Mesto":"Košice","Email":"nina.vargova@example.com","Telefon":"0900 000 004","Profil":"Záujem o programovanie a automatizáciu bežných úloh.","Skola":"Spojená škola Sečovce","Odbor":"Informačné a sieťové technológie","Obdobie":"2024 – súčasnosť","Zrucnosti":"Python, Word, Excel, základy Git","Jazyky":"Slovenský jazyk – materinský; anglický jazyk – B2","Prax":"Školský projekt – jednoduchý program na evidenciu kníh.","Zaujmy":"Programovanie, knihy, plávanie"},{"Meno":"Adam","Priezvisko":"Šimko","Mesto":"Vranov nad Topľou","Email":"adam.simko@example.com","Telefon":"0900 000 005","Profil":"Záujem o sieťové technológie a kybernetickú bezpečnosť.","Skola":"Spojená škola Sečovce","Odbor":"Informačné a sieťové technológie","Obdobie":"2025 – súčasnosť","Zrucnosti":"Packet Tracer, IPv4, Word, základy Linuxu","Jazyky":"Slovenský jazyk – materinský; anglický jazyk – A2","Prax":"Školský projekt – kontrola IP konfigurácie a testovanie spojenia.","Zaujmy":"Siete, futbal, logické hry"}];
+const esc=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+let personIndex=0;
+function renderPerson(){
+  const p=people[personIndex];
+  document.getElementById('preview-counter').textContent=(personIndex+1)+' / '+people.length+' · '+p.Meno;
+  document.getElementById('cv-preview').innerHTML='<div class="cv-name">'+esc(p.Meno+' '+p.Priezvisko)+'</div><div class="cv-subtitle">Študent informačných a sieťových technológií</div><div class="cv-contact">'+esc(p.Mesto+' | '+p.Email+' | '+p.Telefon)+'</div>'+[['PROFIL',p.Profil],['VZDELANIE',p.Skola+'\n'+p.Odbor+'\n'+p.Obdobie],['ZRUČNOSTI',p.Zrucnosti],['JAZYKOVÉ ZNALOSTI',p.Jazyky],['PRAX A ŠKOLSKÉ PROJEKTY',p.Prax],['ZÁUJMY',p.Zaujmy]].map(([title,text])=>'<h3>'+title+'</h3><p>'+esc(text).replaceAll('\n','<br>')+'</p>').join('');
+}
+document.getElementById('preview-prev').addEventListener('click',()=>{personIndex=(personIndex+people.length-1)%people.length;renderPerson()});
+document.getElementById('preview-next').addEventListener('click',()=>{personIndex=(personIndex+1)%people.length;renderPerson()});
+renderPerson();
+document.getElementById('copy-skeleton').addEventListener('click',async()=>{
+  const text=document.getElementById('skeleton');
+  const status=document.getElementById('copy-status');
+  try{await navigator.clipboard.writeText(text.textContent);status.textContent='Kostra je skopírovaná. Vo Worde vlož len text.'}
+  catch{const range=document.createRange();range.selectNodeContents(text);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);status.textContent='Text je označený. Skopíruj ho klávesmi Ctrl + C.'}
+});
+const checks=[...document.querySelectorAll('[data-check]')];
+const storageKey='pvalo-cv-template-checklist';
+let saved={};try{saved=JSON.parse(localStorage.getItem(storageKey)||'{}')||{}}catch{}
+checks.forEach(input=>{input.checked=saved[input.dataset.check]===true;input.addEventListener('change',updateChecks)});
+function updateChecks(){const done=checks.filter(input=>input.checked).length;document.getElementById('cnt').textContent=done+' / '+checks.length;document.getElementById('prog').style.width=(done/checks.length*100)+'%';try{localStorage.setItem(storageKey,JSON.stringify(Object.fromEntries(checks.map(input=>[input.dataset.check,input.checked]))))}catch{}}
+document.getElementById('reset').addEventListener('click',()=>{checks.forEach(input=>input.checked=false);updateChecks()});updateChecks();
+const links=[...document.querySelectorAll('#toc a')];
+const io=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)links.forEach(link=>link.classList.toggle('on',link.getAttribute('href')==='#'+entry.target.id))}),{rootMargin:'-30% 0px -60% 0px'});
+document.querySelectorAll('section.step').forEach(section=>io.observe(section));
+(()=>{const root=document.documentElement;const buttons=[...document.querySelectorAll('[data-theme-choice]')];const show=()=>buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.themeChoice===(root.dataset.theme||'auto'))));buttons.forEach(button=>button.addEventListener('click',()=>{const choice=button.dataset.themeChoice;if(choice==='auto')delete root.dataset.theme;else root.dataset.theme=choice;try{choice==='auto'?localStorage.removeItem('pvalo-theme'):localStorage.setItem('pvalo-theme',choice)}catch{}show()}));show()})();
+</script>
+</body></html>

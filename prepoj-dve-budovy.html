@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Prepoj dve budovy · pvalo.site</title>
+  <meta name="description" content="Vyskúšaj prepojenie dvoch budov: optika, medený Ethernet, rádio a záložné trasy. Interaktívna školská simulácia bez registrácie.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6fec'/%3E%3Cpath d='M7 24V9h6v15m6 0V5h6v19M13 14h6m-6 5h6' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+  <script>
+    (() => {
+      const root = document.documentElement;
+      try {
+        const saved = localStorage.getItem('pvalo-theme');
+        if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+      } catch {}
+      root.dataset.colorScheme = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    })();
+  </script>
+  <link rel="stylesheet" href="src/buildings.css">
+  <script defer src="src/buildings-model.js"></script>
+  <script defer src="src/buildings-visuals.js"></script>
+  <script defer src="src/buildings.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Preskočiť na obsah</a>
+  <header class="topbar">
+    <a href="index.html" class="brand">pvalo<span>.site</span></a>
+    <span>Počítačové siete / Interaktívne laboratórium</span>
+    <div class="topbar-tools">
+      <label class="motion"><input type="checkbox" id="animations"> Animácie</label>
+      <div class="theme-switch" role="group" aria-label="Farebný režim">
+        <button type="button" data-theme-choice="auto" aria-pressed="true" title="Podľa nastavenia systému">◐ Auto</button>
+        <button type="button" data-theme-choice="light" aria-pressed="false">☀ Svetlý</button>
+        <button type="button" data-theme-choice="dark" aria-pressed="false">☾ Tmavý</button>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <div class="intro"><div><p class="eyebrow">TRI CESTY. JEDNO SPOJENIE.</p><h1>Prepoj dve budovy</h1><p>Čo sa stane, keď vypadne spoj? Vyskúšaj to na sieti medzi dvoma budovami.</p></div><div class="intro-note">Didaktická simulácia, nie skutočný test siete.<br>Bez registrácie · priebeh iba v tomto prehliadači.</div></div>
+    <nav class="tabs" aria-label="Režimy laboratória" role="tablist">
+      <button id="free-tab" role="tab" aria-selected="true" aria-controls="free-panel" data-mode="free">Voľné skúšanie</button>
+      <button id="predict-tab" role="tab" aria-selected="false" aria-controls="predict-panel" tabindex="-1" data-mode="predict">Predpovedz a over <span id="quiz-badge">0/9</span></button>
+      <button id="length-tab" role="tab" aria-selected="false" aria-controls="length-panel" tabindex="-1" data-mode="length">Stačí 70 metrov?</button>
+      <button id="challenge-tab" role="tab" aria-selected="false" aria-controls="challenge-panel" tabindex="-1" data-mode="challenge">Záverečná výzva <span id="challenge-badge">0/3</span></button>
+    </nav>
+    <section id="free-panel" role="tabpanel" aria-labelledby="free-tab" class="instruction"><strong>Skús odpojiť optiku.</strong> Sleduj, kadiaľ pôjdu pakety. Kliknutím na zariadenie alebo spoj zistíš, na čo slúži.</section>
+    <section id="predict-panel" role="tabpanel" aria-labelledby="predict-tab" class="lesson" hidden>
+      <div class="section-head"><div><p class="eyebrow" id="question-count"></p><h2 id="question-title"></h2></div><button id="quiz-reset" class="quiet">Začať úlohy odznova</button></div>
+      <p id="question-context"></p><fieldset id="answers"><legend>Ktorá cesta sa použije? Najprv vyber predpoveď.</legend><div class="answer-grid"><label><input type="radio" name="prediction" value="fiber"> Optika</label><label><input type="radio" name="prediction" value="copper"> Meď</label><label><input type="radio" name="prediction" value="radio"> Rádio</label><label><input type="radio" name="prediction" value="none"> Komunikácia nefunguje</label></div></fieldset>
+      <div class="actions"><button id="verify" class="primary" disabled>Spustiť a overiť</button><button id="retry" hidden>Ďalší pokus s nápovedou</button><button id="next-question" hidden>Ďalšia úloha</button></div><div id="quiz-feedback" role="status"></div><div id="quiz-summary" hidden></div>
+    </section>
+    <section id="challenge-panel" role="tabpanel" aria-labelledby="challenge-tab" class="lesson" hidden><p class="eyebrow">OVER VŠETKY TRI MOŽNOSTI</p><h2>Dokáž, že každý spoj dokáže prenášať údaje samostatne.</h2><p>Nechaj zapnutý iba jeden spoj a oba routery. Potom pošli skúšobný paket. Zopakuj to pre ostatné médiá.</p><ul id="challenge-progress" class="checks"></ul><div id="discussion" hidden><h3>Ktorá spoločná porucha dokáže odstaviť všetky tri cesty?</h3><details><summary>Porovnaj svoju odpoveď</summary><p>Porucha ktoréhokoľvek spoločného routera. Všetky tri trasy ním musia prejsť. Funkčné káble a rádiá samy osebe nestačia.</p></details></div></section>
+    <section id="length-panel" role="tabpanel" aria-labelledby="length-tab" class="lesson" hidden><p class="eyebrow">MINIÚLOHA · MEDENÝ KANÁL 1000BASE-T</p><h2>Vzdušná vzdialenosť nie je dĺžka kábla.</h2><p>Spočítaj celú trasu vrátane vedenia v budovách a prepojovacích káblov. V tomto modeli porovnávame kanál s limitom 100 m.</p><div class="length-grid"><label>Medzi budovami (m)<input id="length-distance" type="number" min="0" max="10000" step="0.1" value="70"></label><label>V budove A (m)<input id="length-a" type="number" min="0" max="10000" step="0.1" value="7"></label><label>V budove B (m)<input id="length-b" type="number" min="0" max="10000" step="0.1" value="8"></label><label>Prepojovacie káble (m)<input id="length-patch" type="number" min="0" max="10000" step="0.1" value="5"></label></div><div id="length-result" class="length-result" role="status"></div><p class="small">Táto miniúloha je samostatný návrhový výpočet. Nemení prepínače porúch v schéme.</p></section>
+    <section class="lab" aria-label="Simulácia prepojenia budov">
+      <div class="network-card">
+        <div class="section-head"><div><p class="eyebrow">ŽIVÁ SCHÉMA SIETE</p><h2>Dve budovy, tri nezávislé trasy</h2></div><span class="distance">približne 70 m</span></div>
+        <div id="prediction-cover" class="prediction-cover" hidden>Najprv vyber odpoveď a stlač „Spustiť a overiť“. Potom sa zobrazí výsledná sieť.</div>
+        <div id="diagram-content"><div id="diagram" aria-label="Interaktívna schéma siete"></div><div class="legend"><span class="copper" id="legend-copper"></span><span class="fiber" id="legend-fiber"></span><span class="radio" id="legend-radio"></span></div></div>
+        <p class="small diagram-note">Klikni na zariadenie alebo priamo na kábel. Pod schémou uvidíš, ako sa v ňom prenášajú dáta.</p>
+        <section id="info" class="signal-inspector" aria-labelledby="info-title" hidden>
+          <div class="section-head"><div><p class="eyebrow">POHĽAD DOVNÚTRA SIETE</p><h2 id="info-title" tabindex="-1"></h2></div><button id="close-info" aria-label="Zavrieť vysvetlenie">✕</button></div>
+          <p id="info-state" class="inspection-state"></p>
+          <div id="info-body"></div>
+          <div id="signal-demo" class="signal-demo"></div>
+          <p id="signal-caption" class="small"></p>
+          <p class="small">Zväčšená, spomalená ukážka princípu. Farby svetla a vĺn sú ilustračné; nejde o zobrazenie skutočnej frekvencie ani presného kódovania bitov.</p>
+        </section>
+        <details class="cost-settings" open><summary>Nastaviť prednosť spojov</summary>
+          <p class="small" id="cost-mode-note">Nižšia cena = vyššia prednosť. Zmena ovplyvní oba smery prenosu.</p>
+          <form id="cost-form" novalidate><div class="cost-inputs"><label>Optika<input id="cost-fiber" name="fiber" type="number" min="1" max="65535" step="1" value="10" required></label><label>Meď<input id="cost-copper" name="copper" type="number" min="1" max="65535" step="1" value="20" required></label><label>Rádio<input id="cost-radio" name="radio" type="number" min="1" max="65535" step="1" value="30" required></label></div>
+            <div class="actions"><button type="submit" id="apply-costs">Použiť ceny</button><button type="button" id="default-costs" class="quiet">Obnoviť 10 / 20 / 30</button></div>
+          </form><p id="cost-feedback" role="status" class="small"></p><p id="cost-order" class="small"></p>
+        </details>
+      </div>
+      <aside class="status-card" aria-label="Stav a ovládanie siete">
+        <p class="eyebrow">STAV PREPOJENIA</p><div role="status" aria-live="polite" aria-atomic="true"><h2 id="communication"></h2><p id="route-name" class="route-name"></p><p id="backup-count"></p><p id="state-explanation"></p></div>
+        <div id="controls"><h3>Spoje medzi budovami</h3><div id="link-controls"></div><h3>Spoločné zariadenia</h3><div id="device-controls"></div></div>
+        <div class="actions vertical"><button id="send-packet" class="primary">Poslať skúšobný paket</button><button id="restore">Obnoviť všetko</button></div><p id="packet-result" role="status" class="packet-result"></p>
+
+      </aside>
+    </section>
+    <details class="explain"><summary>Ako sa vyberá cesta a čo znamená záloha?</summary><p>Používame zjednodušený model výberu trasy pomocou OSPF. Predvolené ceny sú: optika <strong>10</strong>, meď <strong>20</strong>, rádio <strong>30</strong>. Môžeš ich zmeniť v paneli „Nastaviť prednosť spojov“. Z funkčných ciest sa vyberie tá s najnižšou cenou. Cena vyjadruje preferenciu, nie finančné náklady ani priamo rýchlosť.</p><p>Tri cesty <strong>automaticky nesčítavajú rýchlosť jedného prenosu</strong>. V tomto modeli prenáša dáta vždy jedna cesta. Pri rovnakých cenách model rozhoduje v poradí optika, meď, rádio; reálne OSPF môže využiť viac rovnocenných ciest (ECMP).</p><p>Prepočet a pohyb paketov sú ilustračné. Ich trvanie nie je meraním skutočného času prepnutia. Model predpokladá správne nakonfigurované samostatné smerované prepojenia medzi routermi.</p><p>Ak zlyhá router, spojenie medzi budovami sa preruší. Miestna komunikácia PC cez funkčný prístupový switch môže pokračovať.</p></details>
+    <details class="explain" id="real-ospf"><summary>Ako sa prednosť nastavuje v reálnej sieti?</summary>
+      <p>Na Cisco IOS / IOS XE sa cena OSPF nastavuje na konkrétnom rozhraní príkazom <code>ip ospf cost</code>. Nižšia celková cena cesty má prednosť. Materiál kábla sám osebe neurčuje poradie. OSPF môže cenu aj vypočítať z referenčnej šírky pásma; ručné nastavenie ju prepíše. <a href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-a1.html" target="_blank" rel="noopener">Dokumentácia Cisco: cena OSPF</a>.</p>
+      <p><strong>Ukážka nižšie používa práve použité ceny zo simulácie.</strong> Názvy rozhraní sú príklad. Predpokladáme samostatné IP podsiete na troch prepojoch, správne IP adresy, zapnuté rozhrania, OSPF susedstvá a oznamovanie oboch miestnych sietí. Rádiá tu fungujú ako ethernetový most medzi routermi; optika potrebuje kompatibilné SFP porty.</p>
+      <pre><code id="ospf-example"></code></pre>
+      <p>Pre rovnakú preferenciu v oboch smeroch nastav zodpovedajúce ceny aj na druhom routeri. Reálne OSPF sčítava ceny pozdĺž celej cesty; v našom modeli majú miestne úseky pre všetky tri možnosti rovnaký vplyv.</p>
+      <p>Príkaz <code>ip ospf priority</code> ovplyvňuje voľbu DR/BDR na segmente, teda routerov zodpovedných za určité úlohy OSPF. <strong>Preferenciu dátovej trasy nastavuj cenou.</strong> <a href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/ospf-i1.html" target="_blank" rel="noopener">Dokumentácia Cisco: priorita routera</a>.</p>
+    </details>
+    <footer><span id="storage-note">Priebeh sa ukladá iba lokálne v tomto prehliadači.</span><button id="erase" class="quiet">Vymazať uložený priebeh</button><a href="index.html">Späť na úvodnú obrazovku</a></footer>
+  </main>
+</body>
+</html>

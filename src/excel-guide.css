@@ -173,3 +173,46 @@ footer { border-top: 1px solid var(--line); margin-top: 35px; padding-block: 20p
   .reference-table th:first-child, .reference-table td:first-child { white-space: normal; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.lesson-nav { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:0 0 26px; }
+.lesson-nav a { display:grid; gap:4px; padding:16px 18px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:10px; text-decoration:none; }
+.lesson-nav a:hover,.lesson-nav a[aria-current=page] { border-color:var(--accent); background:var(--soft); }
+.lesson-nav span { font-size:13px; color:var(--muted); }
+.lesson-nav b { font:700 17px/1.4 var(--display); }
+.lesson-nav a[aria-current=page] span { color:var(--accent); }
+.lesson-reference { margin:0; }
+.lesson-reference img { display:block; max-width:100%; height:auto; background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px; }
+.lesson-reference figcaption { margin-top:9px; color:var(--muted); font-size:14px; }
+.lesson-reference.compact img { max-width:min(100%,540px); }
+.lesson-tools { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.lesson-tools button { padding:7px 12px; background:var(--surface); color:var(--ink); border:1px solid var(--line); border-radius:7px; font-size:15px; }
+.lesson-tools button[aria-pressed=true] { background:var(--soft); color:var(--accent); border-color:var(--accent); }
+.format-demo { border-collapse:separate; border-spacing:0; background:var(--surface); color:var(--ink); }
+.format-demo th { color:var(--ink); background:transparent; font-weight:400; }
+.format-demo td,.format-demo th { border:0; padding:5px; }
+.format-demo.formatted th { color:#fff; background:#176b45; font-weight:700; padding:12px; }
+.format-demo.formatted td { padding:12px; border-bottom:1px solid var(--line); }
+.format-demo.formatted tbody tr:nth-child(odd) { background:var(--soft); }
+.calculator-box { padding:22px; border:1px solid var(--line); border-radius:12px; background:var(--surface); display:grid; gap:18px; }
+.calculator-box label { display:grid; gap:5px; font-size:15px; }
+.calculator-box input,.calculator-box select { width:100%; min-width:0; padding:10px 12px; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:6px; font:inherit; }
+.calculator-inputs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.calculator-result { padding:16px; background:var(--soft); border-radius:8px; }
+.calculator-result p:last-child { margin-bottom:0; }
+.calculator-result[data-error=true] { background:var(--warn-bg); color:var(--warn); }
+.calculator-output-row { display:flex; justify-content:space-between; gap:15px; padding:7px 0; border-bottom:1px solid var(--line); }
+.calculator-output-row:last-child { border-bottom:0; }
+.calculator-output-row small { display:block; color:var(--muted); font-family:var(--mono); font-size:12px; }
+.calculator-result .calculator-output-row b { white-space:nowrap; }
+.formula-table code { white-space:nowrap; }
+.formula-table td { vertical-align:middle; }
+.lesson-footer-nav { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:26px; }
+@media(max-width:650px) {
+  .lesson-nav { grid-template-columns:1fr; gap:8px; }
+  .lesson-nav a { padding:12px 15px; }
+  .lesson-nav b { font-size:16px; }
+  .calculator-inputs { grid-template-columns:1fr; }
+  .calculator-box { padding:16px; }
+  .calculator-output-row { display:block; }
+  .calculator-output-row b { display:block; margin-top:4px; }
+}

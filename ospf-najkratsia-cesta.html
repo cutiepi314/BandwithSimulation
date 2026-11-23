@@ -1,0 +1,2404 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OSPF – Najkratšia cesta · pvalo.site</title>
+  <meta name="description" content="Interaktívna vizualizácia smerovacieho protokolu OSPF a Dijkstrovho algoritmu (SPF): výber najlacnejšej cesty medzi Počítačom A a Počítačom B cez sieť routerov s rôznymi cenami.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6fec'/%3E%3Ccircle cx='8' cy='16' r='3' fill='white'/%3E%3Ccircle cx='16' cy='9' r='3' fill='white'/%3E%3Ccircle cx='24' cy='16' r='3' fill='white'/%3E%3Cpath d='M10.5 14L13.5 11M18.5 11L21.5 14M10.5 17.5L21.5 17.5' stroke='white' stroke-width='2' stroke-linecap='round' opacity='.85'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script>
+    (() => {
+      const root = document.documentElement;
+      try {
+        const saved = localStorage.getItem('pvalo-theme');
+        if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+      } catch {}
+      root.dataset.colorScheme = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-muted: #f1f5fa;
+      --blue: #2f6fec;
+      --blue-strong: #1e57c8;
+      --text: #18263b;
+      --muted: #5b6a7f;
+      --line: #dfe6ef;
+      --green: #14815b;
+      --green-bright: #16a36e;
+      --orange: #c96a0b;
+      --amber-bg: #fff5e5;
+      --amber-border: #f2cf94;
+      --red: #c4303e;
+      --link: #245bc0;
+      --eyebrow: #536981;
+      --subtle-border: #cad8ed;
+      --button-border: #cbd6e4;
+      --accent-soft: #e8efff;
+      --accent-text: #215dcc;
+      --instruction-bg: #eaf1ff;
+      --instruction-border: #d1dffd;
+      --instruction-text: #1e427c;
+      --success-bg: #e7f8f0;
+      --success-border: #a7dec2;
+      --danger-bg: #fff0f1;
+      --danger-border: #edc3c8;
+      --wire: #b3c2d4;
+      --wire-hover: #6d89ad;
+      --node-bg: #ffffff;
+      --node-border: #8fa6c2;
+      --node-settled-bg: #eaf8f1;
+      --node-settled-border: #179468;
+      --node-frontier-bg: #eef4ff;
+      --node-frontier-border: #3b7cf0;
+      --node-active-bg: #fff4df;
+      --node-active-border: #d97706;
+      --node-path-bg: #14815b;
+      --node-path-text: #ffffff;
+      --pill-bg: #ffffff;
+      --pill-border: #c5d3e3;
+      --shadow: 0 3px 16px rgba(24, 38, 59, 0.05);
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    :root[data-color-scheme="dark"] {
+      color-scheme: dark;
+      --bg: #0d1420;
+      --surface: #151f2e;
+      --surface-muted: #1d2a3d;
+      --blue: #4c8dff;
+      --blue-strong: #73a8ff;
+      --text: #e8effa;
+      --muted: #9eb0c9;
+      --line: #2a3a52;
+      --green: #45d19b;
+      --green-bright: #37c98f;
+      --orange: #ffb454;
+      --amber-bg: #362916;
+      --amber-border: #7a5824;
+      --red: #ff8592;
+      --link: #8bb7ff;
+      --eyebrow: #9bb3d4;
+      --subtle-border: #384e6e;
+      --button-border: #3d516d;
+      --accent-soft: #1e3354;
+      --accent-text: #a9caff;
+      --instruction-bg: #182b47;
+      --instruction-border: #2e4b75;
+      --instruction-text: #c6dcff;
+      --success-bg: #12362b;
+      --success-border: #286a53;
+      --danger-bg: #3f212b;
+      --danger-border: #7d4250;
+      --wire: #516682;
+      --wire-hover: #8aa5c9;
+      --node-bg: #1b2739;
+      --node-border: #667e9e;
+      --node-settled-bg: #14362b;
+      --node-settled-border: #38c48d;
+      --node-frontier-bg: #1b3152;
+      --node-frontier-border: #619bff;
+      --node-active-bg: #3d2c15;
+      --node-active-border: #ffb454;
+      --node-path-bg: #19875e;
+      --node-path-text: #ffffff;
+      --pill-bg: #172335;
+      --pill-border: #3f5573;
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font: 15.5px/1.55 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select { font: inherit; }
+    button {
+      cursor: pointer;
+      border: 1px solid var(--button-border);
+      border-radius: 9px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 8px 13px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background .14s ease, border-color .14s ease, transform .1s ease;
+    }
+    button:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--blue); }
+    button:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { cursor: default; opacity: .45; }
+    button.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+    button.primary:hover:not(:disabled) { background: var(--blue-strong); border-color: var(--blue-strong); }
+    button.success { background: var(--green); border-color: var(--green); color: #fff; }
+    button.danger { background: var(--danger-bg); border-color: var(--danger-border); color: var(--red); }
+    button.quiet { background: transparent; border-color: transparent; color: var(--muted); }
+    button.quiet:hover:not(:disabled) { background: var(--surface-muted); color: var(--text); border-color: transparent; }
+    button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid var(--blue);
+      outline-offset: 2px;
+    }
+    a { color: var(--link); }
+    .mono { font-family: var(--mono); }
+
+    .skip { position: absolute; top: -70px; left: 12px; background: var(--surface); padding: 10px 14px; border-radius: 8px; z-index: 20; }
+    .skip:focus { top: 10px; }
+
+    /* Topbar */
+    .topbar {
+      min-height: 68px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 10px max(20px, calc((100vw - 1440px) / 2));
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .brand {
+      color: var(--text);
+      font-size: 20px;
+      letter-spacing: -.04em;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .brand span { color: var(--blue); }
+    .topbar-tools { margin-left: auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .motion { display: flex; align-items: center; gap: 7px; white-space: nowrap; cursor: pointer; }
+    .motion input { width: 17px; height: 17px; accent-color: var(--blue); cursor: pointer; }
+    .theme-switch {
+      display: flex; gap: 2px; padding: 3px;
+      background: var(--surface-muted); border: 1px solid var(--line); border-radius: 10px;
+    }
+    .theme-switch button {
+      padding: 5px 9px; border: 0; border-radius: 7px;
+      background: transparent; color: var(--muted); font-size: 12.5px; font-weight: 600;
+    }
+    .theme-switch button[aria-pressed="true"] { background: var(--surface); color: var(--accent-text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+    /* Main container */
+    main { max-width: 1480px; margin: 0 auto; padding: 28px 20px 36px; }
+
+    .intro {
+      display: flex; gap: 24px; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 22px; flex-wrap: wrap;
+    }
+    .eyebrow {
+      font-size: 11.5px; font-weight: 800; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--eyebrow); margin: 0 0 6px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 3vw, 38px);
+      letter-spacing: -.035em;
+      line-height: 1.15;
+    }
+    .intro p:not(.eyebrow) { margin: 0; color: var(--muted); max-width: 680px; }
+    .intro-note {
+      font-size: 13.5px; color: var(--muted);
+      border-left: 3px solid var(--subtle-border);
+      padding-left: 14px; max-width: 340px;
+    }
+
+    /* Tabs + Presets row */
+    .mode-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 14px; flex-wrap: wrap;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+    .tabs { display: flex; gap: 6px; }
+    .tabs button {
+      border: 0; background: transparent; color: var(--muted);
+      padding: 12px 16px; border-radius: 9px 9px 0 0;
+      border-bottom: 3px solid transparent; font-size: 14.5px;
+    }
+    .tabs button[aria-selected="true"] {
+      color: var(--accent-text);
+      background: var(--accent-soft);
+      border-bottom-color: var(--blue);
+    }
+    .presets { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding-bottom: 8px; }
+    .presets-label { font-size: 12.5px; font-weight: 700; color: var(--muted); margin-right: 2px; }
+    .preset-btn {
+      padding: 6px 11px; font-size: 12.5px; border-radius: 999px;
+      background: var(--surface); border: 1px solid var(--line); color: var(--text);
+    }
+    .preset-btn[aria-pressed="true"] {
+      background: var(--accent-soft); border-color: var(--blue); color: var(--accent-text);
+    }
+
+    /* Quiz bar */
+    .quiz-panel {
+      background: var(--instruction-bg);
+      border: 1px solid var(--instruction-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 18px;
+    }
+    .quiz-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+    .quiz-path-display {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin-top: 10px; padding: 10px 12px;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    }
+    .quiz-feedback {
+      margin-top: 12px; padding: 12px 15px; border-radius: 10px; font-weight: 500;
+    }
+    .quiz-feedback.ok { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--green); }
+    .quiz-feedback.warn { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--orange); }
+
+    /* Main lab grid */
+    .lab {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 375px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    /* Left Network Card */
+    .network-card { padding: 18px 18px 16px; overflow: hidden; }
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .card-head h2 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+    .badge-cost {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
+      background: var(--success-bg); border: 1px solid var(--success-border);
+      color: var(--green); font-weight: 700; font-size: 13.5px;
+    }
+    .badge-cost.down {
+      background: var(--danger-bg); border-color: var(--danger-border); color: var(--red);
+    }
+    .badge-cost.hidden-mode {
+      background: var(--surface-muted); border-color: var(--line); color: var(--muted);
+    }
+
+    /* SPF Stepper Bar */
+    .stepper {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; flex-wrap: wrap;
+      background: var(--surface-muted);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 9px 12px;
+      margin-bottom: 12px;
+    }
+    .stepper-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .stepper-controls button { padding: 6px 11px; font-size: 13px; }
+    .step-pill {
+      font-size: 13px; font-weight: 700; color: var(--accent-text);
+      background: var(--accent-soft); padding: 5px 11px; border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    /* Narrative banner */
+    .narrative {
+      padding: 12px 15px;
+      border-radius: 11px;
+      background: var(--instruction-bg);
+      border: 1px solid var(--instruction-border);
+      color: var(--instruction-text);
+      font-size: 14px;
+      margin-bottom: 10px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .narrative.done {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+      color: var(--text);
+    }
+    .narrative.error {
+      background: var(--danger-bg);
+      border-color: var(--danger-border);
+      color: var(--red);
+    }
+    .narrative-dot {
+      flex: none; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--blue);
+    }
+    .narrative.done .narrative-dot { background: var(--green); }
+    .narrative.error .narrative-dot { background: var(--red); }
+
+    /* SVG Diagram */
+    .diagram-wrap {
+      position: relative;
+      border-radius: 12px;
+      background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--blue) 4%, transparent), transparent 72%);
+    }
+    #topology-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+    }
+
+    /* SVG Element Styles */
+    .lan-wire { stroke: var(--wire); stroke-width: 3.5; stroke-linecap: round; }
+    .lan-wire.active { stroke: var(--green-bright); stroke-width: 5.5; }
+    .lan-wire.down { stroke: var(--red); stroke-dasharray: 6 6; opacity: .55; }
+
+    .link-group { cursor: pointer; }
+    .link-hit { fill: none; stroke: transparent; stroke-width: 26; }
+    .link-line {
+      fill: none;
+      stroke: var(--wire);
+      stroke-linecap: round;
+      transition: stroke .2s ease, stroke-width .2s ease, opacity .2s ease;
+    }
+    .link-group:hover .link-line:not(.down) { stroke: var(--wire-hover); }
+    .link-line.tree { stroke: var(--blue); opacity: .78; }
+    .link-line.checking { stroke: var(--orange); stroke-width: 5.5 !important; }
+    .link-line.improved { stroke: var(--green-bright); stroke-width: 6 !important; }
+    .link-line.optimal { stroke: var(--green-bright); stroke-width: 6.5 !important; }
+    .link-line.preview { stroke: var(--blue); stroke-width: 5.5 !important; stroke-dasharray: 9 5; }
+    .link-line.quiz-chosen { stroke: var(--blue); stroke-width: 6 !important; }
+    .link-line.down { stroke: var(--red); stroke-width: 2.5 !important; stroke-dasharray: 6 6; opacity: .42; }
+
+    .link-flow {
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2.4;
+      stroke-dasharray: 5 11;
+      stroke-linecap: round;
+      opacity: .75;
+      pointer-events: none;
+      animation: flowDash 1.1s linear infinite;
+    }
+    .no-motion .link-flow { animation: none; opacity: 0; }
+    @keyframes flowDash {
+      from { stroke-dashoffset: 32; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    .cost-pill-rect {
+      fill: var(--pill-bg);
+      stroke: var(--pill-border);
+      stroke-width: 1.6;
+      transition: stroke .15s ease, fill .15s ease;
+    }
+    .link-group:hover .cost-pill-rect { stroke: var(--blue); }
+    .link-group.selected .cost-pill-rect {
+      stroke: var(--blue);
+      stroke-width: 2.6;
+      fill: var(--accent-soft);
+    }
+    .link-group.optimal .cost-pill-rect {
+      fill: var(--success-bg);
+      stroke: var(--green-bright);
+      stroke-width: 2;
+    }
+    .link-group.checking .cost-pill-rect {
+      fill: var(--amber-bg);
+      stroke: var(--orange);
+      stroke-width: 2.2;
+    }
+    .link-group.down .cost-pill-rect {
+      fill: var(--danger-bg);
+      stroke: var(--red);
+    }
+    .cost-pill-text {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      fill: var(--text);
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+    .link-group.optimal .cost-pill-text { fill: var(--green); }
+    .link-group.down .cost-pill-text { fill: var(--red); }
+
+    /* Router & PC Nodes */
+    .router-node { cursor: pointer; }
+    .router-halo {
+      fill: none;
+      stroke: var(--orange);
+      stroke-width: 3;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .router-node.active .router-halo {
+      opacity: .85;
+      animation: pulseRing 1.4s ease-out infinite;
+    }
+    .no-motion .router-node.active .router-halo { animation: none; }
+    @keyframes pulseRing {
+      0% { transform: scale(1); opacity: .9; }
+      100% { transform: scale(1.28); opacity: 0; }
+    }
+
+    .router-circle {
+      fill: var(--node-bg);
+      stroke: var(--node-border);
+      stroke-width: 2.4;
+      transition: fill .2s ease, stroke .2s ease;
+    }
+    .router-node:hover .router-circle { stroke: var(--blue); }
+    .router-node.selected .router-circle { stroke: var(--blue); stroke-width: 3.4; }
+    .router-node.frontier .router-circle {
+      fill: var(--node-frontier-bg);
+      stroke: var(--node-frontier-border);
+      stroke-dasharray: 5 3;
+    }
+    .router-node.settled .router-circle {
+      fill: var(--node-settled-bg);
+      stroke: var(--node-settled-border);
+      stroke-dasharray: none;
+    }
+    .router-node.active .router-circle {
+      fill: var(--node-active-bg);
+      stroke: var(--node-active-border);
+      stroke-width: 3.4;
+      stroke-dasharray: none;
+    }
+    .router-node.on-path .router-circle {
+      fill: var(--node-path-bg);
+      stroke: var(--node-path-bg);
+      stroke-width: 3;
+    }
+    .router-node.quiz-next .router-circle {
+      stroke: var(--blue);
+      stroke-dasharray: 4 3;
+      fill: var(--accent-soft);
+    }
+    .router-node.quiz-in-path .router-circle {
+      fill: var(--blue);
+      stroke: var(--blue-strong);
+    }
+    .router-node.down .router-circle {
+      fill: var(--danger-bg);
+      stroke: var(--red);
+      stroke-dasharray: 5 4;
+      opacity: .75;
+    }
+
+    .router-label {
+      font-size: 14px;
+      font-weight: 800;
+      fill: var(--text);
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+    .router-node.on-path .router-label,
+    .router-node.quiz-in-path .router-label { fill: var(--node-path-text); }
+    .router-node.down .router-label { fill: var(--red); }
+
+    .router-arrows {
+      stroke: var(--muted);
+      stroke-width: 1.4;
+      fill: none;
+      opacity: .35;
+      pointer-events: none;
+    }
+    .router-node.on-path .router-arrows,
+    .router-node.quiz-in-path .router-arrows { stroke: #fff; opacity: .45; }
+
+    .dist-badge-rect {
+      fill: var(--surface);
+      stroke: var(--line);
+      stroke-width: 1.4;
+    }
+    .dist-badge.settled .dist-badge-rect { fill: var(--success-bg); stroke: var(--green-bright); }
+    .dist-badge.frontier .dist-badge-rect { fill: var(--accent-soft); stroke: var(--blue); }
+    .dist-badge.active .dist-badge-rect { fill: var(--amber-bg); stroke: var(--orange); }
+    .dist-badge.relaxed .dist-badge-rect { fill: var(--green-bright); stroke: var(--green-bright); }
+    .dist-badge-text {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      fill: var(--muted);
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+    .dist-badge.settled .dist-badge-text { fill: var(--green); }
+    .dist-badge.frontier .dist-badge-text { fill: var(--accent-text); }
+    .dist-badge.active .dist-badge-text { fill: var(--orange); }
+    .dist-badge.relaxed .dist-badge-text { fill: #fff; }
+
+    /* PC boxes */
+    .pc-box {
+      fill: var(--surface-muted);
+      stroke: var(--node-border);
+      stroke-width: 2;
+    }
+    .pc-box.active { stroke: var(--green-bright); fill: var(--success-bg); }
+    .pc-title { font-size: 14px; font-weight: 800; fill: var(--text); text-anchor: middle; }
+    .pc-sub { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); text-anchor: middle; }
+
+    /* Animated packet */
+    .packet-dot {
+      fill: #ffffff;
+      stroke: var(--blue-strong);
+      stroke-width: 2.8;
+      filter: drop-shadow(0 2px 5px rgba(20, 129, 91, 0.45));
+      pointer-events: none;
+    }
+    .packet-dot.reply {
+      fill: var(--blue);
+      stroke: #ffffff;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px 18px;
+      justify-content: center;
+      margin-top: 8px; padding-top: 10px;
+      border-top: 1px solid var(--line);
+      font-size: 12.5px; color: var(--muted); font-weight: 600;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 13px; height: 13px; border-radius: 4px; display: inline-block; }
+    .swatch.line { height: 4px; width: 18px; border-radius: 99px; }
+
+    /* Alternative Paths Comparison */
+    .paths-box {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .paths-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 10px; margin-bottom: 10px; flex-wrap: wrap;
+    }
+    .paths-head h3 { margin: 0; font-size: 14.5px; }
+    .paths-hint { font-size: 12.5px; color: var(--muted); }
+    .path-list { display: grid; gap: 7px; }
+    .path-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--surface-muted);
+      cursor: pointer;
+      transition: border-color .14s ease, background .14s ease;
+      font-size: 13.5px;
+    }
+    .path-row:hover { border-color: var(--blue); background: var(--accent-soft); }
+    .path-row.best {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+    }
+    .path-rank {
+      font-family: var(--mono); font-size: 11.5px; font-weight: 700;
+      padding: 2px 7px; border-radius: 6px;
+      background: var(--surface); color: var(--muted);
+    }
+    .path-row.best .path-rank { background: var(--green); color: #fff; }
+    .path-nodes { font-family: var(--mono); font-weight: 600; font-size: 12.5px; overflow-wrap: anywhere; }
+    .path-meta { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .path-hops { font-size: 12px; color: var(--muted); }
+    .path-cost {
+      font-family: var(--mono); font-weight: 800; font-size: 13.5px;
+      padding: 2px 8px; border-radius: 6px; background: var(--surface);
+    }
+    .path-row.best .path-cost { color: var(--green); }
+
+    /* Right Sidebar */
+    .sidebar { display: grid; gap: 16px; }
+    .side-card { padding: 18px; }
+    .side-card h2 { margin: 0 0 10px; font-size: 16px; letter-spacing: -.02em; }
+
+    .route-status {
+      font-size: 17px; font-weight: 800; margin: 0 0 6px;
+    }
+    .route-status.up { color: var(--green); }
+    .route-status.down { color: var(--red); }
+
+    .route-chips {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 5px;
+      margin: 10px 0;
+    }
+    .chip {
+      font-family: var(--mono); font-size: 12.5px; font-weight: 700;
+      padding: 3px 8px; border-radius: 7px;
+      background: var(--surface-muted); border: 1px solid var(--line);
+    }
+    .chip.best { background: var(--success-bg); border-color: var(--success-border); color: var(--green); }
+    .chip-arrow { color: var(--muted); font-size: 12px; }
+
+    .metrics-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      margin: 12px 0;
+    }
+    .metric-box {
+      padding: 10px 12px; border-radius: 10px;
+      background: var(--surface-muted); border: 1px solid var(--line);
+    }
+    .metric-label { font-size: 11.5px; color: var(--muted); font-weight: 600; display: block; }
+    .metric-val { font-family: var(--mono); font-size: 20px; font-weight: 800; color: var(--text); }
+    .metric-val.green { color: var(--green); }
+
+    .insight-note {
+      font-size: 13px; color: var(--muted);
+      background: var(--surface-muted);
+      border-left: 3px solid var(--blue);
+      padding: 9px 11px; border-radius: 0 8px 8px 0;
+      margin: 10px 0 14px;
+    }
+
+    .actions-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .actions-row button { flex: 1 1 auto; }
+
+    /* Inspector Panel */
+    .inspector-empty {
+      font-size: 13.5px; color: var(--muted);
+      padding: 10px 12px; border-radius: 10px;
+      background: var(--surface-muted); border: 1px dashed var(--button-border);
+    }
+    .cost-control-row {
+      display: flex; align-items: center; gap: 10px; margin: 10px 0;
+    }
+    .cost-control-row input[type="range"] { flex: 1; accent-color: var(--blue); }
+    .cost-control-row input[type="number"] {
+      width: 78px; padding: 7px 9px; border-radius: 8px;
+      border: 1px solid var(--button-border);
+      background: var(--surface); color: var(--text);
+      font-family: var(--mono); font-weight: 700; text-align: center;
+    }
+    .speed-presets {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+      margin: 10px 0 12px;
+    }
+    .speed-btn {
+      padding: 6px 6px; font-size: 11.5px; border-radius: 8px;
+      display: flex; flex-direction: column; align-items: center; line-height: 1.25;
+    }
+    .speed-btn strong { font-family: var(--mono); font-size: 12.5px; color: var(--accent-text); }
+    .speed-btn span { color: var(--muted); font-weight: 500; font-size: 11px; }
+
+    /* SPF Table */
+    .spf-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .spf-table th {
+      text-align: left; font-size: 11px; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--muted);
+      padding: 6px 6px; border-bottom: 1px solid var(--line);
+    }
+    .spf-table td {
+      padding: 6px 6px; border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+    .spf-table tr:last-child td { border-bottom: 0; }
+    .spf-table tr.is-active { background: var(--amber-bg); }
+    .spf-table tr.is-improved { background: var(--success-bg); }
+    .spf-table tr.is-down { opacity: .55; }
+
+    .state-tag {
+      display: inline-block; padding: 2px 7px; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+    }
+    .state-tag.settled { background: var(--success-bg); color: var(--green); }
+    .state-tag.active { background: var(--amber-bg); color: var(--orange); }
+    .state-tag.frontier { background: var(--accent-soft); color: var(--accent-text); }
+    .state-tag.unvisited { background: var(--surface-muted); color: var(--muted); }
+    .state-tag.down { background: var(--danger-bg); color: var(--red); }
+
+    .delta-old { text-decoration: line-through; color: var(--muted); font-size: 11px; margin-right: 4px; }
+    .delta-new { color: var(--green); font-weight: 800; }
+
+    /* Educational details */
+    details.explain {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 16px 20px;
+      border-radius: 14px;
+    }
+    details.explain summary { cursor: pointer; font-weight: 700; font-size: 15px; }
+    details.explain p { max-width: 960px; color: var(--text); }
+    details.explain p:first-of-type { margin-top: 12px; }
+    .explain-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px; margin-top: 14px;
+    }
+    .explain-step {
+      padding: 12px 14px; border-radius: 10px;
+      background: var(--surface-muted); border: 1px solid var(--line);
+      font-size: 13.5px;
+    }
+    .explain-step strong { display: block; margin-bottom: 4px; color: var(--accent-text); }
+    pre.cli {
+      margin: 12px 0; padding: 13px 16px; border-radius: 10px;
+      background: #111827; color: #e5edf9;
+      font-family: var(--mono); font-size: 13px; overflow-x: auto;
+      line-height: 1.55;
+    }
+    .cost-ref-table {
+      width: 100%; max-width: 560px; border-collapse: collapse;
+      font-size: 13.5px; margin: 12px 0;
+    }
+    .cost-ref-table th, .cost-ref-table td {
+      padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left;
+    }
+    .cost-ref-table th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+
+    footer {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      margin-top: 26px; padding-top: 16px;
+      border-top: 1px solid var(--line);
+      font-size: 13px; color: var(--muted);
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 1120px) {
+      .lab { grid-template-columns: 1fr; }
+      .sidebar { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    }
+    @media (max-width: 650px) {
+      .topbar > span { display: none; }
+      main { padding: 18px 12px 24px; }
+      .network-card, .side-card { padding: 14px; }
+      .path-row { grid-template-columns: auto 1fr; }
+      .path-meta { grid-column: 1 / -1; justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Preskočiť na obsah</a>
+
+  <header class="topbar">
+    <a href="index.html" class="brand">pvalo<span>.site</span></a>
+    <span>Počítačové siete / OSPF smerovanie</span>
+    <div class="topbar-tools">
+      <label class="motion"><input type="checkbox" id="animations" checked> Animácie</label>
+      <div class="theme-switch" role="group" aria-label="Farebný režim">
+        <button type="button" data-theme-choice="auto" aria-pressed="true" title="Podľa nastavenia systému">◐ Auto</button>
+        <button type="button" data-theme-choice="light" aria-pressed="false">☀ Svetlý</button>
+        <button type="button" data-theme-choice="dark" aria-pressed="false">☾ Tmavý</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="intro">
+      <div>
+        <p class="eyebrow">OSPF · DIJKSTROV ALGORITMUS (SPF)</p>
+        <h1>Ako OSPF vyberá najkratšiu cestu</h1>
+        <p>Sleduj krok za krokom, ako smerovací protokol OSPF spočíta najlacnejšiu trasu medzi <strong>Počítačom A</strong> a <strong>Počítačom B</strong> cez sieť 8 routerov s rôznymi cenami spojov.</p>
+      </div>
+      <div class="intro-note">
+        <strong>Nižšia celková cena = lepšia cesta.</strong><br>
+        Klikni na ľubovoľný spoj alebo router a zmeň cenu či simuluj výpadok.
+      </div>
+    </div>
+
+    <div class="mode-bar">
+      <nav class="tabs" role="tablist" aria-label="Režimy vizualizácie">
+        <button id="tab-explore" role="tab" aria-selected="true" data-mode="explore">Skúmanie a SPF kroky</button>
+        <button id="tab-quiz" role="tab" aria-selected="false" data-mode="quiz">Vyskúšaj sa: Tipni trasu</button>
+      </nav>
+      <div class="presets" role="group" aria-label="Predpripravené scenáre">
+        <span class="presets-label">Scenár:</span>
+        <button type="button" class="preset-btn" data-preset="classic" aria-pressed="true">Klasika (cena vs. skoky)</button>
+        <button type="button" class="preset-btn" data-preset="outage" aria-pressed="false">Výpadok optiky</button>
+        <button type="button" class="preset-btn" data-preset="ecmp" aria-pressed="false">Rovnocenné cesty (ECMP)</button>
+        <button type="button" class="preset-btn" data-preset="bottleneck" aria-pressed="false">Úzke hrdlo v strede</button>
+        <button type="button" class="preset-btn" data-preset="random" aria-pressed="false">🎲 Náhodné ceny</button>
+      </div>
+    </div>
+
+    <!-- Quiz banner (only in quiz mode) -->
+    <section id="quiz-panel" class="quiz-panel" hidden>
+      <div class="quiz-top">
+        <div>
+          <p class="eyebrow" style="margin-bottom:4px">INTERAKTÍVNA ÚLOHA</p>
+          <strong>Klikaj postupne na routery od R1 po R8 a nájdi trasu s najnižšou celkovou cenou.</strong>
+        </div>
+        <div class="stepper-controls">
+          <button type="button" id="quiz-undo">↶ Krok späť</button>
+          <button type="button" id="quiz-clear">Vymazať výber</button>
+          <button type="button" id="quiz-verify" class="primary" disabled>Overiť moju trasu</button>
+          <button type="button" id="quiz-new">🎲 Nové ceny</button>
+        </div>
+      </div>
+      <div class="quiz-path-display" id="quiz-path-display"></div>
+      <div id="quiz-feedback" class="quiz-feedback" hidden role="status"></div>
+    </section>
+
+    <section class="lab" aria-label="Interaktívna OSPF sieť">
+      <!-- Left: Topology & SPF Stepper -->
+      <div class="card network-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow" style="margin-bottom:3px">ŽIVÁ TOPOLÓGIA SIETE · 8 ROUTEROV, 15 SPOJOV</p>
+            <h2>Počítač A ↔ Počítač B</h2>
+          </div>
+          <div id="top-cost-badge" class="badge-cost">Najnižšia cena OSPF: 30</div>
+        </div>
+
+        <!-- Stepper controls (explore mode) -->
+        <div class="stepper" id="stepper-bar">
+          <div class="stepper-controls">
+            <button type="button" id="step-start" title="Na začiatok výpočtu">⏮ Začiatok</button>
+            <button type="button" id="step-prev" title="Predchádzajúci krok">◀ Späť</button>
+            <button type="button" id="step-next" class="primary" title="Ďalší krok Dijkstrovho algoritmu">▶ Ďalší krok</button>
+            <button type="button" id="step-play" title="Automatické prehrávanie krokov">⏯ Prehrať</button>
+            <button type="button" id="step-end" title="Zobraziť hotový výsledok">⏭ Výsledok</button>
+          </div>
+          <span class="step-pill" id="step-indicator">Výsledok · krok 8 / 8</span>
+        </div>
+
+        <div class="narrative done" id="narrative-box" role="status" aria-live="polite">
+          <span class="narrative-dot" aria-hidden="true"></span>
+          <span id="narrative-text"></span>
+        </div>
+
+        <div class="diagram-wrap">
+          <svg id="topology-svg" viewBox="0 0 1000 520" role="img" aria-label="Topológia siete s Počítačom A, Počítačom B a ôsmimi routermi R1 až R8"></svg>
+        </div>
+
+        <div class="legend" aria-label="Legenda schémy">
+          <span class="legend-item"><span class="swatch line" style="background:var(--green-bright)"></span> Vybraná OSPF trasa</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--node-active-bg);border:2px solid var(--node-active-border)"></span> Aktuálne skúmaný router</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--node-settled-bg);border:2px solid var(--node-settled-border)"></span> Uzavretý (potvrdený)</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--node-frontier-bg);border:2px dashed var(--node-frontier-border)"></span> Kandidát (čaká na potvrdenie)</span>
+          <span class="legend-item"><span class="swatch line" style="background:var(--red)"></span> Výpadok spoja / routera</span>
+        </div>
+
+        <div class="paths-box" id="paths-box">
+          <div class="paths-head">
+            <h3>Porovnanie možných trás (Top 5)</h3>
+            <span class="paths-hint">Prejdi myšou na riadok a porovnaj trasu v schéme</span>
+          </div>
+          <div class="path-list" id="path-list"></div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside class="sidebar" aria-label="Ovládanie, úprava cien a SPF tabuľka">
+        <!-- Route Summary -->
+        <div class="card side-card">
+          <p class="eyebrow">VÝSLEDOK OSPF</p>
+          <p class="route-status up" id="route-status">Trasa nájdená</p>
+          <div id="route-paths-container"></div>
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <span class="metric-label">Celková cena OSPF</span>
+              <span class="metric-val green" id="metric-cost">30</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Počet skokov (spoje)</span>
+              <span class="metric-val" id="metric-hops">4</span>
+            </div>
+          </div>
+          <div class="insight-note" id="insight-note"></div>
+          <div class="actions-row">
+            <button type="button" id="send-packet" class="primary">Poslať paket A → B</button>
+            <button type="button" id="reset-scenario">Obnoviť scenár</button>
+          </div>
+        </div>
+
+        <!-- Inspector for clicked link or router -->
+        <div class="card side-card">
+          <p class="eyebrow">ÚPRAVA SPOJA ALEBO ROUTERA</p>
+          <h2 id="inspector-title">Vyber prvok v schéme</h2>
+          <div id="inspector-body"></div>
+        </div>
+
+        <!-- Live Dijkstra / SPF Table -->
+        <div class="card side-card" id="spf-table-card">
+          <p class="eyebrow">DIJKSTROVA TABUĽKA (SPF Z R1)</p>
+          <h2 id="spf-table-heading">Stav výpočtu po krokoch</h2>
+          <table class="spf-table" aria-label="Dijkstrova tabuľka vzdialeností od R1">
+            <thead>
+              <tr>
+                <th>Router</th>
+                <th>Cena z R1</th>
+                <th>Cez</th>
+                <th>Stav</th>
+              </tr>
+            </thead>
+            <tbody id="spf-tbody"></tbody>
+          </table>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Educational explanations -->
+    <details class="explain">
+      <summary>Ako funguje OSPF a Dijkstrov algoritmus (SPF)?</summary>
+      <p><strong>OSPF (Open Shortest Path First)</strong> je tzv. <em>link-state</em> smerovací protokol. Na rozdiel od staršieho protokolu RIP nepočíta iba počet skokov (routerov po ceste), ale sčítava <strong>cenu (cost)</strong> jednotlivých spojov. Štyri rýchle optické spoje s cenou 5 + 5 + 10 + 10 = 30 tak bez váhania porazia tri pomalé spoje s cenou 40 + 50 + 35 = 125.</p>
+      <div class="explain-grid">
+        <div class="explain-step">
+          <strong>1. Zistenie susedov (Hello)</strong>
+          Každý router pošle pakety Hello a zistí, s ktorými susednými routermi je priamo prepojený a či spoj funguje.
+        </div>
+        <div class="explain-step">
+          <strong>2. Mapa celej siete (LSDB)</strong>
+          Routery si vymenia správy LSA o svojich spojoch a ich cenách. Každý router tak získa rovnakú mapu siete (Link-State Database).
+        </div>
+        <div class="explain-step">
+          <strong>3. Výpočet SPF (Dijkstra)</strong>
+          Každý router spustí Dijkstrov algoritmus so sebou ako koreňom (tu R1): vždy uzavrie neuzavretý router s najnižšou priebežnou cenou a skúsi zlepšiť ceny jeho susedov.
+        </div>
+        <div class="explain-step">
+          <strong>4. Smerovacia tabuľka & ECMP</strong>
+          Najlacnejšia trasa sa zapíše do smerovacej tabuľky. Ak majú dve cesty rovnakú najnižšiu cenu, OSPF môže využiť obe naraz (ECMP – Equal-Cost Multi-Path).
+        </div>
+      </div>
+      <p style="margin-top:14px;color:var(--muted);font-size:13.5px">Poznámka k modelu: Lokálne prístupové LAN úseky medzi Počítačom A a R1 (a medzi R8 a Počítačom B) sú rovnaké pre všetky trasy, preto zobrazovaná celková cena OSPF vyjadruje súčet cien spojov medzi routermi R1 až R8.</p>
+    </details>
+
+    <details class="explain" id="cisco-cli-details">
+      <summary>Ako sa počíta cena OSPF a nastavuje na Cisco routeri?</summary>
+      <p>OSPF automaticky počíta cenu rozhrania zo vzorca: <code class="mono">Cena = Referenčná šírka pásma / Šírka pásma rozhrania</code>. Štandardná referenčná šírka pásma v Cisco IOS je 100 Mbps (preto sa v moderných sieťach často zvyšuje napr. na 10 Gbps príkazom <code class="mono">auto-cost reference-bandwidth 10000</code>). Cenu každého rozhrania však môže správca kedykoľvek nastaviť ručne príkazom <code class="mono">ip ospf cost</code>.</p>
+      <table class="cost-ref-table">
+        <thead>
+          <tr><th>Typ spoja / rýchlosť</th><th>Pri ref. 100 Mbps</th><th>Pri ref. 10 Gbps</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>10 Gbps optika</td><td class="mono">1</td><td class="mono">1</td></tr>
+          <tr><td>1 Gbps optika / Ethernet</td><td class="mono">1</td><td class="mono">10</td></tr>
+          <tr><td>100 Mbps FastEthernet</td><td class="mono">1</td><td class="mono">100</td></tr>
+          <tr><td>10 Mbps Ethernet</td><td class="mono">10</td><td class="mono">1000</td></tr>
+          <tr><td>Serial T1 (1,544 Mbps)</td><td class="mono">64</td><td class="mono">6476</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Príklad konfigurácie pre práve vybraný spoj v simulácii:</strong></p>
+      <pre class="cli"><code id="cli-snippet"></code></pre>
+    </details>
+
+    <footer>
+      <span>Didaktická vizualizácia OSPF · funguje plne lokálne v prehliadači bez registrácie.</span>
+      <a href="index.html">Späť na pvalo.site</a>
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      // ============================================================
+      // 1. TOPOLOGY DEFINITION (8 routers, 15 non-crossing links)
+      // ============================================================
+      const NODES = [
+        { id: 'R1', x: 195, y: 260, ip: '10.0.0.1', role: 'Brána pre Počítač A', badgePos: 'top' },
+        { id: 'R2', x: 365, y: 100, ip: '10.0.0.2', role: 'Jadro siete (horné)', badgePos: 'top' },
+        { id: 'R3', x: 365, y: 260, ip: '10.0.0.3', role: 'Jadro siete (stred)', badgePos: 'tr' },
+        { id: 'R4', x: 365, y: 420, ip: '10.0.0.4', role: 'Jadro siete (dolné)', badgePos: 'bottom' },
+        { id: 'R5', x: 605, y: 100, ip: '10.0.0.5', role: 'Jadro siete (horné)', badgePos: 'top' },
+        { id: 'R6', x: 605, y: 260, ip: '10.0.0.6', role: 'Jadro siete (stred)', badgePos: 'tr' },
+        { id: 'R7', x: 605, y: 420, ip: '10.0.0.7', role: 'Jadro siete (dolné)', badgePos: 'bottom' },
+        { id: 'R8', x: 785, y: 260, ip: '10.0.0.8', role: 'Brána pre Počítač B', badgePos: 'top' }
+      ];
+
+      const PC_A = { id: 'PCA', label: 'Počítač A', ip: '192.168.10.10', x: 66, y: 260 };
+      const PC_B = { id: 'PCB', label: 'Počítač B', ip: '192.168.20.10', x: 934, y: 260 };
+
+      const BASE_EDGES = [
+        { id: 'R1-R2', a: 'R1', b: 'R2', ifaceA: 'Gi0/0', ifaceB: 'Gi0/0' },
+        { id: 'R1-R3', a: 'R1', b: 'R3', ifaceA: 'Gi0/1', ifaceB: 'Gi0/0' },
+        { id: 'R1-R4', a: 'R1', b: 'R4', ifaceA: 'Gi0/2', ifaceB: 'Gi0/0' },
+        { id: 'R2-R3', a: 'R2', b: 'R3', ifaceA: 'Gi0/1', ifaceB: 'Gi0/1' },
+        { id: 'R3-R4', a: 'R3', b: 'R4', ifaceA: 'Gi0/2', ifaceB: 'Gi0/1' },
+        { id: 'R2-R5', a: 'R2', b: 'R5', ifaceA: 'Gi0/2', ifaceB: 'Gi0/0' },
+        { id: 'R2-R6', a: 'R2', b: 'R6', ifaceA: 'Gi0/3', ifaceB: 'Gi0/0' },
+        { id: 'R3-R6', a: 'R3', b: 'R6', ifaceA: 'Gi0/3', ifaceB: 'Gi0/1' },
+        { id: 'R4-R6', a: 'R4', b: 'R6', ifaceA: 'Gi0/2', ifaceB: 'Gi0/2' },
+        { id: 'R4-R7', a: 'R4', b: 'R7', ifaceA: 'Gi0/3', ifaceB: 'Gi0/0' },
+        { id: 'R5-R6', a: 'R5', b: 'R6', ifaceA: 'Gi0/1', ifaceB: 'Gi0/3' },
+        { id: 'R6-R7', a: 'R6', b: 'R7', ifaceA: 'Gi0/4', ifaceB: 'Gi0/1' },
+        { id: 'R5-R8', a: 'R5', b: 'R8', ifaceA: 'Gi0/2', ifaceB: 'Gi0/0' },
+        { id: 'R6-R8', a: 'R6', b: 'R8', ifaceA: 'Gi0/5', ifaceB: 'Gi0/1' },
+        { id: 'R7-R8', a: 'R7', b: 'R8', ifaceA: 'Gi0/2', ifaceB: 'Gi0/2' }
+      ];
+
+      const PRESETS = {
+        classic: {
+          name: 'Klasika (cena vs. skoky)',
+          costs: {
+            'R1-R2': 10, 'R1-R3': 40, 'R1-R4': 15,
+            'R2-R3': 18, 'R3-R4': 14,
+            'R2-R5': 45, 'R2-R6': 5, 'R3-R6': 50, 'R4-R6': 20, 'R4-R7': 12,
+            'R5-R6': 5, 'R6-R7': 18,
+            'R5-R8': 10, 'R6-R8': 35, 'R7-R8': 15
+          },
+          downEdges: [],
+          downNodes: []
+        },
+        outage: {
+          name: 'Výpadok optiky',
+          costs: {
+            'R1-R2': 10, 'R1-R3': 40, 'R1-R4': 15,
+            'R2-R3': 18, 'R3-R4': 14,
+            'R2-R5': 45, 'R2-R6': 5, 'R3-R6': 50, 'R4-R6': 20, 'R4-R7': 12,
+            'R5-R6': 5, 'R6-R7': 18,
+            'R5-R8': 10, 'R6-R8': 35, 'R7-R8': 15
+          },
+          downEdges: ['R2-R6'],
+          downNodes: []
+        },
+        ecmp: {
+          name: 'Rovnocenné cesty (ECMP)',
+          costs: {
+            'R1-R2': 10, 'R1-R3': 35, 'R1-R4': 10,
+            'R2-R3': 20, 'R3-R4': 20,
+            'R2-R5': 10, 'R2-R6': 25, 'R3-R6': 30, 'R4-R6': 25, 'R4-R7': 10,
+            'R5-R6': 18, 'R6-R7': 18,
+            'R5-R8': 10, 'R6-R8': 28, 'R7-R8': 10
+          },
+          downEdges: [],
+          downNodes: []
+        },
+        bottleneck: {
+          name: 'Úzke hrdlo v strede',
+          costs: {
+            'R1-R2': 12, 'R1-R3': 8, 'R1-R4': 16,
+            'R2-R3': 10, 'R3-R4': 10,
+            'R2-R5': 15, 'R2-R6': 64, 'R3-R6': 64, 'R4-R6': 64, 'R4-R7': 14,
+            'R5-R6': 12, 'R6-R7': 12,
+            'R5-R8': 11, 'R6-R8': 8, 'R7-R8': 13
+          },
+          downEdges: [],
+          downNodes: []
+        }
+      };
+
+      const SPEED_PRESETS = [
+        { label: '10G optika', cost: 1 },
+        { label: '1G optika', cost: 5 },
+        { label: '100M LAN', cost: 10 },
+        { label: 'WAN linka', cost: 25 },
+        { label: 'Pomalý spoj', cost: 50 },
+        { label: 'Serial T1', cost: 64 }
+      ];
+
+      const nodeById = Object.fromEntries(NODES.map(n => [n.id, n]));
+
+      // ============================================================
+      // 2. APPLICATION STATE
+      // ============================================================
+      const state = {
+        mode: 'explore', // 'explore' | 'quiz'
+        preset: 'classic',
+        edges: [],
+        downNodes: new Set(),
+        selected: { type: 'edge', id: 'R2-R6' },
+        hoverPath: null, // array of node IDs when hovering top-5 list
+        spfSteps: [],
+        stepIndex: 0,
+        playing: false,
+        playTimer: null,
+        animations: !matchMedia('(prefers-reduced-motion: reduce)').matches,
+        // Quiz state
+        quizPath: ['R1'],
+        quizChecked: false,
+        // Packet animation
+        packets: [],
+        packetRaf: null,
+        ecmpToggle: 0
+      };
+
+      // ============================================================
+      // 3. DIJKSTRA / SPF ENGINE & TOP-K SIMPLE PATHS
+      // ============================================================
+      function edgeMap() {
+        const map = new Map();
+        for (const e of state.edges) {
+          map.set(e.id, e);
+          map.set(`${e.b}-${e.a}`, e);
+        }
+        return map;
+      }
+
+      function getEdgeBetween(u, v) {
+        return state.edges.find(e => (e.a === u && e.b === v) || (e.a === v && e.b === u));
+      }
+
+      function computeDijkstraTrace() {
+        const steps = [];
+        const dist = {};
+        const preds = {};
+        const settled = new Set();
+        for (const n of NODES) {
+          dist[n.id] = Infinity;
+          preds[n.id] = [];
+        }
+
+        if (state.downNodes.has('R1') || state.downNodes.has('R8')) {
+          const broken = state.downNodes.has('R1') && state.downNodes.has('R8')
+            ? 'R1 aj R8'
+            : (state.downNodes.has('R1') ? 'R1 (brána Počítača A)' : 'R8 (brána Počítača B)');
+          steps.push({
+            index: 0,
+            isFinal: true,
+            reachable: false,
+            activeNode: null,
+            settled: new Set(),
+            dist: { ...dist },
+            preds: structuredClone(preds),
+            checks: [],
+            optimalPaths: [],
+            optimalEdgeIds: new Set(),
+            optimalNodeIds: new Set(),
+            narrative: `Smerovanie zlyhalo: router ${broken} je vypnutý. Počítač A a Počítač B spolu nemôžu komunikovať.`
+          });
+          return steps;
+        }
+
+        dist['R1'] = 0;
+
+        // Step 0: Initialization
+        steps.push({
+          index: 0,
+          isFinal: false,
+          reachable: null,
+          activeNode: 'R1',
+          settled: new Set(),
+          dist: { ...dist },
+          preds: structuredClone(preds),
+          checks: [],
+          optimalPaths: [],
+          optimalEdgeIds: new Set(),
+          optimalNodeIds: new Set(),
+          narrative: 'Začiatok SPF výpočtu: začíname na routeri R1 (cena 0). Všetky ostatné routery majú zatiaľ cenu ∞.'
+        });
+
+        while (true) {
+          // Pick unsettled, UP router with smallest finite distance
+          let u = null;
+          let bestD = Infinity;
+          for (const n of NODES) {
+            if (state.downNodes.has(n.id) || settled.has(n.id)) continue;
+            if (dist[n.id] < bestD) {
+              bestD = dist[n.id];
+              u = n.id;
+            }
+          }
+          if (!u) break;
+
+          settled.add(u);
+          const checks = [];
+
+          // Inspect all UP edges incident to u leading to UP unsettled neighbors
+          for (const e of state.edges) {
+            if (!e.up) continue;
+            if (e.a !== u && e.b !== u) continue;
+            const v = e.a === u ? e.b : e.a;
+            if (state.downNodes.has(v) || settled.has(v)) continue;
+
+            const oldD = dist[v];
+            const cand = dist[u] + e.cost;
+            if (cand < oldD) {
+              dist[v] = cand;
+              preds[v] = [u];
+              checks.push({ edgeId: e.id, from: u, to: v, cost: e.cost, oldDist: oldD, newDist: cand, status: 'improved' });
+            } else if (cand === oldD) {
+              preds[v].push(u);
+              checks.push({ edgeId: e.id, from: u, to: v, cost: e.cost, oldDist: oldD, newDist: cand, status: 'tied' });
+            } else {
+              checks.push({ edgeId: e.id, from: u, to: v, cost: e.cost, oldDist: oldD, newDist: cand, status: 'worse' });
+            }
+          }
+
+          // Build clear Slovak narrative for this step
+          const improved = checks.filter(c => c.status === 'improved');
+          const tied = checks.filter(c => c.status === 'tied');
+          let msg = `OSPF uzatvára najlacnejší neuzavretý router ${u} (potvrdená cena ${dist[u]}). `;
+          if (improved.length > 0) {
+            const parts = improved.map(c =>
+              `${c.to}: ${c.oldDist === Infinity ? '∞' : c.oldDist} → ${c.newDist} (${dist[u]}+${c.cost})`
+            );
+            msg += `Zlepšené ceny susedov: ${parts.join(', ')}.`;
+          } else if (tied.length > 0) {
+            const parts = tied.map(c => `${c.to} (${c.newDist})`);
+            msg += `Nájdená rovnocenná cesta (ECMP) k ${parts.join(', ')}.`;
+          } else if (checks.length > 0) {
+            msg += 'Žiadny zo susedov nezískal lacnejšiu trasu.';
+          } else {
+            msg += 'Všetci dostupní susedia sú už uzavretí.';
+          }
+
+          steps.push({
+            index: steps.length,
+            isFinal: false,
+            reachable: null,
+            activeNode: u,
+            settled: new Set(settled),
+            dist: { ...dist },
+            preds: structuredClone(preds),
+            checks,
+            optimalPaths: [],
+            optimalEdgeIds: new Set(),
+            optimalNodeIds: new Set(),
+            narrative: msg
+          });
+        }
+
+        // Reconstruct all optimal paths from R1 to R8
+        const reachable = Number.isFinite(dist['R8']);
+        const optimalPaths = [];
+        const optimalEdgeIds = new Set();
+        const optimalNodeIds = new Set();
+
+        if (reachable) {
+          function backtrack(curr, acc) {
+            if (curr === 'R1') {
+              optimalPaths.push([...acc].reverse());
+              return;
+            }
+            for (const p of preds[curr]) {
+              acc.push(p);
+              backtrack(p, acc);
+              acc.pop();
+            }
+          }
+          backtrack('R8', ['R8']);
+
+          for (const path of optimalPaths) {
+            for (let i = 0; i < path.length; i++) {
+              optimalNodeIds.add(path[i]);
+              if (i < path.length - 1) {
+                const e = getEdgeBetween(path[i], path[i + 1]);
+                if (e) optimalEdgeIds.add(e.id);
+              }
+            }
+          }
+        }
+
+        let finalMsg;
+        if (!reachable) {
+          finalMsg = 'Cesta neexistuje! Medzi routerom R1 a R8 nie je žiadne funkčné prepojenie. Obnov niektorý odpojený spoj alebo router.';
+        } else if (optimalPaths.length === 1) {
+          const p = optimalPaths[0];
+          finalMsg = `Výpočet SPF je hotový! Najkratšia OSPF trasa: Počítač A → ${p.join(' → ')} → Počítač B s celkovou cenou ${dist['R8']} (${p.length - 1} skokov medzi routermi).`;
+        } else {
+          finalMsg = `Výpočet SPF je hotový! OSPF našlo ${optimalPaths.length} rovnocenné trasy (ECMP) s rovnakou najnižšou cenou ${dist['R8']} — premávku môže rozkladať medzi obe.`;
+        }
+
+        steps.push({
+          index: steps.length,
+          isFinal: true,
+          reachable,
+          activeNode: null,
+          settled: new Set(settled),
+          dist: { ...dist },
+          preds: structuredClone(preds),
+          checks: [],
+          optimalPaths,
+          optimalEdgeIds,
+          optimalNodeIds,
+          narrative: finalMsg
+        });
+
+        return steps;
+      }
+
+      function computeTopPaths(limit = 5) {
+        if (state.downNodes.has('R1') || state.downNodes.has('R8')) return [];
+        const adj = {};
+        for (const n of NODES) adj[n.id] = [];
+        for (const e of state.edges) {
+          if (!e.up) continue;
+          if (state.downNodes.has(e.a) || state.downNodes.has(e.b)) continue;
+          adj[e.a].push({ to: e.b, cost: e.cost });
+          adj[e.b].push({ to: e.a, cost: e.cost });
+        }
+
+        const results = [];
+        const visited = new Set(['R1']);
+
+        function dfs(curr, path, totalCost) {
+          if (curr === 'R8') {
+            results.push({ nodes: [...path], cost: totalCost, hops: path.length - 1 });
+            return;
+          }
+          for (const next of adj[curr]) {
+            if (visited.has(next.to)) continue;
+            visited.add(next.to);
+            path.push(next.to);
+            dfs(next.to, path, totalCost + next.cost);
+            path.pop();
+            visited.delete(next.to);
+          }
+        }
+
+        dfs('R1', ['R1'], 0);
+        results.sort((a, b) => a.cost - b.cost || a.hops - b.hops || a.nodes.join('').localeCompare(b.nodes.join('')));
+        return results.slice(0, limit);
+      }
+
+      // ============================================================
+      // 4. LOAD PRESET & RECOMPUTE
+      // ============================================================
+      function loadPreset(presetKey, jumpToEnd = true) {
+        stopPlayback();
+        state.preset = presetKey;
+        state.downNodes.clear();
+        state.hoverPath = null;
+
+        if (presetKey === 'random') {
+          const palette = [2, 4, 5, 8, 10, 12, 15, 18, 20, 25, 30, 35, 40, 50, 64];
+          state.edges = BASE_EDGES.map(e => ({
+            ...e,
+            cost: palette[Math.floor(Math.random() * palette.length)],
+            up: true
+          }));
+        } else {
+          const p = PRESETS[presetKey] || PRESETS.classic;
+          const downE = new Set(p.downEdges);
+          for (const nid of p.downNodes) state.downNodes.add(nid);
+          state.edges = BASE_EDGES.map(e => ({
+            ...e,
+            cost: p.costs[e.id],
+            up: !downE.has(e.id)
+          }));
+        }
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+          btn.setAttribute('aria-pressed', String(btn.dataset.preset === presetKey));
+        });
+
+        resetQuizState();
+        recompute(jumpToEnd);
+      }
+
+      function recompute(jumpToEnd = true, opts = {}) {
+        state.spfSteps = computeDijkstraTrace();
+        if (jumpToEnd) {
+          state.stepIndex = state.spfSteps.length - 1;
+        } else {
+          state.stepIndex = Math.min(state.stepIndex, state.spfSteps.length - 1);
+        }
+        renderAll(opts);
+        const finalStep = state.spfSteps[state.spfSteps.length - 1];
+        if (!opts.skipPackets && state.mode === 'explore' && state.stepIndex === state.spfSteps.length - 1 && finalStep.reachable && state.animations) {
+          launchPacketBurst();
+        }
+      }
+
+      // ============================================================
+      // 5. SVG RENDERING
+      // ============================================================
+      const SVG_NS = 'http://www.w3.org/2000/svg';
+      function el(tag, attrs = {}, text = null) {
+        const node = document.createElementNS(SVG_NS, tag);
+        for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+        if (text !== null) node.textContent = text;
+        return node;
+      }
+
+      function strokeWidthForCost(cost) {
+        if (cost <= 5) return 4.6;
+        if (cost <= 15) return 3.6;
+        if (cost <= 35) return 2.8;
+        return 2.1;
+      }
+
+      function getBadgeOffset(node) {
+        switch (node.badgePos) {
+          case 'top': return { dx: 0, dy: -46 };
+          case 'bottom': return { dx: 0, dy: 46 };
+          case 'tr': return { dx: 36, dy: -32 };
+          default: return { dx: 0, dy: -46 };
+        }
+      }
+
+      function renderSVG() {
+        const svg = document.getElementById('topology-svg');
+        svg.innerHTML = '';
+
+        const step = state.spfSteps[state.stepIndex];
+        const finalStep = state.spfSteps[state.spfSteps.length - 1];
+        const hideAnswer = state.mode === 'quiz' && !state.quizChecked;
+
+        // Preview path edge set (when hovering top-5 list)
+        const previewEdgeIds = new Set();
+        if (state.hoverPath && !hideAnswer) {
+          for (let i = 0; i < state.hoverPath.length - 1; i++) {
+            const e = getEdgeBetween(state.hoverPath[i], state.hoverPath[i + 1]);
+            if (e) previewEdgeIds.add(e.id);
+          }
+        }
+
+        // Quiz chosen edges & nodes
+        const quizEdgeIds = new Set();
+        const quizNodeIds = new Set(state.quizPath);
+        if (state.mode === 'quiz') {
+          for (let i = 0; i < state.quizPath.length - 1; i++) {
+            const e = getEdgeBetween(state.quizPath[i], state.quizPath[i + 1]);
+            if (e) quizEdgeIds.add(e.id);
+          }
+        }
+
+        // Checks lookup for current step
+        const checksByEdge = new Map();
+        const improvedNodes = new Set();
+        if (!hideAnswer && step && step.checks) {
+          for (const c of step.checks) {
+            checksByEdge.set(c.edgeId, c);
+            if (c.status === 'improved') improvedNodes.add(c.to);
+          }
+        }
+
+        // Tree edges (best known predecessor edges so far)
+        const treeEdgeIds = new Set();
+        if (!hideAnswer && step) {
+          for (const n of NODES) {
+            for (const p of (step.preds[n.id] || [])) {
+              const e = getEdgeBetween(p, n.id);
+              if (e) treeEdgeIds.add(e.id);
+            }
+          }
+        }
+
+        // Layers for crisp z-ordering
+        const gLan = el('g', { id: 'layer-lan' });
+        const gLinks = el('g', { id: 'layer-links' });
+        const gFlows = el('g', { id: 'layer-flows' });
+        const gPills = el('g', { id: 'layer-pills' });
+        const gNodes = el('g', { id: 'layer-nodes' });
+        const gPackets = el('g', { id: 'layer-packets' });
+
+        // 1. LAN Access wires (PC A <-> R1 and R8 <-> PC B)
+        const showOptimal = !hideAnswer && step.isFinal && step.reachable;
+        const lanAClass = state.downNodes.has('R1') ? 'lan-wire down' : (showOptimal ? 'lan-wire active' : 'lan-wire');
+        const lanBClass = state.downNodes.has('R8') ? 'lan-wire down' : (showOptimal ? 'lan-wire active' : 'lan-wire');
+
+        gLan.appendChild(el('line', { x1: PC_A.x + 36, y1: PC_A.y, x2: nodeById.R1.x - 28, y2: nodeById.R1.y, class: lanAClass }));
+        gLan.appendChild(el('line', { x1: nodeById.R8.x + 28, y1: nodeById.R8.y, x2: PC_B.x - 36, y2: PC_B.y, class: lanBClass }));
+
+        if (showOptimal) {
+          gFlows.appendChild(el('path', { d: `M ${PC_A.x + 36} ${PC_A.y} L ${nodeById.R1.x - 28} ${nodeById.R1.y}`, class: 'link-flow' }));
+          gFlows.appendChild(el('path', { d: `M ${nodeById.R8.x + 28} ${nodeById.R8.y} L ${PC_B.x - 36} ${PC_B.y}`, class: 'link-flow' }));
+        }
+
+        // Subtle LAN labels
+        gLan.appendChild(el('text', { x: 132, y: 244, class: 'pc-sub' }, 'LAN'));
+        gLan.appendChild(el('text', { x: 856, y: 244, class: 'pc-sub' }, 'LAN'));
+
+        // 2. Inter-router links
+        for (const e of state.edges) {
+          const nA = nodeById[e.a];
+          const nB = nodeById[e.b];
+          const isDown = !e.up || state.downNodes.has(e.a) || state.downNodes.has(e.b);
+          const isSelected = state.mode === 'explore' && state.selected?.type === 'edge' && state.selected.id === e.id;
+          const isOptimal = showOptimal && step.optimalEdgeIds.has(e.id);
+          const check = checksByEdge.get(e.id);
+          const isTree = !hideAnswer && !step.isFinal && treeEdgeIds.has(e.id);
+          const isPreview = previewEdgeIds.has(e.id);
+          const isQuizChosen = state.mode === 'quiz' && quizEdgeIds.has(e.id);
+
+          const groupClasses = ['link-group'];
+          if (isSelected) groupClasses.push('selected');
+          if (isDown) groupClasses.push('down');
+          else if (isOptimal) groupClasses.push('optimal');
+          else if (check) groupClasses.push('checking');
+
+          const g = el('g', {
+            class: groupClasses.join(' '),
+            'data-edge-id': e.id,
+            tabindex: '0',
+            role: 'button',
+            'aria-label': `Spoj ${e.a} až ${e.b}, cena ${e.cost}, ${e.up ? 'aktívny' : 'odpojený'}`
+          });
+
+          const lineClasses = ['link-line'];
+          if (isDown) lineClasses.push('down');
+          else if (isQuizChosen && !state.quizChecked) lineClasses.push('quiz-chosen');
+          else if (isPreview) lineClasses.push('preview');
+          else if (isOptimal) lineClasses.push('optimal');
+          else if (isQuizChosen && state.quizChecked) lineClasses.push('preview');
+          else if (check && check.status === 'improved') lineClasses.push('improved');
+          else if (check) lineClasses.push('checking');
+          else if (isTree) lineClasses.push('tree');
+
+          g.appendChild(el('line', { x1: nA.x, y1: nA.y, x2: nB.x, y2: nB.y, class: 'link-hit' }));
+          g.appendChild(el('line', {
+            x1: nA.x, y1: nA.y, x2: nB.x, y2: nB.y,
+            class: lineClasses.join(' '),
+            'stroke-width': strokeWidthForCost(e.cost)
+          }));
+
+          // Flow dash on optimal edges (directional along path)
+          if (isOptimal && !isPreview) {
+            // Find direction from optimal path
+            let fromN = nA, toN = nB;
+            for (const path of step.optimalPaths) {
+              const idxA = path.indexOf(e.a);
+              const idxB = path.indexOf(e.b);
+              if (idxA !== -1 && idxB !== -1 && Math.abs(idxA - idxB) === 1) {
+                if (idxA > idxB) { fromN = nB; toN = nA; }
+                break;
+              }
+            }
+            gFlows.appendChild(el('path', { d: `M ${fromN.x} ${fromN.y} L ${toN.x} ${toN.y}`, class: 'link-flow' }));
+          }
+
+          // Cost pill at midpoint
+          const mx = (nA.x + nB.x) / 2;
+          const my = (nA.y + nB.y) / 2;
+          const labelStr = !e.up ? '✕' : String(e.cost);
+          const pillW = Math.max(30, labelStr.length * 9 + 16);
+
+          const pillG = el('g', { class: groupClasses.join(' '), 'data-edge-id': e.id });
+          pillG.appendChild(el('rect', {
+            x: mx - pillW / 2,
+            y: my - 13,
+            width: pillW,
+            height: 26,
+            rx: 13,
+            class: 'cost-pill-rect'
+          }));
+          pillG.appendChild(el('text', { x: mx, y: my + 0.5, class: 'cost-pill-text' }, labelStr));
+
+          const onEdgeClick = () => {
+            if (state.mode === 'explore') {
+              state.selected = { type: 'edge', id: e.id };
+              renderAll();
+            }
+          };
+          g.addEventListener('click', onEdgeClick);
+          pillG.addEventListener('click', onEdgeClick);
+          g.addEventListener('keydown', ev => {
+            if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onEdgeClick(); }
+          });
+
+          gLinks.appendChild(g);
+          gPills.appendChild(pillG);
+        }
+
+        // 3. PC A and PC B
+        for (const pc of [PC_A, PC_B]) {
+          const pcG = el('g', {});
+          const isReachableActive = showOptimal || (pc.id === 'PCA' && !state.downNodes.has('R1')) || (pc.id === 'PCB' && !state.downNodes.has('R8'));
+          pcG.appendChild(el('rect', {
+            x: pc.x - 38, y: pc.y - 46, width: 76, height: 92, rx: 14,
+            class: `pc-box ${showOptimal ? 'active' : ''}`
+          }));
+          // Monitor icon
+          pcG.appendChild(el('rect', {
+            x: pc.x - 19, y: pc.y - 31, width: 38, height: 26, rx: 4,
+            fill: 'none', stroke: showOptimal ? 'var(--green)' : 'var(--blue)', 'stroke-width': 2.2
+          }));
+          pcG.appendChild(el('path', {
+            d: `M ${pc.x - 7} ${pc.y - 1} H ${pc.x + 7} M ${pc.x} ${pc.y - 5} V ${pc.y - 1}`,
+            stroke: showOptimal ? 'var(--green)' : 'var(--blue)', 'stroke-width': 2.2, 'stroke-linecap': 'round'
+          }));
+          pcG.appendChild(el('text', { x: pc.x, y: pc.y + 18, class: 'pc-title' }, pc.label));
+          pcG.appendChild(el('text', { x: pc.x, y: pc.y + 34, class: 'pc-sub' }, pc.ip));
+          gNodes.appendChild(pcG);
+        }
+
+        // 4. Routers R1–R8
+        const lastQuizNode = state.quizPath[state.quizPath.length - 1];
+        const validQuizNext = new Set();
+        if (state.mode === 'quiz' && !state.quizChecked && lastQuizNode !== 'R8') {
+          for (const e of state.edges) {
+            if (!e.up) continue;
+            if (e.a === lastQuizNode && !state.downNodes.has(e.b) && !quizNodeIds.has(e.b)) validQuizNext.add(e.b);
+            if (e.b === lastQuizNode && !state.downNodes.has(e.a) && !quizNodeIds.has(e.a)) validQuizNext.add(e.a);
+          }
+        }
+
+        for (const n of NODES) {
+          const isDown = state.downNodes.has(n.id);
+          const isSelected = state.mode === 'explore' && state.selected?.type === 'node' && state.selected.id === n.id;
+          const isActive = !hideAnswer && step.activeNode === n.id;
+          const isSettled = !hideAnswer && step.settled.has(n.id);
+          const dVal = step.dist[n.id];
+          const isFrontier = !hideAnswer && !isSettled && Number.isFinite(dVal);
+          const isOnPath = showOptimal && step.optimalNodeIds.has(n.id);
+
+          const cls = ['router-node'];
+          if (isDown) cls.push('down');
+          else if (state.mode === 'quiz' && !state.quizChecked) {
+            if (quizNodeIds.has(n.id)) cls.push('quiz-in-path');
+            else if (validQuizNext.has(n.id)) cls.push('quiz-next');
+          } else {
+            if (isOnPath) cls.push('on-path');
+            else if (isActive) cls.push('active');
+            else if (isSettled) cls.push('settled');
+            else if (isFrontier) cls.push('frontier');
+          }
+          if (isSelected) cls.push('selected');
+
+          const g = el('g', {
+            class: cls.join(' '),
+            'data-node-id': n.id,
+            tabindex: '0',
+            role: 'button',
+            'aria-label': `Router ${n.id}, ${isDown ? 'vypnutý' : 'zapnutý'}`
+          });
+
+          // Pulsing halo for active node
+          g.appendChild(el('circle', {
+            cx: n.x, cy: n.y, r: 28,
+            class: 'router-halo',
+            style: `transform-origin: ${n.x}px ${n.y}px`
+          }));
+
+          // Main router circle
+          g.appendChild(el('circle', { cx: n.x, cy: n.y, r: 27, class: 'router-circle' }));
+
+          // Subtle router X-arrows motif
+          g.appendChild(el('path', {
+            d: `M ${n.x - 14} ${n.y - 14} L ${n.x - 8} ${n.y - 8} M ${n.x + 14} ${n.y - 14} L ${n.x + 8} ${n.y - 8} M ${n.x - 14} ${n.y + 14} L ${n.x - 8} ${n.y + 8} M ${n.x + 14} ${n.y + 14} L ${n.x + 8} ${n.y + 8}`,
+            class: 'router-arrows',
+            'stroke-linecap': 'round'
+          }));
+
+          g.appendChild(el('text', { x: n.x, y: n.y + 0.5, class: 'router-label' }, isDown ? `${n.id} ✕` : n.id));
+
+          // Live Dijkstra distance badge (hidden during active quiz before verification)
+          if (!hideAnswer && !isDown) {
+            const off = getBadgeOffset(n);
+            const bx = n.x + off.dx;
+            const by = n.y + off.dy;
+            const dText = Number.isFinite(dVal) ? `d=${dVal}` : 'd=∞';
+            const bw = Math.max(38, dText.length * 7.5 + 12);
+            const bCls = ['dist-badge'];
+            if (improvedNodes.has(n.id)) bCls.push('relaxed');
+            else if (isActive) bCls.push('active');
+            else if (isSettled) bCls.push('settled');
+            else if (isFrontier) bCls.push('frontier');
+
+            const bg = el('g', { class: bCls.join(' ') });
+            bg.appendChild(el('rect', { x: bx - bw / 2, y: by - 11, width: bw, height: 22, rx: 11, class: 'dist-badge-rect' }));
+            bg.appendChild(el('text', { x: bx, y: by + 0.5, class: 'dist-badge-text' }, dText));
+            g.appendChild(bg);
+          }
+
+          const onNodeClick = () => {
+            if (state.mode === 'quiz') {
+              handleQuizNodeClick(n.id);
+            } else {
+              state.selected = { type: 'node', id: n.id };
+              renderAll();
+            }
+          };
+          g.addEventListener('click', onNodeClick);
+          g.addEventListener('keydown', ev => {
+            if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onNodeClick(); }
+          });
+
+          gNodes.appendChild(g);
+        }
+
+        svg.appendChild(gLan);
+        svg.appendChild(gLinks);
+        svg.appendChild(gFlows);
+        svg.appendChild(gPills);
+        svg.appendChild(gNodes);
+        svg.appendChild(gPackets);
+      }
+
+      // ============================================================
+      // 6. SIDEBAR, TOP-5 PATHS, SPF TABLE & INSPECTOR RENDERING
+      // ============================================================
+      function renderAll(opts = {}) {
+        document.documentElement.classList.toggle('no-motion', !state.animations);
+        renderSVG();
+        renderStepperAndNarrative();
+        renderSummary();
+        if (!opts.preserveInspector) renderInspector();
+        renderSpfTable();
+        renderTopPaths();
+        renderQuizPanel();
+        renderCliSnippet();
+      }
+
+      function renderStepperAndNarrative() {
+        const step = state.spfSteps[state.stepIndex];
+        const total = state.spfSteps.length - 1;
+        const isQuiz = state.mode === 'quiz';
+
+        document.getElementById('stepper-bar').hidden = isQuiz;
+        const narrBox = document.getElementById('narrative-box');
+        const narrText = document.getElementById('narrative-text');
+
+        if (isQuiz && !state.quizChecked) {
+          narrBox.className = 'narrative';
+          narrText.textContent = 'Režim úlohy: najkratšia cesta je skrytá. Klikaj postupne na routery od R1 po R8 a skús nájsť najnižšiu cenu.';
+        } else {
+          narrBox.className = 'narrative' + (step.isFinal ? (step.reachable ? ' done' : ' error') : '');
+          narrText.textContent = step.narrative;
+        }
+
+        document.getElementById('step-indicator').textContent =
+          step.isFinal ? `Výsledok · krok ${total} / ${total}` : `Krok ${state.stepIndex} / ${total}`;
+
+        document.getElementById('step-start').disabled = state.stepIndex === 0;
+        document.getElementById('step-prev').disabled = state.stepIndex === 0;
+        document.getElementById('step-next').disabled = state.stepIndex === total;
+        document.getElementById('step-end').disabled = state.stepIndex === total;
+        document.getElementById('step-play').textContent = state.playing ? '⏸ Pozastaviť' : '⏯ Prehrať';
+      }
+
+      function renderSummary() {
+        const finalStep = state.spfSteps[state.spfSteps.length - 1];
+        const topPaths = computeTopPaths(5);
+        const hideAnswer = state.mode === 'quiz' && !state.quizChecked;
+
+        const topBadge = document.getElementById('top-cost-badge');
+        const statusEl = document.getElementById('route-status');
+        const container = document.getElementById('route-paths-container');
+        const metricCost = document.getElementById('metric-cost');
+        const metricHops = document.getElementById('metric-hops');
+        const insightEl = document.getElementById('insight-note');
+        const sendBtn = document.getElementById('send-packet');
+
+        if (hideAnswer) {
+          topBadge.className = 'badge-cost hidden-mode';
+          topBadge.textContent = 'Výsledok skrytý (úloha)';
+          statusEl.className = 'route-status';
+          statusEl.textContent = 'Čaká sa na tvoj tip';
+          container.innerHTML = '<p style="font-size:13.5px;color:var(--muted);margin:6px 0">Po overení svojej trasy sa tu zobrazí výpočet OSPF.</p>';
+          metricCost.textContent = '?';
+          metricHops.textContent = '?';
+          insightEl.textContent = 'Tip: Nesleduj len najkratšiu čiaru na pohľad — spočítaj ceny na viacerých vetvách!';
+          sendBtn.disabled = true;
+          return;
+        }
+
+        if (!finalStep.reachable) {
+          topBadge.className = 'badge-cost down';
+          topBadge.textContent = 'Cesta neexistuje';
+          statusEl.className = 'route-status down';
+          statusEl.textContent = 'Cieľ nedosiahnuteľný';
+          container.innerHTML = '<p style="font-size:13.5px;color:var(--muted);margin:6px 0">Medzi Počítačom A a Počítačom B nevedie žiadna funkčná trasa.</p>';
+          metricCost.textContent = '∞';
+          metricCost.className = 'metric-val';
+          metricHops.textContent = '—';
+          insightEl.textContent = 'Zapni späť aspoň jeden odpojený spoj alebo router, alebo stlač „Obnoviť scenár“.';
+          sendBtn.disabled = true;
+          return;
+        }
+
+        const bestCost = finalStep.dist['R8'];
+        const ecmp = finalStep.optimalPaths.length > 1;
+        topBadge.className = 'badge-cost';
+        topBadge.textContent = ecmp
+          ? `ECMP (${finalStep.optimalPaths.length} trasy) · cena ${bestCost}`
+          : `Najnižšia cena OSPF: ${bestCost}`;
+
+        statusEl.className = 'route-status up';
+        statusEl.textContent = ecmp
+          ? `Rovnocenné cesty (ECMP · ${finalStep.optimalPaths.length}×)`
+          : 'Najkratšia cesta nájdená';
+
+        container.innerHTML = finalStep.optimalPaths.map(path => {
+          const allNodes = ['PC A', ...path, 'PC B'];
+          return `<div class="route-chips">${allNodes.map((id, i) =>
+            `<span class="chip ${i > 0 && i < allNodes.length - 1 ? 'best' : ''}">${id}</span>${i < allNodes.length - 1 ? '<span class="chip-arrow">→</span>' : ''}`
+          ).join('')}</div>`;
+        }).join('');
+
+        metricCost.textContent = String(bestCost);
+        metricCost.className = 'metric-val green';
+        const hopsList = [...new Set(finalStep.optimalPaths.map(p => p.length - 1))];
+        metricHops.textContent = hopsList.join(' / ');
+        sendBtn.disabled = false;
+
+        // Smart pedagogical insight
+        const minHopsPath = [...topPaths].sort((a, b) => a.hops - b.hops || a.cost - b.cost)[0];
+        const bestHops = finalStep.optimalPaths[0].length - 1;
+        if (ecmp) {
+          insightEl.textContent = `Obe trasy majú presne rovnakú cenu ${bestCost}. OSPF ich obe zapíše do smerovacej tabuľky a môže medzi ne rozkladať prevádzku (load balancing).`;
+        } else if (minHopsPath && minHopsPath.hops < bestHops) {
+          insightEl.textContent = `Zaujímavosť: Trasa s menej skokmi (${minHopsPath.nodes.join(' → ')}, len ${minHopsPath.hops} skoky) má vyššiu cenu ${minHopsPath.cost}. OSPF preto vybralo ${bestHops}-skokovú trasu za ${bestCost}!`;
+        } else if (topPaths.length > 1) {
+          const second = topPaths.find(p => p.cost > bestCost);
+          if (second) {
+            insightEl.textContent = `Druhá najlepšia trasa (${second.nodes.join(' → ')}) má cenu ${second.cost} (+${second.cost - bestCost}). Ak by vypadol spoj na hlavnej trase, OSPF sa na ňu automaticky prepne.`;
+          } else {
+            insightEl.textContent = 'Klikni na ľubovoľný spoj na aktívnej trase a skús mu zvýšiť cenu alebo ho odpojiť — OSPF okamžite prepočíta novú cestu.';
+          }
+        } else {
+          insightEl.textContent = 'Toto je momentálne jediná funkčná cesta medzi Počítačom A a Počítačom B.';
+        }
+      }
+
+      function renderInspector() {
+        const titleEl = document.getElementById('inspector-title');
+        const bodyEl = document.getElementById('inspector-body');
+
+        if (state.mode === 'quiz') {
+          titleEl.textContent = 'Úprava v režime úlohy';
+          bodyEl.innerHTML = '<div class="inspector-empty">Počas hádania trasy klikaním na routery zostavuješ vlastnú cestu. Pre úpravu cien spojov prepni na kartu <strong>Skúmanie a SPF kroky</strong>.</div>';
+          return;
+        }
+
+        if (!state.selected) {
+          titleEl.textContent = 'Vyber prvok v schéme';
+          bodyEl.innerHTML = '<div class="inspector-empty">Klikni na ľubovoľný <strong>spoj</strong> (zmeníš jeho cenu alebo ho odpojíš) alebo na <strong>router</strong> (môžeš simulovať poruchu).</div>';
+          return;
+        }
+
+        if (state.selected.type === 'edge') {
+          const edge = state.edges.find(e => e.id === state.selected.id);
+          if (!edge) return;
+          titleEl.textContent = `Spoj ${edge.a} ↔ ${edge.b}`;
+          bodyEl.innerHTML = `
+            <p style="margin:0 0 8px;font-size:13px;color:var(--muted)">
+              Rozhrania: <span class="mono">${edge.a} (${edge.ifaceA}) ↔ ${edge.b} (${edge.ifaceB})</span> · Stav: <strong>${edge.up ? 'Zapnutý' : 'Odpojený'}</strong>
+            </p>
+            <label for="edge-cost-num" style="font-size:13px;font-weight:700">Cena OSPF (cost):</label>
+            <div class="cost-control-row">
+              <input id="edge-cost-range" type="range" min="1" max="100" value="${Math.min(100, edge.cost)}" ${!edge.up ? 'disabled' : ''}>
+              <input id="edge-cost-num" type="number" min="1" max="65535" value="${edge.cost}" ${!edge.up ? 'disabled' : ''}>
+            </div>
+            <div class="speed-presets">
+              ${SPEED_PRESETS.map(sp => `
+                <button type="button" class="speed-btn" data-set-cost="${sp.cost}" ${!edge.up ? 'disabled' : ''}>
+                  <strong>${sp.cost}</strong>
+                  <span>${sp.label}</span>
+                </button>
+              `).join('')}
+            </div>
+            <div class="actions-row">
+              <button type="button" id="toggle-edge-btn" class="${edge.up ? 'danger' : 'success'}">
+                ${edge.up ? '✕ Odpojiť spoj (výpadok)' : '✓ Znovu pripojiť spoj'}
+              </button>
+            </div>
+          `;
+
+          const rangeEl = document.getElementById('edge-cost-range');
+          const numEl = document.getElementById('edge-cost-num');
+
+          const applyCost = (val, liveDrag = false) => {
+            const parsed = Math.max(1, Math.min(65535, Math.round(Number(val) || 1)));
+            edge.cost = parsed;
+            rangeEl.value = Math.min(100, parsed);
+            if (!liveDrag || document.activeElement !== numEl) numEl.value = parsed;
+            stopPlayback();
+            recompute(true, { preserveInspector: true, skipPackets: liveDrag });
+          };
+
+          rangeEl.addEventListener('input', () => applyCost(rangeEl.value, true));
+          rangeEl.addEventListener('change', () => applyCost(rangeEl.value, false));
+          numEl.addEventListener('input', () => {
+            const n = Number(numEl.value);
+            if (Number.isFinite(n) && n >= 1) applyCost(n, true);
+          });
+          numEl.addEventListener('change', () => applyCost(numEl.value, false));
+          bodyEl.querySelectorAll('[data-set-cost]').forEach(btn => {
+            btn.addEventListener('click', () => applyCost(btn.dataset.setCost, false));
+          });
+          document.getElementById('toggle-edge-btn').addEventListener('click', () => {
+            edge.up = !edge.up;
+            stopPlayback();
+            recompute(true);
+          });
+        } else if (state.selected.type === 'node') {
+          const node = nodeById[state.selected.id];
+          const isDown = state.downNodes.has(node.id);
+          const finalStep = state.spfSteps[state.spfSteps.length - 1];
+          const distFromR1 = finalStep.dist[node.id];
+
+          // Find next hop toward PC B (R8) if on optimal path
+          const nextHops = new Set();
+          if (finalStep.reachable && !isDown) {
+            for (const path of finalStep.optimalPaths) {
+              const idx = path.indexOf(node.id);
+              if (idx !== -1 && idx < path.length - 1) nextHops.add(path[idx + 1]);
+            }
+          }
+          const nextHopText = node.id === 'R8'
+            ? 'priamo do LAN Počítača B'
+            : (nextHops.size > 0 ? [...nextHops].join(' / ') : 'mimo hlavnej trasy');
+
+          titleEl.textContent = `Router ${node.id}`;
+          bodyEl.innerHTML = `
+            <p style="margin:0 0 10px;font-size:13px;color:var(--muted)">
+              ${node.role} · Router-ID <span class="mono">${node.ip}</span>
+            </p>
+            <div class="metrics-grid" style="margin-top:0">
+              <div class="metric-box">
+                <span class="metric-label">Cena od R1</span>
+                <span class="metric-val" style="font-size:16px">${isDown ? 'Vypnutý' : (Number.isFinite(distFromR1) ? distFromR1 : '∞')}</span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-label">Ďalší skok k PC B</span>
+                <span class="metric-val" style="font-size:14px">${isDown ? '—' : nextHopText}</span>
+              </div>
+            </div>
+            <div class="actions-row">
+              <button type="button" id="toggle-node-btn" class="${isDown ? 'success' : 'danger'}">
+                ${isDown ? '✓ Zapnúť router' : '✕ Simulovať poruchu routera'}
+              </button>
+            </div>
+          `;
+          document.getElementById('toggle-node-btn').addEventListener('click', () => {
+            if (isDown) state.downNodes.delete(node.id);
+            else state.downNodes.add(node.id);
+            stopPlayback();
+            recompute(true);
+          });
+        }
+      }
+
+      function renderSpfTable() {
+        const card = document.getElementById('spf-table-card');
+        const hideAnswer = state.mode === 'quiz' && !state.quizChecked;
+        card.hidden = hideAnswer;
+        if (hideAnswer) return;
+
+        const step = state.spfSteps[state.stepIndex];
+        const checkByTarget = new Map((step.checks || []).map(c => [c.to, c]));
+        const tbody = document.getElementById('spf-tbody');
+
+        tbody.innerHTML = NODES.map(n => {
+          const isDown = state.downNodes.has(n.id);
+          const isActive = step.activeNode === n.id;
+          const isSettled = step.settled.has(n.id);
+          const dVal = step.dist[n.id];
+          const isFrontier = !isSettled && Number.isFinite(dVal);
+          const check = checkByTarget.get(n.id);
+          const improved = check && check.status === 'improved';
+
+          let rowCls = '';
+          if (isDown) rowCls = 'is-down';
+          else if (isActive) rowCls = 'is-active';
+          else if (improved) rowCls = 'is-improved';
+
+          let costCell;
+          if (isDown) {
+            costCell = '<span class="mono">—</span>';
+          } else if (improved) {
+            const oldTxt = check.oldDist === Infinity ? '∞' : check.oldDist;
+            costCell = `<span class="mono"><span class="delta-old">${oldTxt}</span><span class="delta-new">${check.newDist}</span></span>`;
+          } else {
+            costCell = `<span class="mono" style="font-weight:700">${Number.isFinite(dVal) ? dVal : '∞'}</span>`;
+          }
+
+          const predList = step.preds[n.id] || [];
+          const predCell = n.id === 'R1' ? 'štart' : (predList.length ? predList.join(', ') : '—');
+
+          let tagHtml;
+          if (isDown) tagHtml = '<span class="state-tag down">Porucha</span>';
+          else if (isActive) tagHtml = '<span class="state-tag active">Skúmaný</span>';
+          else if (isSettled) tagHtml = '<span class="state-tag settled">Uzavretý</span>';
+          else if (isFrontier) tagHtml = '<span class="state-tag frontier">Kandidát</span>';
+          else tagHtml = '<span class="state-tag unvisited">Neobjavený</span>';
+
+          return `<tr class="${rowCls}">
+            <td><strong>${n.id}</strong></td>
+            <td>${costCell}</td>
+            <td class="mono" style="font-size:12px">${predCell}</td>
+            <td>${tagHtml}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      function renderTopPaths() {
+        const box = document.getElementById('paths-box');
+        const list = document.getElementById('path-list');
+        const hideAnswer = state.mode === 'quiz' && !state.quizChecked;
+        box.hidden = hideAnswer;
+        if (hideAnswer) return;
+
+        const paths = computeTopPaths(5);
+        if (paths.length === 0) {
+          list.innerHTML = '<div class="inspector-empty">Žiadna dostupná cesta medzi R1 a R8.</div>';
+          return;
+        }
+
+        const bestCost = paths[0].cost;
+        list.innerHTML = paths.map((p, idx) => {
+          const isBest = p.cost === bestCost;
+          const diff = p.cost - bestCost;
+          return `
+            <div class="path-row ${isBest ? 'best' : ''}" data-path-idx="${idx}">
+              <span class="path-rank">${isBest ? '✓ OSPF' : `#${idx + 1}`}</span>
+              <span class="path-nodes">${p.nodes.join(' → ')}</span>
+              <span class="path-meta">
+                <span class="path-hops">${p.hops} ${p.hops === 1 ? 'skok' : (p.hops < 5 ? 'skoky' : 'skokov')}</span>
+                <span class="path-cost">${p.cost}${diff > 0 ? ` (+${diff})` : ''}</span>
+              </span>
+            </div>
+          `;
+        }).join('');
+
+        list.querySelectorAll('.path-row').forEach(row => {
+          const idx = Number(row.dataset.pathIdx);
+          row.addEventListener('mouseenter', () => {
+            state.hoverPath = paths[idx].nodes;
+            renderSVG();
+          });
+          row.addEventListener('mouseleave', () => {
+            state.hoverPath = null;
+            renderSVG();
+          });
+        });
+      }
+
+      function renderCliSnippet() {
+        const edge = (state.selected?.type === 'edge' && state.edges.find(e => e.id === state.selected.id))
+          || state.edges[0];
+        if (!edge) return;
+        const lines = [
+          `! Nastavenie ceny na routeri ${edge.a} (smerom k ${edge.b})`,
+          `${edge.a}(config)# interface ${edge.ifaceA}`,
+          edge.up ? `${edge.a}(config-if)# ip ospf cost ${edge.cost}` : `${edge.a}(config-if)# shutdown   ! spoj je momentálne odpojený`,
+          `${edge.a}(config-if)# exit`,
+          ``,
+          `! Rovnakú cenu nastavíme aj na druhej strane (${edge.b}) pre symetrické smerovanie`,
+          `${edge.b}(config)# interface ${edge.ifaceB}`,
+          edge.up ? `${edge.b}(config-if)# ip ospf cost ${edge.cost}` : `${edge.b}(config-if)# shutdown`
+        ];
+        document.getElementById('cli-snippet').textContent = lines.join('\n');
+      }
+
+      // ============================================================
+      // 7. QUIZ MODE (TIPNI SI TRASU)
+      // ============================================================
+      function resetQuizState() {
+        state.quizPath = ['R1'];
+        state.quizChecked = false;
+      }
+
+      function quizPathCost(nodes) {
+        let sum = 0;
+        for (let i = 0; i < nodes.length - 1; i++) {
+          const e = getEdgeBetween(nodes[i], nodes[i + 1]);
+          if (!e || !e.up) return Infinity;
+          sum += e.cost;
+        }
+        return sum;
+      }
+
+      function handleQuizNodeClick(nodeId) {
+        if (state.quizChecked) return;
+        if (state.downNodes.has(nodeId)) return;
+
+        // Clicking the last node (except R1) undoes it
+        const last = state.quizPath[state.quizPath.length - 1];
+        if (nodeId === last && state.quizPath.length > 1) {
+          state.quizPath.pop();
+          renderAll();
+          return;
+        }
+
+        if (last === 'R8') return;
+        if (state.quizPath.includes(nodeId)) return;
+
+        const edge = getEdgeBetween(last, nodeId);
+        if (edge && edge.up) {
+          state.quizPath.push(nodeId);
+          renderAll();
+        }
+      }
+
+      function renderQuizPanel() {
+        const panel = document.getElementById('quiz-panel');
+        panel.hidden = state.mode !== 'quiz';
+        if (state.mode !== 'quiz') return;
+
+        const display = document.getElementById('quiz-path-display');
+        const feedback = document.getElementById('quiz-feedback');
+        const last = state.quizPath[state.quizPath.length - 1];
+        const sum = quizPathCost(state.quizPath);
+
+        display.innerHTML = `
+          <span style="font-size:13px;font-weight:700;color:var(--muted)">Tvoja trasa:</span>
+          ${state.quizPath.map((id, i) => `<span class="chip">${id}</span>${i < state.quizPath.length - 1 ? '<span class="chip-arrow">→</span>' : ''}`).join('')}
+          ${last !== 'R8' ? '<span style="font-size:12.5px;color:var(--muted)">(klikni na ďalší susedný router…)</span>' : ''}
+          <span style="margin-left:auto;font-family:var(--mono);font-weight:800;font-size:14px">Súčet: ${sum}</span>
+        `;
+
+        document.getElementById('quiz-undo').disabled = state.quizPath.length <= 1 || state.quizChecked;
+        document.getElementById('quiz-clear').disabled = state.quizPath.length <= 1 && !state.quizChecked;
+        document.getElementById('quiz-verify').disabled = last !== 'R8' || state.quizChecked;
+
+        if (!state.quizChecked) {
+          feedback.hidden = true;
+          return;
+        }
+
+        const finalStep = state.spfSteps[state.spfSteps.length - 1];
+        const bestCost = finalStep.dist['R8'];
+        feedback.hidden = false;
+        if (sum === bestCost) {
+          feedback.className = 'quiz-feedback ok';
+          feedback.textContent = `Výborne! Tvoja trasa (${state.quizPath.join(' → ')}) má najnižšiu možnú cenu ${bestCost} — presne tú, ktorú vyberie OSPF!`;
+        } else {
+          const bestPathStr = finalStep.optimalPaths[0].join(' → ');
+          feedback.className = 'quiz-feedback warn';
+          feedback.textContent = `Takmer! Tvoja trasa mala cenu ${sum}, ale OSPF našlo lacnejšiu cestu: ${bestPathStr} s cenou ${bestCost} (ušetrilo ${sum - bestCost}). Pozri si ju zvýraznenú nazeleno v schéme!`;
+        }
+      }
+
+      // ============================================================
+      // 8. PACKET FLOW ANIMATION (PC A -> ... -> PC B -> ... -> PC A)
+      // ============================================================
+      function pathToPoints(routerPath, reverse = false) {
+        const pts = [
+          { x: PC_A.x + 36, y: PC_A.y },
+          ...routerPath.map(id => ({ x: nodeById[id].x, y: nodeById[id].y })),
+          { x: PC_B.x - 36, y: PC_B.y }
+        ];
+        return reverse ? pts.reverse() : pts;
+      }
+
+      function computePolylineLength(pts) {
+        let total = 0;
+        const segs = [];
+        for (let i = 0; i < pts.length - 1; i++) {
+          const len = Math.hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y);
+          segs.push({ from: pts[i], to: pts[i + 1], start: total, len });
+          total += len;
+        }
+        return { total, segs };
+      }
+
+      function pointAtDistance(poly, d) {
+        const clamped = Math.max(0, Math.min(poly.total, d));
+        for (const s of poly.segs) {
+          if (clamped <= s.start + s.len || s === poly.segs[poly.segs.length - 1]) {
+            const t = s.len === 0 ? 0 : (clamped - s.start) / s.len;
+            return {
+              x: s.from.x + (s.to.x - s.from.x) * t,
+              y: s.from.y + (s.to.y - s.from.y) * t
+            };
+          }
+        }
+        return poly.segs[0].from;
+      }
+
+      function launchPacketBurst() {
+        const finalStep = state.spfSteps[state.spfSteps.length - 1];
+        if (!finalStep.reachable || finalStep.optimalPaths.length === 0) return;
+
+        // If ECMP, send a packet along EACH optimal path (or alternate)
+        const now = performance.now();
+        finalStep.optimalPaths.forEach((routerPath, idx) => {
+          const polyFwd = computePolylineLength(pathToPoints(routerPath, false));
+          const polyBack = computePolylineLength(pathToPoints(routerPath, true));
+          const speed = 340; // px/sec
+          const durFwd = (polyFwd.total / speed) * 1000;
+          state.packets.push({
+            poly: polyFwd,
+            start: now + idx * 140,
+            duration: durFwd,
+            reply: false
+          });
+          state.packets.push({
+            poly: polyBack,
+            start: now + idx * 140 + durFwd + 120,
+            duration: durFwd,
+            reply: true
+          });
+        });
+
+        if (!state.packetRaf) {
+          state.packetRaf = requestAnimationFrame(tickPackets);
+        }
+      }
+
+      function tickPackets(now) {
+        const layer = document.getElementById('layer-packets');
+        if (!layer) { state.packetRaf = null; return; }
+        layer.innerHTML = '';
+
+        const alive = [];
+        for (const pkt of state.packets) {
+          if (now < pkt.start) {
+            alive.push(pkt);
+            continue;
+          }
+          const progress = (now - pkt.start) / pkt.duration;
+          if (progress <= 1) {
+            alive.push(pkt);
+            const pt = pointAtDistance(pkt.poly, progress * pkt.poly.total);
+            layer.appendChild(el('circle', {
+              cx: pt.x, cy: pt.y, r: 7.5,
+              class: `packet-dot ${pkt.reply ? 'reply' : ''}`
+            }));
+          }
+        }
+        state.packets = alive;
+        if (alive.length > 0 && state.animations) {
+          state.packetRaf = requestAnimationFrame(tickPackets);
+        } else {
+          layer.innerHTML = '';
+          state.packetRaf = null;
+        }
+      }
+
+      // ============================================================
+      // 9. PLAYBACK CONTROLS
+      // ============================================================
+      function stopPlayback() {
+        state.playing = false;
+        if (state.playTimer) {
+          clearInterval(state.playTimer);
+          state.playTimer = null;
+        }
+      }
+
+      function togglePlayback() {
+        if (state.playing) {
+          stopPlayback();
+          renderStepperAndNarrative();
+          return;
+        }
+        if (state.stepIndex >= state.spfSteps.length - 1) {
+          state.stepIndex = 0;
+        }
+        state.playing = true;
+        renderAll();
+        state.playTimer = setInterval(() => {
+          if (state.stepIndex < state.spfSteps.length - 1) {
+            state.stepIndex++;
+            renderAll();
+            if (state.stepIndex === state.spfSteps.length - 1) {
+              stopPlayback();
+              renderStepperAndNarrative();
+              if (state.animations) launchPacketBurst();
+            }
+          } else {
+            stopPlayback();
+            renderStepperAndNarrative();
+          }
+        }, 1500);
+      }
+
+      // ============================================================
+      // 10. EVENT WIRING & THEME SWITCHER
+      // ============================================================
+      // Theme switch (compatible with pvalo.site)
+      (() => {
+        const root = document.documentElement;
+        const buttons = document.querySelectorAll('[data-theme-choice]');
+        const media = matchMedia('(prefers-color-scheme: dark)');
+        const applyScheme = () => {
+          root.dataset.colorScheme = root.dataset.theme || (media.matches ? 'dark' : 'light');
+          buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === (root.dataset.theme || 'auto'))));
+        };
+        buttons.forEach(b => b.addEventListener('click', () => {
+          const choice = b.dataset.themeChoice;
+          if (choice === 'auto') delete root.dataset.theme;
+          else root.dataset.theme = choice;
+          try { choice === 'auto' ? localStorage.removeItem('pvalo-theme') : localStorage.setItem('pvalo-theme', choice); } catch {}
+          applyScheme();
+        }));
+        media.addEventListener('change', applyScheme);
+        applyScheme();
+      })();
+
+      // Animations toggle
+      const animCheckbox = document.getElementById('animations');
+      animCheckbox.checked = state.animations;
+      animCheckbox.addEventListener('change', () => {
+        state.animations = animCheckbox.checked;
+        renderAll();
+      });
+
+      // Mode tabs
+      document.querySelectorAll('.tabs button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          stopPlayback();
+          state.mode = btn.dataset.mode;
+          document.querySelectorAll('.tabs button').forEach(t => t.setAttribute('aria-selected', String(t === btn)));
+          if (state.mode === 'quiz') {
+            resetQuizState();
+            state.stepIndex = state.spfSteps.length - 1;
+          }
+          renderAll();
+        });
+      });
+
+      // Presets
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => loadPreset(btn.dataset.preset, true));
+      });
+
+      // Stepper buttons
+      document.getElementById('step-start').addEventListener('click', () => {
+        stopPlayback(); state.stepIndex = 0; renderAll();
+      });
+      document.getElementById('step-prev').addEventListener('click', () => {
+        stopPlayback(); if (state.stepIndex > 0) { state.stepIndex--; renderAll(); }
+      });
+      document.getElementById('step-next').addEventListener('click', () => {
+        stopPlayback();
+        if (state.stepIndex < state.spfSteps.length - 1) {
+          state.stepIndex++;
+          renderAll();
+          if (state.stepIndex === state.spfSteps.length - 1 && state.animations) launchPacketBurst();
+        }
+      });
+      document.getElementById('step-end').addEventListener('click', () => {
+        stopPlayback();
+        state.stepIndex = state.spfSteps.length - 1;
+        renderAll();
+        if (state.animations) launchPacketBurst();
+      });
+      document.getElementById('step-play').addEventListener('click', togglePlayback);
+
+      // Summary buttons
+      document.getElementById('send-packet').addEventListener('click', () => {
+        if (state.stepIndex !== state.spfSteps.length - 1) {
+          stopPlayback();
+          state.stepIndex = state.spfSteps.length - 1;
+          renderAll();
+        }
+        launchPacketBurst();
+      });
+      document.getElementById('reset-scenario').addEventListener('click', () => loadPreset(state.preset, true));
+
+      // Quiz buttons
+      document.getElementById('quiz-undo').addEventListener('click', () => {
+        if (state.quizPath.length > 1) { state.quizPath.pop(); renderAll(); }
+      });
+      document.getElementById('quiz-clear').addEventListener('click', () => {
+        resetQuizState(); renderAll();
+      });
+      document.getElementById('quiz-verify').addEventListener('click', () => {
+        state.quizChecked = true;
+        state.stepIndex = state.spfSteps.length - 1;
+        renderAll();
+        if (state.animations) launchPacketBurst();
+      });
+      document.getElementById('quiz-new').addEventListener('click', () => {
+        loadPreset('random', true);
+      });
+
+      // Keyboard shortcuts for stepping (Left / Right arrows when not inside an input)
+      document.addEventListener('keydown', e => {
+        if (state.mode !== 'explore') return;
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+        if (e.key === 'ArrowRight' && state.stepIndex < state.spfSteps.length - 1) {
+          stopPlayback(); state.stepIndex++; renderAll();
+        } else if (e.key === 'ArrowLeft' && state.stepIndex > 0) {
+          stopPlayback(); state.stepIndex--; renderAll();
+        }
+      });
+
+      // Boot
+      loadPreset('classic', true);
+    })();
+  </script>
+</body>
+</html>
